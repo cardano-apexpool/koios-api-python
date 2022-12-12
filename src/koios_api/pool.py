@@ -39,7 +39,7 @@ def get_pool_info(pool_id):
     Current pool statuses and details for a specified list of pool ids
     :param pool_id: Stake pool bech32 ID as string (for one stake pool)
     or list of stake pool bech32 IDs (for multiple stake pools)
-    :return: pool_info
+    :returns: pool_info
     """
     url = API_BASE_URL + '/pool_info'
     headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
@@ -64,7 +64,7 @@ def get_pool_stake_snapshot(pool_id):
     https://api.koios.rest/#get-/pool_stake_snapshot
     Returns Mark, Set and Go stake snapshots for the selected pool, useful for leaderlog calculation
     :param pool_id: stake pool bech32 id
-    :return: Pool snapshot as list of maps by epoch (current and previous 2)
+    :returns: Pool snapshot as list of maps by epoch (current and previous 2)
     """
     url = API_BASE_URL + '/pool_stake_snapshot?_pool_bech32=%s' % pool_id
     while True:
@@ -83,7 +83,7 @@ def get_pool_delegators(pool_id):
     https://api.koios.rest/#get-/pool_delegators
     Return information about live delegators for a given pool.
     :param pool_id: stake pool bech32 id
-    :return: The list of pool delegators maps
+    :returns: The list of pool delegators maps
     """
     url = API_BASE_URL + '/pool_delegators?_pool_bech32=%s' % pool_id
     delegators = []
@@ -113,7 +113,7 @@ def get_pool_delegators_history(pool_id, epoch=0):
     (all epochs if not specified).
     :param pool_id: stake pool bech32 id
     :param epoch: (optional) epoch
-    :return: The list of pool delegators maps
+    :returns: The list of pool delegators maps
     """
     url = API_BASE_URL + '/pool_delegators_history?_pool_bech32=%s' % pool_id
     if isinstance(epoch, int) and epoch > 0:
@@ -144,7 +144,7 @@ def get_pool_blocks(pool_id, epoch=0):
     Return information about blocks minted by a given pool for all epochs (or _epoch_no if provided)
     :param pool_id: stake pool bech32 id
     :param epoch: (optional) epoch
-    :return: The list of pool blocks maps
+    :returns: The list of pool blocks maps
     """
     url = API_BASE_URL + '/pool_blocks?_pool_bech32=%s' % pool_id
     if isinstance(epoch, int) and epoch > 0:
@@ -176,7 +176,7 @@ def get_pool_history(pool_id, epoch=0):
     (or all epochs that pool existed for, in descending order if no _epoch_no was provided)
     :param pool_id: stake pool bech32 id
     :param epoch: (optional) epoch
-    :return: pool_history
+    :returns: pool_history
     """
     url = API_BASE_URL + '/pool_history?_pool_bech32=%s' % pool_id
     if isinstance(epoch, int) and epoch > 0:
@@ -192,14 +192,16 @@ def get_pool_history(pool_id, epoch=0):
     return resp
 
 
-def get_pool_updates(pool_id):
+def get_pool_updates(pool_id=''):
     """
     https://api.koios.rest/#get-/pool_updates
     Return all pool updates for all pools or only updates for specific pool if specified
     :param pool_id: stake pool bech32 id
-    :return: pool_updates
+    :returns: pool_updates
     """
-    url = API_BASE_URL + '/pool_updates?_pool_bech32=%s' % pool_id
+    url = API_BASE_URL + '/pool_updates'
+    if pool_id:
+        url += '?_pool_bech32=%s' % pool_id
     while True:
         try:
             resp = json.loads(requests.get(url).text)
@@ -243,7 +245,7 @@ def get_pool_metadata(pool_id):
     https://api.koios.rest/#get-/pool_relays
     A list of registered relays for all currently registered/retiring (not retired) pools
     :param pool_id: stake pool bech32 id
-    :return: The list of pool metadata maps
+    :returns: The list of pool metadata maps
     """
     url = API_BASE_URL + '/pool_metadata'
     headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
@@ -266,7 +268,7 @@ def get_pool_metadata(pool_id):
 def get_retiring_pools():
     """
     Get the retiring stake pools list
-    :return: The list of retiring pools maps
+    :returns: The list of retiring pools maps
     """
     headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
     url = API_BASE_URL + '/pool_updates?pool_status=eq.retiring'
