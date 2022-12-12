@@ -6,6 +6,21 @@ To install the module, type the following command:
 ```bash
 pip3 install koios_api
 ```
+## Environment
+KOIOS can work in Preview & Preprod Testnets along with Mainnet
+By default Mainnet is used. To use a testnet you can set the environment variable 
+
+```bash
+#preprod
+export CARDANO_NET=preprod
+```
+
+```bash
+#preview
+export CARDANO_NET=preview
+```
+
+By default API_BASE_URL is set to api/v0
 
 ## Using the module
 Importing the complete module:
