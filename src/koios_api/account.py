@@ -2,10 +2,11 @@ import json
 import requests
 import inspect
 from time import sleep
+from typing import Union
 from .__config__ import *
 
 
-def get_account_list(offset: int = 0):
+def get_account_list(offset: int = 0) -> list:
     """
     https://api.koios.rest/#get-/account_list
     Get a list of all accounts
@@ -15,12 +16,12 @@ def get_account_list(offset: int = 0):
     params = {
         "offset": offset
     }
-    response = requests.get(url, params=params)
-    response.raise_for_status()
-    return response.json()
+    resp = requests.get(url, params=params)
+    resp.raise_for_status()
+    return resp.json()
 
 
-def get_account_info(addr):
+def get_account_info(addr: Union[list, str]) -> list:
     """
     https://api.koios.rest/#post-/account_info
     Get the account information for given stake addresses (accounts)
@@ -28,21 +29,12 @@ def get_account_info(addr):
     :returns: The list of account information maps
     """
     url = API_BASE_URL + '/account_info'
-    headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
-    stake_addresses = {}
-    if isinstance(addr, list):
-        stake_addresses['_stake_addresses'] = addr
-    else:
-        stake_addresses['_stake_addresses'] = [addr]
-    while True:
-        try:
-            resp = requests.post(url, json=stake_addresses).json()
-            break
-        except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
-            sleep(SLEEP_TIME)
-            print('retrying...')
-    return resp
+    if isinstance(addr, str):
+        addr = [addr]
+    stake_addresses = {'_stake_addresses': addr}
+    resp = requests.post(url, json=stake_addresses)
+    resp.raise_for_status()
+    return resp.json()
 
 
 def get_account_rewards(addr, epoch=0):
