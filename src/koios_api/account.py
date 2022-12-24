@@ -5,32 +5,19 @@ from time import sleep
 from .__config__ import *
 
 
-def get_account_list():
+def get_account_list(offset: int = 0):
     """
     https://api.koios.rest/#get-/account_list
     Get a list of all accounts
     :returns: The list of accounts maps
     """
     url = API_BASE_URL + '/account_list'
-    headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
-    account_list = []
-    offset = 0
-    while True:
-        paginated_url = url + '?offset=%d' % offset
-        while True:
-            try:
-                resp = json.loads(requests.get(paginated_url, headers=headers).text)
-                break
-            except Exception as e:
-                print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
-                sleep(SLEEP_TIME)
-                print('offset: %s, retrying...' % offset)
-        account_list += resp
-        if len(resp) < 1000:
-            break
-        else:
-            offset += len(resp)
-    return account_list
+    params = {
+        "offset": offset
+    }
+    response = requests.get(url, params=params)
+    response.raise_for_status()
+    return response.json()
 
 
 def get_account_info(addr):
@@ -49,7 +36,7 @@ def get_account_info(addr):
         stake_addresses['_stake_addresses'] = [addr]
     while True:
         try:
-            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(stake_addresses)).text)
+            resp = requests.post(url, json=stake_addresses).json()
             break
         except Exception as e:
             print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
