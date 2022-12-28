@@ -5,16 +5,17 @@ from time import sleep
 from .__config__ import *
 
 
-def get_asset_list(policy=''):
+def get_asset_list(policy='', offset=0, limit=0):
     """
     https://api.koios.rest/#get-/asset_list
     Get the list of all native assets (paginated)
     :param policy: Asset Policy (optional), default: all policies
+    :param offset: The offset to start from (optional)
+    :param limit: The maximum number of accounts to return (optional)
     :returns: The list of assets maps by policy
     """
     url = API_BASE_URL + '/asset_list'
     assets_names_hex = []
-    offset = 0
     while True:
         paginated_url = url + '?offset=%d' % offset
         if isinstance(policy, str) and policy != '':
@@ -32,6 +33,9 @@ def get_asset_list(policy=''):
             break
         else:
             offset += len(resp)
+        if 0 < limit <= len(assets_names_hex):
+            assets_names_hex = assets_names_hex[0:limit]
+            break
     return assets_names_hex
 
 
@@ -99,15 +103,24 @@ def get_asset_history(policy, name=''):
     url = API_BASE_URL + '/asset_history?_asset_policy=%s' % policy
     if isinstance(name, str) and name != '':
         url += '&_asset_name=%s' % name
+    assets = []
+    offset = 0
     while True:
-        try:
-            resp = json.loads(requests.get(url).text)
+        paginated_url = url + '&offset=%d' % offset
+        while True:
+            try:
+                resp = json.loads(requests.get(paginated_url).text)
+                break
+            except Exception as e:
+                print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+                sleep(SLEEP_TIME)
+                print('retrying...')
+        assets += resp
+        if len(resp) < 1000:
             break
-        except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
-            sleep(SLEEP_TIME)
-            print('retrying...')
-    return resp
+        else:
+            offset += len(resp)
+    return assets
 
 
 def get_asset_policy_info(policy):
@@ -176,12 +189,21 @@ def get_asset_txs(policy, name='', block=0, history=False):
         url += '&_after_block_height=%d' % block
     if isinstance(history, bool):
         url += '&_history=%s' % str(history).lower()
+    assets_txs = []
+    offset = 0
     while True:
-        try:
-            resp = json.loads(requests.get(url).text)
+        paginated_url = url + '&offset=%d' % offset
+        while True:
+            try:
+                resp = json.loads(requests.get(paginated_url).text)
+                break
+            except Exception as e:
+                print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+                sleep(SLEEP_TIME)
+                print('retrying...')
+        assets_txs += resp
+        if len(resp) < 1000:
             break
-        except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
-            sleep(SLEEP_TIME)
-            print('retrying...')
-    return resp
+        else:
+            offset += len(resp)
+    return assets_txs

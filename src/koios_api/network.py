@@ -9,7 +9,7 @@ def get_tip():
     """
     https://api.koios.rest/#get-/tip
     Get the tip info about the latest block seen by chain
-    :returns: A list with the tip map
+    :returns: A list with the tip as a map
     """
     url = API_BASE_URL + '/tip'
     while True:

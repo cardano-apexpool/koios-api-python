@@ -7,8 +7,8 @@ To install the module, type the following command:
 pip3 install koios_api
 ```
 ## Environment
-KOIOS can work in Preview & Preprod Testnets along with Mainnet
-By default Mainnet is used. To use a testnet you can set the environment variable 
+By default, koios_api works with mainnet, but it can also work with the preview and preprod testnets, and even with custom Api URLs (because anyone can install an own Koios Api).
+To use a testnet you can set the environment variable:
 
 ```bash
 #preprod
@@ -20,7 +20,11 @@ export CARDANO_NET=preprod
 export CARDANO_NET=preview
 ```
 
-By default API_BASE_URL is set to api/v0
+To work with a custom Api URL, set the environment variable:
+
+```bash
+export API_BASE_URL=https://custom.url/api/v0
+```
 
 ## Using the module
 Importing the complete module:
@@ -82,6 +86,7 @@ The result will be identical.
 [Account](#Account)<br>
 [get_account_list](#get_account_list) Get a list of all accounts<br>
 [get_account_info](#get_account_info) Get the account information for given stake addresses (accounts)<br>
+[get_account_info_cached](#get_account_info_cached) Get the cached account information for given stake addresses (accounts)<br>
 [get_account_rewards](#get_account_rewards) Get the full rewards history (including MIR) for given stake addresses (accounts)<br>
 [get_account_updates](#get_account_updates) Get the account updates (registration, deregistration, delegation and withdrawals) for given stake addresses (accounts)<br>
 [get_account_addresses](#get_account_addresses) Get all addresses associated with given staking accounts<br>
@@ -341,7 +346,7 @@ Example response:
 
 #### get_block_info
 Get detailed information about a specific block<br>
-Parameters: Block hash as string (for one block) or list of block hashes (for multiple blocks)
+Parameters: Block hash as string (for one block) or list of block hashes (for multiple blocks)<br>
 Returns: The list of block maps<br>
 Example:<br>
 `block_info = get_block_info('8e33bb588feff6414469779d724923064688615535280f8982c9981410cd06f6')`<br>
@@ -374,7 +379,7 @@ Example response:
 
 #### get_block_txs
 Get a list of all transactions included in provided blocks<br>
-Parameters: Block(s) hash(es) as string (for one block) or list of block hashes (for multiple blocks)
+Parameters: Block(s) hash(es) as string (for one block) or list of block hashes (for multiple blocks)<br>
 Returns: The list of transaction maps by block<br>
 Example:<br>
 `block_txs = get_block_txs('8e33bb588feff6414469779d724923064688615535280f8982c9981410cd06f6')`<br>
@@ -822,8 +827,11 @@ Example response:
 
 #### get_account_list
 Get a list of all accounts<br>
-Parameters: none<br>
+Parameters:<br>
+The offset (optional) to start from, default 0<br>
+The maximum number of accounts to return (optional), default 0 (no limit)<br>
 Returns: The list of accounts maps<br>
+This takes a very long time to execute (about one hour), because the total number of accounts is in the millions range.<br>
 Example:<br>
 `account_list = get_account_list()`<br>
 Example response:
@@ -848,6 +856,30 @@ Parameters: Stake address(es), as a string (for one address) or a list (for mult
 Returns: The list of account information maps<br>
 Example:<br>
 `account_info = get_account_info('stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j')`<br>
+Example response:
+```json
+[
+  {
+    "stake_address": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
+    "status": "registered",
+    "delegated_pool": "pool18r2y72aue5nmv489xtnfxl36vzusq95qst6urd87yd5hgzms04c",
+    "total_balance": "20418617",
+    "utxo": "20418617",
+    "rewards": "0",
+    "withdrawals": "0",
+    "rewards_available": "0",
+    "reserves": "0",
+    "treasury": "0"
+  }
+]
+```
+
+#### get_account_info_cached
+Get the cached account information for given stake addresses (accounts)<br>
+Parameters: Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
+Returns: The list of account information maps<br>
+Example:<br>
+`account_info_cached = get_account_info_cached('stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j')`<br>
 Example response:
 ```json
 [
@@ -1040,7 +1072,10 @@ Example response:
 
 #### get_asset_list
 Get the list of all native assets (paginated)<br>
-Parameters: Asset Policy (optional), default: all policies<br>
+Parameters:<br>
+Asset Policy (optional), default: all policies<br>
+The offset (optional) to start from, default 0<br>
+The maximum number of accounts to return (optional), default 0 (no limit)<br>
 Returns: The list of assets maps by policy<br>
 Example:<br>
 `asset_list = get_asset_list()`<br>
@@ -1393,10 +1428,10 @@ Example response:
 ```json
 [
   {
-    "tx_hash": "f144a8264acf4bdfe2e1241170969c930d64ab6b0996a4a45237b623f1dd670e",
-    "epoch_no": 321,
-    "block_height": 42325043,
-    "block_time": 1506635091
+    "tx_hash": "d4ac560398b95e6435bd6657e39fe5638f7c5bfaa6ffa6b8fa9bfae0b4882666",
+    "epoch_no": 380,
+    "block_height": 8112717,,
+    "block_time": 1670493734
   }
 ]
 ```
@@ -1991,7 +2026,7 @@ Example response:
 
 #### get_datum_info
 List of datum information for given datum hashes<br>
-Parameters: Datum hash(es) as string (for one datum hash) or list (for a list of datum hashes)
+Parameters: Datum hash(es) as string (for one datum hash) or list (for a list of datum hashes)<br>
 Returns Datum information as list of maps<br>
 Example:<br>
 `datum_info = get_datum_info('45b0cfc220ceec5b7c1c62c4d4193d38e4eba48e8815729ce75f9c0ab0e4c1c0')`<br>

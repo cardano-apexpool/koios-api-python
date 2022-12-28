@@ -200,17 +200,27 @@ def get_pool_updates(pool_id=''):
     :returns: pool_updates
     """
     url = API_BASE_URL + '/pool_updates'
-    if pool_id:
-        url += '?_pool_bech32=%s' % pool_id
+    pool_updates = []
+    offset = 0
     while True:
-        try:
-            resp = json.loads(requests.get(url).text)
+        if pool_id:
+            paginated_url = url + '?_pool_bech32=%s&offset=%d' % (pool_id, offset)
+        else:
+            paginated_url = url + '?offset=%d' % offset
+        while True:
+            try:
+                resp = json.loads(requests.get(paginated_url).text)
+                break
+            except Exception as e:
+                print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+                sleep(SLEEP_TIME)
+                print('retrying...')
+        pool_updates += resp
+        if len(resp) < 1000:
             break
-        except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
-            sleep(SLEEP_TIME)
-            print('retrying...')
-    return resp
+        else:
+            offset += len(resp)
+    return pool_updates
 
 
 def get_pool_relays():

@@ -69,15 +69,24 @@ def get_address_assets(addr):
         addresses['_addresses'] = addr
     else:
         addresses['_addresses'] = [addr]
+    assets = []
+    offset = 0
     while True:
-        try:
-            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(addresses)).text)
+        paginated_url = url + '?offset=%d' % offset
+        while True:
+            try:
+                resp = json.loads(requests.post(paginated_url, headers=headers, data=json.dumps(addresses)).text)
+                break
+            except Exception as e:
+                print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+                sleep(SLEEP_TIME)
+                print('retrying...')
+        assets += resp
+        if len(resp) < 1000:
             break
-        except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
-            sleep(SLEEP_TIME)
-            print('retrying...')
-    return resp
+        else:
+            offset += len(resp)
+    return assets
 
 
 def get_credential_txs(cred):

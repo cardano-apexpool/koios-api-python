@@ -5,16 +5,17 @@ from time import sleep
 from .__config__ import *
 
 
-def get_account_list():
+def get_account_list(offset=0, limit=0):
     """
     https://api.koios.rest/#get-/account_list
     Get a list of all accounts
+    :param offset: The offset to start from (optional)
+    :param limit: The maximum number of accounts to return (optional)
     :returns: The list of accounts maps
     """
     url = API_BASE_URL + '/account_list'
     headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
     account_list = []
-    offset = 0
     while True:
         paginated_url = url + '?offset=%d' % offset
         while True:
@@ -30,6 +31,9 @@ def get_account_list():
             break
         else:
             offset += len(resp)
+        if 0 < limit <= len(account_list):
+            account_list = account_list[0:limit]
+            break
     return account_list
 
 
@@ -41,6 +45,31 @@ def get_account_info(addr):
     :returns: The list of account information maps
     """
     url = API_BASE_URL + '/account_info'
+    headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    stake_addresses = {}
+    if isinstance(addr, list):
+        stake_addresses['_stake_addresses'] = addr
+    else:
+        stake_addresses['_stake_addresses'] = [addr]
+    while True:
+        try:
+            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(stake_addresses)).text)
+            break
+        except Exception as e:
+            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+            sleep(SLEEP_TIME)
+            print('retrying...')
+    return resp
+
+
+def get_account_info_cached(addr):
+    """
+    https://api.koios.rest/#post-/account_info
+    Get the cached account information for given stake addresses (accounts)
+    :param addr: Stake address(es), as a string (for one address) or a list (for multiple addresses)
+    :returns: The list of account information maps
+    """
+    url = API_BASE_URL + '/account_info_cached'
     headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
     stake_addresses = {}
     if isinstance(addr, list):
