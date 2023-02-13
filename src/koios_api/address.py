@@ -30,11 +30,12 @@ def get_address_info(addr):
     return resp
 
 
-def get_address_txs(addr):
+def get_address_txs(addr, block_height=0):
     """
     https://api.koios.rest/#post-/address_txs
     Get the transaction hash list of input address array, optionally filtering after specified block height (inclusive)
     :param addr: Payment address(es) as string (for one address) or list (for multiple addresses)
+    :param block_height: Return only the transactions after this block height. Optional.
     :returns: The list of transactions maps
     """
     url = API_BASE_URL + '/address_txs'
@@ -44,6 +45,8 @@ def get_address_txs(addr):
         addresses['_addresses'] = addr
     else:
         addresses['_addresses'] = [addr]
+    if block_height > 0:
+        addresses['_after_block_height'] = block_height
     while True:
         try:
             resp = json.loads(requests.post(url, headers=headers, data=json.dumps(addresses)).text)
