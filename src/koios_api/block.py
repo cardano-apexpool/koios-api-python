@@ -13,15 +13,17 @@ def get_blocks(limit=0):
     :returns: The list of block maps (the newest first)
     """
     url = API_BASE_URL + '/blocks'
+    parameters = {}
     blocks = []
     offset = 0
     while True:
-        paginated_url = url + '?offset=%d' % offset
+        if offset > 0:
+            parameters['offset'] = offset
         if isinstance(limit, int) and limit > 0:
-            paginated_url += '&limit=%d' % limit
+            parameters['limit'] = limit
         while True:
             try:
-                resp = json.loads(requests.get(paginated_url).text)
+                resp = json.loads(requests.get(url, params=parameters).text)
                 break
             except Exception as e:
                 print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))

@@ -13,13 +13,15 @@ def get_pools_list():
     """
     url = API_BASE_URL + '/pool_list'
     headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    parameters = {}
     pools_list = []
     offset = 0
     while True:
-        paginated_url = url + '?offset=%d' % offset
+        if offset > 0:
+            parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(paginated_url, headers=headers).text)
+                resp = json.loads(requests.get(url, headers=headers, params=parameters).text)
                 break
             except Exception as e:
                 print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
@@ -66,10 +68,11 @@ def get_pool_stake_snapshot(pool_id):
     :param pool_id: stake pool bech32 id
     :returns: Pool snapshot as list of maps by epoch (current and previous 2)
     """
-    url = API_BASE_URL + '/pool_stake_snapshot?_pool_bech32=%s' % pool_id
+    url = API_BASE_URL + '/pool_stake_snapshot'
+    parameters = {'_pool_bech32': pool_id}
     while True:
         try:
-            resp = json.loads(requests.get(url).text)
+            resp = json.loads(requests.get(url, params=parameters).text)
             break
         except Exception as e:
             print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
@@ -85,14 +88,16 @@ def get_pool_delegators(pool_id):
     :param pool_id: stake pool bech32 id
     :returns: The list of pool delegators maps
     """
-    url = API_BASE_URL + '/pool_delegators?_pool_bech32=%s' % pool_id
+    url = API_BASE_URL + '/pool_delegators'
+    parameters = {'_pool_bech32': pool_id}
     delegators = []
     offset = 0
     while True:
-        paginated_url = url + '&offset=%d' % offset
+        if offset > 0:
+            parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(paginated_url).text)
+                resp = json.loads(requests.get(url, params=parameters).text)
                 break
             except Exception as e:
                 print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
@@ -115,16 +120,18 @@ def get_pool_delegators_history(pool_id, epoch=0):
     :param epoch: (optional) epoch
     :returns: The list of pool delegators maps
     """
-    url = API_BASE_URL + '/pool_delegators_history?_pool_bech32=%s' % pool_id
+    url = API_BASE_URL + '/pool_delegators_history'
+    parameters = {'_pool_bech32': pool_id}
     if isinstance(epoch, int) and epoch > 0:
-        url += '&_epoch_no=%d' % epoch
+        parameters['_epoch_no'] = epoch
     delegators = []
     offset = 0
     while True:
-        paginated_url = url + '&offset=%d' % offset
+        if offset > 0:
+            parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(paginated_url).text)
+                resp = json.loads(requests.get(url, params=parameters).text)
                 break
             except Exception as e:
                 print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
@@ -146,16 +153,18 @@ def get_pool_blocks(pool_id, epoch=0):
     :param epoch: (optional) epoch
     :returns: The list of pool blocks maps
     """
-    url = API_BASE_URL + '/pool_blocks?_pool_bech32=%s' % pool_id
+    url = API_BASE_URL + '/pool_blocks'
+    parameters = {'_pool_bech32': pool_id}
     if isinstance(epoch, int) and epoch > 0:
-        url += '&_epoch_no=%d' % epoch
+        parameters['_epoch_no'] = epoch
     blocks = []
     offset = 0
     while True:
-        paginated_url = url + '&offset=%d' % offset
+        if offset > 0:
+            parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(paginated_url).text)
+                resp = json.loads(requests.get(url, params=parameters).text)
                 break
             except Exception as e:
                 print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
@@ -178,12 +187,13 @@ def get_pool_history(pool_id, epoch=0):
     :param epoch: (optional) epoch
     :returns: pool_history
     """
-    url = API_BASE_URL + '/pool_history?_pool_bech32=%s' % pool_id
+    url = API_BASE_URL + '/pool_history'
+    parameters = {'_pool_bech32':  pool_id}
     if isinstance(epoch, int) and epoch > 0:
-        url += '&_epoch_no=%d' % epoch
+        parameters['_epoch_no'] = epoch
     while True:
         try:
-            resp = json.loads(requests.get(url).text)
+            resp = json.loads(requests.get(url, params=parameters).text)
             break
         except Exception as e:
             print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
@@ -200,16 +210,17 @@ def get_pool_updates(pool_id=''):
     :returns: pool_updates
     """
     url = API_BASE_URL + '/pool_updates'
+    parameters = {}
     pool_updates = []
     offset = 0
     while True:
         if pool_id:
-            paginated_url = url + '?_pool_bech32=%s&offset=%d' % (pool_id, offset)
-        else:
-            paginated_url = url + '?offset=%d' % offset
+            parameters['_pool_bech32'] = pool_id
+        if offset > 0:
+            parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(paginated_url).text)
+                resp = json.loads(requests.get(url, params=parameters).text)
                 break
             except Exception as e:
                 print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
@@ -230,13 +241,15 @@ def get_pool_relays():
     :returns: The list of relays maps by stake pool
     """
     url = API_BASE_URL + '/pool_relays'
+    parameters = {}
     relays = []
     offset = 0
     while True:
-        paginated_url = url + '?offset=%d' % offset
+        if offset > 0:
+            parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(paginated_url).text)
+                resp = json.loads(requests.get(url, params=parameters).text)
                 break
             except Exception as e:
                 print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
@@ -281,10 +294,11 @@ def get_retiring_pools():
     :returns: The list of retiring pools maps
     """
     headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
-    url = API_BASE_URL + '/pool_updates?pool_status=eq.retiring'
+    url = API_BASE_URL + '/pool_updates'
+    parameters = {'pool_status': 'eq.retiring'}
     while True:
         try:
-            resp = json.loads(requests.get(url, headers=headers).text)
+            resp = json.loads(requests.get(url, headers=headers, params=parameters).text)
             break
         except Exception as e:
             print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))

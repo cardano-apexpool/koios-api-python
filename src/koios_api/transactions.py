@@ -87,13 +87,15 @@ def get_tx_metalabels():
     :returns: The list of transaction metadata labels maps
     """
     url = API_BASE_URL + '/tx_metalabels'
+    parameters = {}
     metalabels_list = []
     offset = 0
     while True:
-        paginated_url = url + '?offset=%d' % offset
+        if offset > 0:
+            parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(paginated_url).text)
+                resp = json.loads(requests.get(url, params=parameters).text)
                 break
             except Exception as e:
                 print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))

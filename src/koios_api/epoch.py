@@ -13,11 +13,12 @@ def get_epoch_info(epoch=0):
     :returns: The list of epoch info maps
     """
     url = API_BASE_URL + '/epoch_info'
+    parameters = {}
     if isinstance(epoch, int) and epoch > 0:
-        url += '?_epoch_no=%d' % epoch
+        parameters['_epoch_no'] = epoch
     while True:
         try:
-            resp = json.loads(requests.get(url).text)
+            resp = json.loads(requests.get(url, params=parameters).text)
             break
         except Exception as e:
             print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
@@ -34,11 +35,12 @@ def get_epoch_params(epoch=0):
     :returns: The list of epoch protocol parameters maps
     """
     url = API_BASE_URL + '/epoch_params'
+    parameters = {}
     if isinstance(epoch, int) and epoch > 0:
-        url += '?_epoch_no=%d' % epoch
+        parameters['_epoch_no'] = epoch
     while True:
         try:
-            resp = json.loads(requests.get(url).text)
+            resp = json.loads(requests.get(url, params=parameters).text)
             break
         except Exception as e:
             print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
@@ -55,11 +57,12 @@ def get_epoch_block_protocols(epoch=0):
     :returns: The list of epoch protocol distribution maps
     """
     url = API_BASE_URL + '/epoch_block_protocols'
+    parameters = {}
     if isinstance(epoch, int) and epoch > 0:
-        url += '?_epoch_no=%d' % epoch
+        parameters['_epoch_no'] = epoch
     while True:
         try:
-            resp = json.loads(requests.get(url).text)
+            resp = json.loads(requests.get(url, params=parameters).text)
             break
         except Exception as e:
             print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))

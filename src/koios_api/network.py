@@ -50,11 +50,12 @@ def get_totals(epoch=0):
     :returns: The list of tokenomic stats maps
     """
     url = API_BASE_URL + '/totals'
+    parameters = {}
     if isinstance(epoch, int) and epoch > 0:
-        url += '?_epoch_no=%d' % epoch
+        parameters['_epoch_no'] = epoch
     while True:
         try:
-            resp = json.loads(requests.get(url).text)
+            resp = json.loads(requests.get(url, params=parameters).text)
             break
         except Exception as e:
             print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))

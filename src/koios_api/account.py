@@ -15,12 +15,14 @@ def get_account_list(offset=0, limit=0):
     """
     url = API_BASE_URL + '/account_list'
     headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    parameters = {}
     account_list = []
     while True:
-        paginated_url = url + '?offset=%d' % offset
+        if offset > 0:
+            parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(paginated_url, headers=headers).text)
+                resp = json.loads(requests.get(url, headers=headers, params=parameters).text)
                 break
             except Exception as e:
                 print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
@@ -175,6 +177,7 @@ def get_account_assets(addr):
     """
     url = API_BASE_URL + '/account_assets'
     headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    parameters = {}
     stake_addresses = {}
     if isinstance(addr, list):
         stake_addresses['_stake_addresses'] = addr
@@ -183,10 +186,12 @@ def get_account_assets(addr):
     assets = []
     offset = 0
     while True:
-        paginated_url = url + '?offset=%d' % offset
+        if offset > 0:
+            parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.post(paginated_url, headers=headers, data=json.dumps(stake_addresses)).text)
+                resp = json.loads(requests.post(url, headers=headers, params=parameters,
+                                                data=json.dumps(stake_addresses)).text)
                 break
             except Exception as e:
                 print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
@@ -200,11 +205,12 @@ def get_account_assets(addr):
     return assets
 
 
-def get_account_history(addr):
+def get_account_history(addr, epoch=0):
     """
     https://api.koios.rest/#post-/account_history
     Get the staking history of given stake addresses (accounts)
     :param addr: Stake address(es), as a string (for one address) or a list (for multiple addresses)
+    :param epoch: Epoch (optional) to fetch information for, default: all epochs
     :returns: The list of staking history maps by account (stake address)
     """
     url = API_BASE_URL + '/account_history'
@@ -214,6 +220,8 @@ def get_account_history(addr):
         stake_addresses['_stake_addresses'] = addr
     else:
         stake_addresses['_stake_addresses'] = [addr]
+    if epoch:
+        stake_addresses['_epoch_no'] = epoch
     while True:
         try:
             resp = json.loads(requests.post(url, headers=headers, data=json.dumps(stake_addresses)).text)

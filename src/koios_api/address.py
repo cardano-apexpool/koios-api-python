@@ -67,6 +67,7 @@ def get_address_assets(addr):
     """
     url = API_BASE_URL + '/address_assets'
     headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    parameters = {}
     addresses = {}
     if isinstance(addr, list):
         addresses['_addresses'] = addr
@@ -75,10 +76,12 @@ def get_address_assets(addr):
     assets = []
     offset = 0
     while True:
-        paginated_url = url + '?offset=%d' % offset
+        if offset > 0:
+            parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.post(paginated_url, headers=headers, data=json.dumps(addresses)).text)
+                resp = json.loads(requests.post(url, headers=headers, params=parameters,
+                                                data=json.dumps(addresses)).text)
                 break
             except Exception as e:
                 print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))

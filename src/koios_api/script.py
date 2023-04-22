@@ -12,13 +12,15 @@ def get_native_script_list():
     :returns: The list of all native scripts maps
     """
     url = API_BASE_URL + '/native_script_list'
+    parameters = {}
     scripts_list = []
     offset = 0
     while True:
-        paginated_url = url + '?offset=%d' % offset
+        if offset > 0:
+            parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(paginated_url).text)
+                resp = json.loads(requests.get(url, params=parameters).text)
                 break
             except Exception as e:
                 print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
@@ -39,13 +41,15 @@ def get_plutus_script_list():
     :returns: The list of all plutus scripts maps
     """
     url = API_BASE_URL + '/plutus_script_list'
+    parameters = {}
     scripts_list = []
     offset = 0
     while True:
-        paginated_url = url + '?offset=%d' % offset
+        if offset > 0:
+            parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(paginated_url).text)
+                resp = json.loads(requests.get(url, params=parameters).text)
                 break
             except Exception as e:
                 print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
@@ -66,10 +70,11 @@ def get_script_redeemers(script):
     :param script: script hash
     :returns resp: redeemers list as map
     """
-    url = API_BASE_URL + '/script_redeemers?_script_hash=%s' % script
+    url = API_BASE_URL + '/script_redeemers'
+    parameters = {'_script_hash':  script}
     while True:
         try:
-            resp = json.loads(requests.get(url).text)
+            resp = json.loads(requests.get(url, params=parameters).text)
             break
         except Exception as e:
             print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
