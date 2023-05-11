@@ -5,7 +5,7 @@ from time import sleep
 from .__config__ import *
 
 
-def get_pools_list():
+def get_pools_list() -> list:
     """
     https://api.koios.rest/#get-/pool_list
     A list of all currently registered/retiring (not retired) pools
@@ -24,18 +24,18 @@ def get_pools_list():
                 resp = json.loads(requests.get(url, headers=headers, params=parameters).text)
                 break
             except Exception as e:
-                print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+                print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
                 print('retrying...')
         pools_list += resp
-        if len(resp) < 1000:
+        if len(resp) < API_RESP_COUNT:
             break
         else:
             offset += len(resp)
     return pools_list
 
 
-def get_pool_info(pool_id):
+def get_pool_info(pool_id: [str, list]) -> list:
     """
     https://api.koios.rest/#post-/pool_info
     Current pool statuses and details for a specified list of pool ids
@@ -55,13 +55,13 @@ def get_pool_info(pool_id):
             resp = json.loads(requests.post(url, headers=headers, data=json.dumps(pool_ids)).text)
             break
         except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
             print('retrying...')
     return resp
 
 
-def get_pool_stake_snapshot(pool_id):
+def get_pool_stake_snapshot(pool_id: str) -> list:
     """
     https://api.koios.rest/#get-/pool_stake_snapshot
     Returns Mark, Set and Go stake snapshots for the selected pool, useful for leaderlog calculation
@@ -75,13 +75,13 @@ def get_pool_stake_snapshot(pool_id):
             resp = json.loads(requests.get(url, params=parameters).text)
             break
         except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
             print('retrying...')
     return resp
 
 
-def get_pool_delegators(pool_id):
+def get_pool_delegators(pool_id: str) -> list:
     """
     https://api.koios.rest/#get-/pool_delegators
     Return information about live delegators for a given pool.
@@ -100,18 +100,18 @@ def get_pool_delegators(pool_id):
                 resp = json.loads(requests.get(url, params=parameters).text)
                 break
             except Exception as e:
-                print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+                print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
                 print('retrying...')
         delegators += resp
-        if len(resp) < 1000:
+        if len(resp) < API_RESP_COUNT:
             break
         else:
             offset += len(resp)
     return delegators
 
 
-def get_pool_delegators_history(pool_id, epoch=0):
+def get_pool_delegators_history(pool_id: str, epoch: int = 0) -> list:
     """
     https://api.koios.rest/#get-/pool_delegators_history
     Return information about active delegators (incl. history) for a given pool and epoch number
@@ -134,18 +134,18 @@ def get_pool_delegators_history(pool_id, epoch=0):
                 resp = json.loads(requests.get(url, params=parameters).text)
                 break
             except Exception as e:
-                print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+                print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
                 print('retrying...')
         delegators += resp
-        if len(resp) < 1000:
+        if len(resp) < API_RESP_COUNT:
             break
         else:
             offset += len(resp)
     return delegators
 
 
-def get_pool_blocks(pool_id, epoch=0):
+def get_pool_blocks(pool_id: str, epoch: int = 0) -> list:
     """
     https://api.koios.rest/#get-/pool_blocks
     Return information about blocks minted by a given pool for all epochs (or _epoch_no if provided)
@@ -167,18 +167,18 @@ def get_pool_blocks(pool_id, epoch=0):
                 resp = json.loads(requests.get(url, params=parameters).text)
                 break
             except Exception as e:
-                print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+                print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
                 print('retrying...')
         blocks += resp
-        if len(resp) < 1000:
+        if len(resp) < API_RESP_COUNT:
             break
         else:
             offset += len(resp)
     return blocks
 
 
-def get_pool_history(pool_id, epoch=0):
+def get_pool_history(pool_id: str, epoch: int = 0) -> list:
     """
     https://api.koios.rest/#get-/pool_history
     Return information about pool stake, block and reward history in a given epoch _epoch_no
@@ -196,13 +196,13 @@ def get_pool_history(pool_id, epoch=0):
             resp = json.loads(requests.get(url, params=parameters).text)
             break
         except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
             print('retrying...')
     return resp
 
 
-def get_pool_updates(pool_id=''):
+def get_pool_updates(pool_id: str = '') -> list:
     """
     https://api.koios.rest/#get-/pool_updates
     Return all pool updates for all pools or only updates for specific pool if specified
@@ -213,9 +213,9 @@ def get_pool_updates(pool_id=''):
     parameters = {}
     pool_updates = []
     offset = 0
+    if pool_id:
+        parameters['_pool_bech32'] = pool_id
     while True:
-        if pool_id:
-            parameters['_pool_bech32'] = pool_id
         if offset > 0:
             parameters['offset'] = offset
         while True:
@@ -223,18 +223,18 @@ def get_pool_updates(pool_id=''):
                 resp = json.loads(requests.get(url, params=parameters).text)
                 break
             except Exception as e:
-                print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+                print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
                 print('retrying...')
         pool_updates += resp
-        if len(resp) < 1000:
+        if len(resp) < API_RESP_COUNT:
             break
         else:
             offset += len(resp)
     return pool_updates
 
 
-def get_pool_relays():
+def get_pool_relays() -> list:
     """
     https://api.koios.rest/#get-/pool_relays
     A list of registered relays for all currently registered/retiring (not retired) pools
@@ -252,20 +252,20 @@ def get_pool_relays():
                 resp = json.loads(requests.get(url, params=parameters).text)
                 break
             except Exception as e:
-                print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+                print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
                 print('retrying...')
         relays += resp
-        if len(resp) < 1000:
+        if len(resp) < API_RESP_COUNT:
             break
         else:
             offset += len(resp)
     return relays
 
 
-def get_pool_metadata(pool_id):
+def get_pool_metadata(pool_id: str) -> list:
     """
-    https://api.koios.rest/#get-/pool_relays
+    https://api.koios.rest/#post-/pool_metadata
     A list of registered relays for all currently registered/retiring (not retired) pools
     :param pool_id: stake pool bech32 id
     :returns: The list of pool metadata maps
@@ -282,13 +282,13 @@ def get_pool_metadata(pool_id):
             resp = json.loads(requests.post(url, headers=headers, data=json.dumps(pool_ids)).text)
             break
         except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
             print('retrying...')
     return resp
 
 
-def get_retiring_pools():
+def get_retiring_pools() -> list:
     """
     Get the retiring stake pools list
     :returns: The list of retiring pools maps
@@ -301,7 +301,7 @@ def get_retiring_pools():
             resp = json.loads(requests.get(url, headers=headers, params=parameters).text)
             break
         except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
             print('retrying...')
     return resp

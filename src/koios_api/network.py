@@ -5,7 +5,7 @@ from time import sleep
 from .__config__ import *
 
 
-def get_tip():
+def get_tip() -> list:
     """
     https://api.koios.rest/#get-/tip
     Get the tip info about the latest block seen by chain
@@ -17,13 +17,13 @@ def get_tip():
             resp = json.loads(requests.get(url).text)
             break
         except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
             print('retrying...')
     return resp
 
 
-def get_genesis():
+def get_genesis() -> list:
     """
     https://api.koios.rest/#get-/genesis
     Get the Genesis parameters used to start specific era on chain
@@ -35,13 +35,13 @@ def get_genesis():
             resp = json.loads(requests.get(url).text)
             break
         except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
             print('retrying...')
     return resp
 
 
-def get_totals(epoch=0):
+def get_totals(epoch: int = 0) -> list:
     """
     https://api.koios.rest/#get-/totals
     Get the circulating utxo, treasury, rewards, supply and reserves in lovelace
@@ -58,7 +58,25 @@ def get_totals(epoch=0):
             resp = json.loads(requests.get(url, params=parameters).text)
             break
         except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
+            sleep(SLEEP_TIME)
+            print('retrying...')
+    return resp
+
+
+def get_param_updates() -> list:
+    """
+    https://api.koios.rest/#get-/param_updates
+    Get all parameter update proposals submitted to the chain starting Shelley era
+    :returns: A list with the parameters updates
+    """
+    url = API_BASE_URL + '/param_updates'
+    while True:
+        try:
+            resp = json.loads(requests.get(url).text)
+            break
+        except Exception as e:
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
             print('retrying...')
     return resp

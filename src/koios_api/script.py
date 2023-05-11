@@ -5,7 +5,7 @@ from time import sleep
 from .__config__ import *
 
 
-def get_native_script_list():
+def get_native_script_list() -> list:
     """
     https://api.koios.rest/#get-/native_script_list
     List of all existing native script hashes along with their creation transaction hashes
@@ -23,18 +23,18 @@ def get_native_script_list():
                 resp = json.loads(requests.get(url, params=parameters).text)
                 break
             except Exception as e:
-                print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+                print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
                 print('Offset %d, retrying...' % offset)
         scripts_list += resp
-        if len(resp) < 1000:
+        if len(resp) < API_RESP_COUNT:
             break
         else:
             offset += len(resp)
     return scripts_list
 
 
-def get_plutus_script_list():
+def get_plutus_script_list() -> list:
     """
     https://api.koios.rest/#get-/plutus_script_list
     List of all existing native script hashes along with their creation transaction hashes
@@ -52,18 +52,18 @@ def get_plutus_script_list():
                 resp = json.loads(requests.get(url, params=parameters).text)
                 break
             except Exception as e:
-                print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+                print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
                 print('Offset %d, retrying...' % offset)
         scripts_list += resp
-        if len(resp) < 1000:
+        if len(resp) < API_RESP_COUNT:
             break
         else:
             offset += len(resp)
     return scripts_list
 
 
-def get_script_redeemers(script):
+def get_script_redeemers(script: str) -> list:
     """
     https://api.koios.rest/#get-/script_redeemers
     List of all redeemers for a given script hash
@@ -77,13 +77,13 @@ def get_script_redeemers(script):
             resp = json.loads(requests.get(url, params=parameters).text)
             break
         except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
             print('retrying...')
     return resp
 
 
-def get_datum_info(datum):
+def get_datum_info(datum: [str, list]) -> list:
     """
     https://api.koios.rest/#post-/datum_info
     List of datum information for given datum hashes
@@ -102,7 +102,7 @@ def get_datum_info(datum):
             resp = json.loads(requests.post(url, headers=headers, data=json.dumps(datum_hashes)).text)
             break
         except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
             print('retrying...')
     return resp

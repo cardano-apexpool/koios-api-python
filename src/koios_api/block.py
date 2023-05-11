@@ -5,7 +5,7 @@ from time import sleep
 from .__config__ import *
 
 
-def get_blocks(limit=0):
+def get_blocks(limit: int = 0) -> list:
     """
     https://api.koios.rest/#get-/blocks
     Get summarised details about all blocks (paginated - latest first)
@@ -26,11 +26,11 @@ def get_blocks(limit=0):
                 resp = json.loads(requests.get(url, params=parameters).text)
                 break
             except Exception as e:
-                print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+                print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
                 print('retrying...')
         blocks += resp
-        if len(resp) < 1000:
+        if len(resp) < API_RESP_COUNT:
             break
         else:
             offset += len(resp)
@@ -42,8 +42,9 @@ def get_blocks(limit=0):
         return blocks
 
 
-def get_block_info(block):
+def get_block_info(block: [str, list]) -> list:
     """
+    https://api.koios.rest/#post-/block_info
     Get detailed information about a specific block
     :param block: Block hash as string (for one block) or list of block hashes (for multiple blocks)
     :returns: The list of block maps
@@ -60,13 +61,13 @@ def get_block_info(block):
             resp = json.loads(requests.post(url, headers=headers, data=json.dumps(block_hashes)).text)
             break
         except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
             print('retrying...')
     return resp
 
 
-def get_block_txs(block):
+def get_block_txs(block: [str, list]) -> list:
     """
     https://api.koios.rest/#post-/block_txs
     Get a list of all transactions included in provided blocks
@@ -85,7 +86,7 @@ def get_block_txs(block):
             resp = json.loads(requests.post(url, headers=headers, data=json.dumps(block_hashes)).text)
             break
         except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
             print('retrying...')
     return resp

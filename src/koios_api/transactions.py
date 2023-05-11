@@ -5,7 +5,7 @@ from time import sleep
 from .__config__ import *
 
 
-def get_tx_info(txs):
+def get_tx_info(txs: [str, list]) -> list:
     """
     https://api.koios.rest/#post-/tx_info
     Get detailed information about transaction(s)
@@ -24,13 +24,13 @@ def get_tx_info(txs):
             resp = json.loads(requests.post(url, headers=headers, data=json.dumps(tx_hashes)).text)
             break
         except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
             print('retrying...')
     return resp
 
 
-def get_tx_utxos(txs):
+def get_tx_utxos(txs: [str, list]) -> list:
     """
     https://api.koios.rest/#post-/tx_utxos
     Get UTxO set (inputs/outputs) of transactions.
@@ -49,13 +49,13 @@ def get_tx_utxos(txs):
             resp = json.loads(requests.post(url, headers=headers, data=json.dumps(tx_hashes)).text)
             break
         except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
             print('retrying...')
     return resp
 
 
-def get_tx_metadata(txs):
+def get_tx_metadata(txs: [str, list]) -> list:
     """
     https://api.koios.rest/#post-/tx_metadata
     Get metadata information (if any) for given transaction(s)
@@ -74,13 +74,13 @@ def get_tx_metadata(txs):
             resp = json.loads(requests.post(url, headers=headers, data=json.dumps(tx_hashes)).text)
             break
         except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
             print('retrying...')
     return resp
 
 
-def get_tx_metalabels():
+def get_tx_metalabels() -> list:
     """
     https://api.koios.rest/#get-/tx_metalabels
     Get a list of all transaction metadata labels
@@ -98,18 +98,18 @@ def get_tx_metalabels():
                 resp = json.loads(requests.get(url, params=parameters).text)
                 break
             except Exception as e:
-                print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+                print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('Offset %d, retrying...' % offset)
+                print(f"Offset {offset}, retrying...")
         metalabels_list += resp
-        if len(resp) < 1000:
+        if len(resp) < API_RESP_COUNT:
             break
         else:
             offset += len(resp)
     return metalabels_list
 
 
-def submit_tx(tx):
+def submit_tx(tx: str) -> str:
     """
     https://api.koios.rest/#post-/submittx
     Submit an already serialized transaction to the network.
@@ -123,13 +123,13 @@ def submit_tx(tx):
             resp = json.loads(requests.post(url, headers=headers, data=tx).text)
             break
         except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
             print('retrying...')
     return resp
 
 
-def get_tx_status(txs):
+def get_tx_status(txs: [str, list]) -> list:
     """
     https://api.koios.rest/#post-/tx_status
     Get the number of block confirmations for a given transaction hash list
@@ -148,7 +148,7 @@ def get_tx_status(txs):
             resp = json.loads(requests.post(url, headers=headers, data=json.dumps(tx_hashes)).text)
             break
         except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
             print('retrying...')
     return resp

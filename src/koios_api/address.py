@@ -5,7 +5,7 @@ from time import sleep
 from .__config__ import *
 
 
-def get_address_info(addr):
+def get_address_info(addr: [str, list]) -> list:
     """
     https://api.koios.rest/#post-/address_info
     Get address info - balance, associated stake address (if any) and UTxO set for given addresses
@@ -24,13 +24,13 @@ def get_address_info(addr):
             resp = json.loads(requests.post(url, headers=headers, data=json.dumps(addresses)).text)
             break
         except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
             print('retrying...')
     return resp
 
 
-def get_address_txs(addr, block_height=0):
+def get_address_txs(addr: [str, list], block_height: int = 0) -> list:
     """
     https://api.koios.rest/#post-/address_txs
     Get the transaction hash list of input address array, optionally filtering after specified block height (inclusive)
@@ -52,13 +52,38 @@ def get_address_txs(addr, block_height=0):
             resp = json.loads(requests.post(url, headers=headers, data=json.dumps(addresses)).text)
             break
         except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
             print('retrying...')
     return resp
 
 
-def get_address_assets(addr):
+def get_credential_utxos(cred: [str, list]) -> list:
+    """
+    https://api.koios.rest/#post-/credential_utxos
+    Get a list of UTxO against input payment credential array including their balances
+    :param cred: Payment credential in hex format as string (for one credential) or list (for multiple credentials)
+    :returns: The list of input payment credentials maps
+    """
+    url = API_BASE_URL + '/credential_utxos'
+    headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    credentials = {}
+    if isinstance(cred, list):
+        credentials['_payment_credentials'] = cred
+    else:
+        credentials['_payment_credentials'] = [cred]
+    while True:
+        try:
+            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(credentials)).text)
+            break
+        except Exception as e:
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
+            sleep(SLEEP_TIME)
+            print('retrying...')
+    return resp
+
+
+def get_address_assets(addr: [str, list]) -> list:
     """
     https://api.koios.rest/#post-/address_assets
     Get the list of all the assets (policy, name and quantity) for given addresses
@@ -84,18 +109,18 @@ def get_address_assets(addr):
                                                 data=json.dumps(addresses)).text)
                 break
             except Exception as e:
-                print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+                print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
                 print('retrying...')
         assets += resp
-        if len(resp) < 1000:
+        if len(resp) < API_RESP_COUNT:
             break
         else:
             offset += len(resp)
     return assets
 
 
-def get_credential_txs(cred):
+def get_credential_txs(cred: [str, list]) -> list:
     """
     https://api.koios.rest/#post-/credential_txs
     Get the transaction hash list of input payment credential array,
@@ -115,7 +140,7 @@ def get_credential_txs(cred):
             resp = json.loads(requests.post(url, headers=headers, data=json.dumps(credentials)).text)
             break
         except Exception as e:
-            print('Exception in %s: %s' % (inspect.getframeinfo(inspect.currentframe()).function, e))
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
             print('retrying...')
     return resp
