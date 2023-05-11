@@ -58,6 +58,7 @@ The result will be identical.
 [get_tip](#get_tip) Get the tip info about the latest block seen by chain<br>
 [get_genesis](#get_genesis) Get the Genesis parameters used to start specific era on chain<br>
 [get_totals](#get_totals) Get the circulating utxo, treasury, rewards, supply and reserves in lovelace for specified epoch, all epochs if empty<br>
+[get_param_updates](#get_param_updates) Get all parameter update proposals submitted to the chain starting Shelley era<br>
 
 [Epoch](#Epoch)<br>
 [get_epoch_info](#get_epoch_info) Get the epoch information, all epochs if no epoch specified<br>
@@ -80,25 +81,21 @@ The result will be identical.
 [Address](#Address)<br>
 [get_address_info](#get_address_info) Get the transaction hash list of input address array, optionally filtering after specified block height (inclusive)<br>
 [get_address_txs](#get_address_txs) Get the transaction hash list of input address array, optionally filtering after specified block height (inclusive)<br>
+[get_credential_utxos](#get_credential_utxos) Get a list of UTxO against input payment credential array including their balances<br>
 [get_address_assets](#get_address_assets) Get the list of all the assets (policy, name and quantity) for given addresses<br>
 [get_credential_txs](#get_credential_txs) Get the transaction hash list of input payment credential array, optionally filtering after specified block height (inclusive)<br>
 
-[Account](#Account)<br>
-[get_account_list](#get_account_list) Get a list of all accounts<br>
-[get_account_info](#get_account_info) Get the account information for given stake addresses (accounts)<br>
-[get_account_info_cached](#get_account_info_cached) Get the cached account information for given stake addresses (accounts)<br>
-[get_account_rewards](#get_account_rewards) Get the full rewards history (including MIR) for given stake addresses (accounts)<br>
-[get_account_updates](#get_account_updates) Get the account updates (registration, deregistration, delegation and withdrawals) for given stake addresses (accounts)<br>
-[get_account_addresses](#get_account_addresses) Get all addresses associated with given staking accounts<br>
-[get_account_assets](#get_account_assets) Get the native asset balance of given accounts<br>
-[get_account_history](#get_account_history) Get the staking history of given stake addresses (accounts)<br>
-
 [Asset](#Asset)<br>
 [get_asset_list](#get_asset_list) Get the list of all native assets (paginated)<br>
-[get_asset_address_list](#get_asset_address_list) Get the list of all addresses holding a given asset<br>
+[get_asset_token_registry](#get_asset_token_registry) Get a list of assets registered via token registry on github<br>
+[get_asset_addresses](#get_asset_addresses) Get the list of all addresses holding a given asset<br>
+[get_asset_nft_address](#get_asset_nft_address) Get the address where specified NFT currently reside on.<br>
 [get_asset_info](#get_asset_info) Get the information of an asset including first minting & token registry metadata<br>
+[get_asset_info_bulk](#get_asset_info_bulk) Get the information of a list of assets including first minting & token registry metadata<br>
 [get_asset_history](#get_asset_history) Get the mint/burn history of an asset<br>
-[get_asset_policy_info](#get_asset_policy_info) Get the information for all assets under the same policy<br>
+[get_policy_asset_addresses](#get_policy_asset_addresses) Get the list of addresses with quantity for each asset on the given policy<br>
+[get_policy_asset_info](#get_policy_asset_info) Get the information for all assets under the same policy<br>
+[get_policy_asset_list](#get_policy_asset_list) Get the list of asset under the given policy (including balances)<br>
 [get_asset_summary](#get_asset_summary) Get the summary of an asset (total transactions exclude minting/total wallets include only wallets with asset balance)<br>
 [get_asset_txs](#get_asset_txs) Get the list of all asset transaction hashes (the newest first)<br>
 
@@ -121,12 +118,23 @@ The result will be identical.
 [get_script_redeemers](#get_script_redeemers) The list of all redeemers for a given script hash<br>
 [get_datum_info](#get_datum_info) The list of datum information for given datum hashes<br>
 
+[Stake Account](#Stake Account)<br>
+[get_account_list](#get_account_list) Get a list of all accounts<br>
+[get_account_info](#get_account_info) Get the account information for given stake addresses (accounts)<br>
+[get_account_utxos](#get_account_utxos) Get a list of all UTxOs for a given stake address (account)<br>
+[get_account_info_cached](#get_account_info_cached) Get the cached account information for given stake addresses (accounts)<br>
+[get_account_rewards](#get_account_rewards) Get the full rewards history (including MIR) for given stake addresses (accounts)<br>
+[get_account_updates](#get_account_updates) Get the account updates (registration, deregistration, delegation and withdrawals) for given stake addresses (accounts)<br>
+[get_account_addresses](#get_account_addresses) Get all addresses associated with given staking accounts<br>
+[get_account_assets](#get_account_assets) Get the native asset balance of given accounts<br>
+[get_account_history](#get_account_history) Get the staking history of given stake addresses (accounts)<br>
+
 ### Network
 
 #### get_tip
 Get the tip info about the latest block seen by chain<br>
 Parameters: none<br>
-Returns: The tip information as a list of one map<br>
+Returns: The tip information as a list of one dictionary<br>
 Example:<br>
 `tip = get_tip()`<br>
 Example response:
@@ -146,7 +154,7 @@ Example response:
 #### get_genesis
 Get the Genesis parameters used to start specific era on chain<br>
 Parameters: none<br>
-Returns: Genesis parameters used to start each era on chain as a list of one map<br>
+Returns: Genesis parameters used to start each era on chain as a list of one dictionary<br>
 Example:<br>
 `genesis = get_genesis()`<br>
 Example response:
@@ -172,7 +180,7 @@ Example response:
 #### get_totals
 Get the circulating utxo, treasury, rewards, supply and reserves in lovelace for specified epoch, all epochs if empty<br>
 Parameters: Epoch (optional)<br>
-Returns: Supply/reserves/utxo/fees/treasury stats as a list of one map (if the epoch is specified) or a list of all available epochs (if the epoch parameter is not specified)<br>
+Returns: Supply/reserves/utxo/fees/treasury stats as a list of one dictionary (if the epoch is specified) or a list of all available epochs (if the epoch parameter is not specified)<br>
 Example:<br>
 `totals = get_totals(380)`<br>
 Example response:
@@ -189,12 +197,42 @@ Example response:
 ]
 ```
 
+#### get_param_updates
+Get all parameter update proposals submitted to the chain starting Shelley era<br>
+Parameters: none<br>
+Returns: All parameter update proposals<br>
+Example:<br>
+`param_updates = get_param_updates()`<br>
+```json
+[
+  {
+    "tx_hash": "b516588da34b58b7d32b6a057f513e16ea8c87de46615631be3316d8a8847d46",
+    "block_height": 4533644,
+    "block_time": 1596923351,
+    "epoch_no": 210,
+    "data": {
+      "decentralisation": 0.9
+    }
+  },
+  {
+    "tx_hash": "784902982af484f78d10f1587072f5a6b888ed0c1296d4ecf1e21c0251696ca1",
+    "block_height": 4558648,
+    "block_time": 1597425824,
+    "epoch_no": 211,
+    "data": {
+      "decentralisation": 0.8
+    }
+  },
+  ...
+]
+```
+
 ### Epoch
 
 #### get_epoch_info
 Get the epoch information, all epochs if no epoch specified<br>
 Parameters: Epoch (optional)<br>
-Returns: The list of epoch info maps<br>
+Returns: The list of epoch info dictionaries<br>
 Example:<br>
 `epoch_info = get_epoch_info(379)`<br>
 Example response:
@@ -220,7 +258,7 @@ Example response:
 #### get_epoch_params
 Get the protocol parameters for specific epoch, returns information about all epochs if no epoch specified<br>
 Parameters: Epoch (optional)<br>
-Returns: The list of epoch protocol parameters maps<br>
+Returns: The list of epoch protocol parameters dictionaries<br>
 Example:<br>
 `epoch_params = get_epoch_params(380)`<br>
 Example response:
@@ -266,7 +304,7 @@ Example response:
 #### get_epoch_block_protocols
 Get the information about block protocol distribution in epoch<br>
 Parameters: Epoch (optional)<br>
-Returns: The list of epoch protocol distribution maps<br>
+Returns: The list of epoch protocol distribution dictionaries<br>
 Example:<br>
 `epoch_block_protocols = get_epoch_block_protocols(380)`<br>
 Example response:
@@ -290,7 +328,7 @@ Example response:
 #### get_blocks
 Get summarised details about all blocks (paginated - latest first)<br>
 Parameters: The maximum number of blocks to return<br>
-Returns: The list of block maps (the newest first)<br>
+Returns: The list of block dictionaries (the newest first)<br>
 Example:<br>
 `blocks = get_blocks(3)`<br>
 Example response:
@@ -347,7 +385,7 @@ Example response:
 #### get_block_info
 Get detailed information about a specific block<br>
 Parameters: Block hash as string (for one block) or list of block hashes (for multiple blocks)<br>
-Returns: The list of block maps<br>
+Returns: The list of block dictionaries<br>
 Example:<br>
 `block_info = get_block_info('8e33bb588feff6414469779d724923064688615535280f8982c9981410cd06f6')`<br>
 Example response:
@@ -380,7 +418,7 @@ Example response:
 #### get_block_txs
 Get a list of all transactions included in provided blocks<br>
 Parameters: Block(s) hash(es) as string (for one block) or list of block hashes (for multiple blocks)<br>
-Returns: The list of transaction maps by block<br>
+Returns: The list of transaction dictionaries by block<br>
 Example:<br>
 `block_txs = get_block_txs('8e33bb588feff6414469779d724923064688615535280f8982c9981410cd06f6')`<br>
 Example response:
@@ -418,7 +456,7 @@ Example response:
 #### get_tx_info
 Get detailed information about transaction(s)<br>
 Parameters: Transaction(s) hash(es) as a string (for one transaction) or list (for multiple transactions)<br>
-Returns: The list of transactions details maps<br>
+Returns: The list of transactions details dictionaries<br>
 Example:<br>
 `tx_info = get_tx_info('99f2aefba2a4a5a550aeed9d91d3adabe77a286ec45c345c7980a208364f76c6')`<br>
 Example response:
@@ -520,7 +558,7 @@ Example response:
 #### get_tx_utxos
 Get UTxO set (inputs/outputs) of transactions<br>
 Parameters: Transaction(s) hash(es) as a string (for one transaction) or list (for multiple transactions)<br>
-Returns: The list of transactions UTxOs maps<br>
+Returns: The list of transactions UTxOs dictionaries<br>
 Example:<br>
 `tx_utxos = get_tx_utxos('bf685dde61d36b8acd259b2bd00a69a2e8359d2a69b75aa3a0eff9d38ca1f2ef')`<br>
 Example response:
@@ -597,7 +635,7 @@ Example response:
 #### get_tx_metadata
 Get metadata information (if any) for given transaction(s)<br>
 Parameters: Transaction(s) hash(es) as a string (for one transaction) or list (for multiple transactions)<br>
-Returns: The list of transactions metadata maps<br>
+Returns: The list of transactions metadata dictionaries<br>
 Example:<br>
 `tx_metadata = get_tx_metadata('291b5533227331999eca2e63934c1061e5f85993e77747a90d9901413d7bb937')`<br>
 Example response:
@@ -625,7 +663,7 @@ Example response:
 #### get_tx_metalabels
 Get a list of all transaction metadata labels<br>
 Parameters: none<br>
-Returns: The list of transaction metadata labels maps<br>
+Returns: The list of transaction metadata labels dictionaries<br>
 Example:<br>
 `tx_metalabels = get_tx_metalabels()`<br>
 Example response:
@@ -673,7 +711,7 @@ Example response:
 #### get_tx_status
 Get the number of block confirmations for a given transaction hash list<br>
 Parameters: Transaction(s) hash(es) as a string (for one transaction) or list (for multiple transactions)<br>
-Returns: The list of transactions block confirmations maps<br>
+Returns: The list of transactions block confirmations dictionaries<br>
 Example:<br>
 `tx_status = get_tx_status('0eec38dc1d2d021f477a890d754e66c49fe74a9fd972793076587496c9850060')`<br>
 Example response:
@@ -691,7 +729,7 @@ Example response:
 #### get_address_info
 Get the transaction hash list of input address array, optionally filtering after specified block height (inclusive)<br>
 Parameters: Payment address(es) as string (for one address) or list (for multiple addresses)<br>
-Returns: The list of transactions maps<br>
+Returns: The list of transactions dictionaries<br>
 Example:<br>
 `address_info = get_address_info('addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7')`<br>
 Example response:
@@ -722,7 +760,7 @@ Example response:
 #### get_address_txs
 Get the transaction hash list of input address array, optionally filtering after specified block height (inclusive)<br>
 Parameters: Payment address(es) as string (for one address) or list (for multiple addresses)<br>
-Returns: The list of transactions maps<br>
+Returns: The list of transactions dictionaries<br>
 Example:<br>
 `address_txs = get_address_txs('addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7')`<br>
 Example response:
@@ -756,10 +794,53 @@ Example response:
 ]
 ```
 
+#### get_credential_utxos
+Get a list of UTxO against input payment credential array including their balances<br>
+Parameters: Payment credential(s) as string (for one credential) or list (for multiple credentials)<br>
+Returns: The list of UTxO against input payment credential array including their balances<br>
+Example:<br>
+`credential_utxos = get_credential_utxos('0c35748e147183cd784875e78a5b372fa6975e9ac6406d6015c09bac')`<br>
+Example response:<br>
+```json
+[
+  {
+    "tx_hash": "8e9b85284f92ad85416d4fb0a3ff5d3bbd9b57c4a4d97a8d39dc99316eace0cf",
+    "tx_index": 0,
+    "value": "5000000"
+  },
+  {
+    "tx_hash": "e7333c01d3c2887767aca13e5c74fb858fbf0119cd90d944869ee72b8b81f523",
+    "tx_index": 1,
+    "value": "20432286"
+  },
+  {
+    "tx_hash": "ecfbbc335ec203b10ee65faddf06fb0ceac27c36ef3a76047fbf820f6e9ed7f2",
+    "tx_index": 2,
+    "value": "2301540"
+  },
+  {
+    "tx_hash": "b70a9107a38e776c0b1d94a1578c393a1ce01ea8e28ed56c5c724a2639e31bfe",
+    "tx_index": 2,
+    "value": "1150770"
+  },
+  {
+    "tx_hash": "1107afdada22f259aa798de57ca3839e212e977467628c85315326917a13dd3b",
+    "tx_index": 2,
+    "value": "1150770"
+  },
+  ...
+  {
+    "tx_hash": "b9d519ff9309dd78a7e8031aef2fa6b21358478efed5f0bdf234fa10c83eede7",
+    "tx_index": 1,
+    "value": "137666866"
+  }
+]
+```
+
 #### get_address_assets
 Get the list of all the assets (policy, name and quantity) for given addresses<br>
 Parameters: Payment address(es) as string (for one address) or list (for multiple addresses)<br>
-Returns: The list of assets maps by address<br>
+Returns: The list of assets dictionaries by address<br>
 Example:<br>
 `address_assets = get_address_assets('addr1qywp2795uk4uusknpseu3fcwy8ew57dnuaeutnxaa5j6ulp4u2anham4xet066yjc6xjxcymujvvwlfhj8k8gxfl2nvs73rvzh')`<br>
 Example response:
@@ -795,7 +876,7 @@ Example response:
 #### get_credential_txs
 Get the transaction hash list of input payment credential array, optionally filtering after specified block height (inclusive)<br>
 Parameters: Credential(s) as string (for one credential) or list (for multiple credentials)<br>
-Returns: The list of address information maps<br>
+Returns: The list of address information dictionaries<br>
 Example:<br>
 `credential_txs = get_credential_txs('dcc3fb415f1e0bf25bbabae6e261c61f85a1a23e4e063145b1efcc39')`<br>
 Example response:
@@ -823,251 +904,6 @@ Example response:
 ]
 ```
 
-### Account
-
-#### get_account_list
-Get a list of all accounts<br>
-Parameters:<br>
-The offset (optional) to start from, default 0<br>
-The maximum number of accounts to return (optional), default 0 (no limit)<br>
-Returns: The list of accounts maps<br>
-This takes a very long time to execute (about one hour), because the total number of accounts is in the millions range.<br>
-Example:<br>
-`account_list = get_account_list()`<br>
-Example response:
-```json
-[
-  {
-    "id": "stake1uyfmzu5qqy70a8kq4c8rw09q0w0ktfcxppwujejnsh6tyrg5c774g"
-  },
-  {
-    "id": "stake1uydhlh7f2kkw9eazct5zyzlrvj32gjnkmt2v5qf6t8rut4qwch8ey"
-  },
-  {
-    "id": "stake1uxsgkz6fvgws5wn80vckwvghzapnhfmf0672nmmkm2tt9fcaau5sw"
-  },
-  ...
-]
-```
-
-#### get_account_info
-Get the account information for given stake addresses (accounts)<br>
-Parameters: Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
-Returns: The list of account information maps<br>
-Example:<br>
-`account_info = get_account_info('stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j')`<br>
-Example response:
-```json
-[
-  {
-    "stake_address": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
-    "status": "registered",
-    "delegated_pool": "pool18r2y72aue5nmv489xtnfxl36vzusq95qst6urd87yd5hgzms04c",
-    "total_balance": "20418617",
-    "utxo": "20418617",
-    "rewards": "0",
-    "withdrawals": "0",
-    "rewards_available": "0",
-    "reserves": "0",
-    "treasury": "0"
-  }
-]
-```
-
-#### get_account_info_cached
-Get the cached account information for given stake addresses (accounts)<br>
-Parameters: Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
-Returns: The list of account information maps<br>
-Example:<br>
-`account_info_cached = get_account_info_cached('stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j')`<br>
-Example response:
-```json
-[
-  {
-    "stake_address": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
-    "status": "registered",
-    "delegated_pool": "pool18r2y72aue5nmv489xtnfxl36vzusq95qst6urd87yd5hgzms04c",
-    "total_balance": "20418617",
-    "utxo": "20418617",
-    "rewards": "0",
-    "withdrawals": "0",
-    "rewards_available": "0",
-    "reserves": "0",
-    "treasury": "0"
-  }
-]
-```
-
-#### get_account_rewards
-Get the full rewards history (including MIR) for given stake addresses (accounts)<br>
-Parameters:<br>
-Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
-Epoch (optional), default: current epoch<br>
-Returns: The list of rewards maps by account (stake address)<br>
-Example:<br>
-`account_rewards = get_account_rewards('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`<br>
-Example response:
-```json
-[
-  {
-    "stake_address": "stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z",
-    "rewards": [
-      {
-        "earned_epoch": 233,
-        "spendable_epoch": 235,
-        "amount": "3990414",
-        "type": "member",
-        "pool_id": "pool1jdhjfcu34lq88rypdtslzwyf27uh0h3apcr9mjd68zhc69r29fy"
-      },
-      {
-        "earned_epoch": 234,
-        "spendable_epoch": 236,
-        "amount": "2792902",
-        "type": "member",
-        "pool_id": "pool1jdhjfcu34lq88rypdtslzwyf27uh0h3apcr9mjd68zhc69r29fy"
-      },
-      ...
-      {
-        "earned_epoch": 379,
-        "spendable_epoch": 381,
-        "amount": "6496870",
-        "type": "member",
-        "pool_id": "pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd"
-      }
-    ]
-  }
-]
-```
-
-#### get_account_updates
-Get the account updates (registration, deregistration, delegation and withdrawals) for given stake addresses (accounts)<br>
-Parameters: Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
-Returns: The list of account updates maps by account (stake address)<br>
-Example:<br>
-`account_updates = get_account_updates('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`<br>
-Example response:
-```json
-[
-  {
-    "stake_address": "stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z",
-    "updates": [
-      {
-        "action_type": "withdrawal",
-        "tx_hash": "487bc75f00fe934dad33683271cca8540fe868eef7025962678f179a1a111ecc",
-        "epoch_no": 324,
-        "epoch_slot": 70687,
-        "absolute_slot": 54675487,
-        "block_time": 1646241778
-      },
-      {
-        "action_type": "withdrawal",
-        "tx_hash": "eb3ffa01f434e210716151fd9001af82529e371a91c20af02512942f988a2119",
-        "epoch_no": 269,
-        "epoch_slot": 339679,
-        "absolute_slot": 31184479,
-        "block_time": 1622750770
-      },
-      ...
-      {
-        "action_type": "withdrawal",
-        "tx_hash": "b056dcbff9b908e1bd3ed015466f64486538058ba3553dbf885b216d88343370",
-        "epoch_no": 252,
-        "epoch_slot": 58375,
-        "absolute_slot": 23559175,
-        "block_time": 1615125466
-      }
-    ]
-  }
-]
-```
-
-#### get_account_addresses
-Get all addresses associated with given staking accounts<br>
-Parameters: Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
-Returns: The list of addresses maps by account (stake address)<br>
-Example:<br>
-`account_addresses = get_account_addresses('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`<br>
-Example response:
-```json
-[
-  {
-    "stake_address": "stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z",
-    "addresses": [
-      "addr1qxwjxvzv8rmyutcjp0647w4n05wv7aez9jdmqcxn8a9sshll0qre4udr9ny9sj8020uxher08k44ssl9pxlk3w5f4x2qjyz9yf"
-    ]
-  }
-]
-```
-
-#### get_account_assets
-Get the native asset balance of given accounts<br>
-Parameters: Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
-Returns: The list of account assets maps by account (stake address)<br>
-Example:<br>
-`account_assets = get_account_assets('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`<br>
-Example response:
-```json
-[
-  {
-    "stake_address": "stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z",
-    "asset_list": [
-      {
-        "policy_id": "0029cb7c88c7567b63d1a512c0ed626aa169688ec980730c0473b913",
-        "asset_name": "6c70202302",
-        "fingerprint": "asset1awuysx8hc686uz0dykmvmc7jfut2ulceucf6yc",
-        "quantity": "418089787"
-      },
-      {
-        "policy_id": "0029cb7c88c7567b63d1a512c0ed626aa169688ec980730c0473b913",
-        "asset_name": "6c7020f302",
-        "fingerprint": "asset1mcq0awl6awlaqg0ywukf94q0mnau263l9rght5",
-        "quantity": "586811406"
-      },
-      ...
-      {
-        "policy_id": "ea2d23f1fa631b414252824c153f2d6ba833506477a929770a4dd9c2",
-        "asset_name": "4d414442554c",
-        "fingerprint": "asset1q0kwjy669gmsqpvxp4lr0sp26pdm0dafme3qp2",
-        "quantity": "500"
-      }
-    ]
-  }
-]
-```
-
-#### get_account_history
-Get the staking history of given stake addresses (accounts)<br>
-Parameters: Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
-Returns: The list of staking history maps by account (stake address)<br>
-Example:<br>
-`account_history = get_account_history('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`<br>
-Example response:
-```json
-[
-  {
-    "stake_address": "stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z",
-    "history": [
-      {
-        "pool_id": "pool1jdhjfcu34lq88rypdtslzwyf27uh0h3apcr9mjd68zhc69r29fy",
-        "epoch_no": 233,
-        "active_stake": "4655706122"
-      },
-      {
-        "pool_id": "pool1jdhjfcu34lq88rypdtslzwyf27uh0h3apcr9mjd68zhc69r29fy",
-        "epoch_no": 234,
-        "active_stake": "5020706122"
-      },
-      ...
-      {
-        "pool_id": "pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd",
-        "epoch_no": 381,
-        "active_stake": "10247851319"
-      }
-    ]
-  }
-]
-```
-
 ### Asset
 
 #### get_asset_list
@@ -1076,7 +912,7 @@ Parameters:<br>
 Asset Policy (optional), default: all policies<br>
 The offset (optional) to start from, default 0<br>
 The maximum number of accounts to return (optional), default 0 (no limit)<br>
-Returns: The list of assets maps by policy<br>
+Returns: The list of assets dictionaries by policy<br>
 Example:<br>
 `asset_list = get_asset_list()`<br>
 Example response:
@@ -1102,12 +938,55 @@ Example response:
 ]
 ```
 
-#### get_asset_address_list
+#### get_asset_token_registry
+Get a list of assets registered via token registry on github<br>
+Parameters: none<br>
+Returns: The list of assets registered via token registry on github<br>
+Example:<br>
+`asset_token_registry = get_asset_token_registry()`<br>
+Example response:<br>
+```json
+[
+  {
+    "policy_id": "00000002df633853f6a47465c9496721d2d5b1291b8398016c0e87ae",
+    "asset_name": "6e7574636f696e",
+    "asset_name_ascii": "nutcoin",
+    "ticker": "NUT",
+    "description": "The legendary Nutcoin, the first native asset minted on Cardano.",
+    "url": "https://fivebinaries.com/nutcoin",
+    "decimals": 0,
+    "logo": "iVBORw0KGgoAAAANSUhEUgAAAGQA....2rCPgau2EAAAAASUVORK5CYII="
+  },
+  {
+    "policy_id": "00109530994ea381c0bfe0936c85ea01bfe2765c24ef6dad5740c33e",
+    "asset_name": "486f646c657220436f616c6974696f6e20436f696e",
+    "asset_name_ascii": "Hodler Coalition Coin",
+    "ticker": "HODLR",
+    "description": "Stake ₳DA with the Hodler Coalition. Save the World.",
+    "url": "https://www.hodlerstaking.com/",
+    "decimals": 4,
+    "logo": "iVBORw0KGgoAAAANSUhEUgAAARAAA...4RtRz5t2G8zAAAAAElFTkSuQmCC"
+  },
+  {
+    "policy_id": "0011fbab202151eca9e9ef7680569d9419d12e51e693cb05a2edd2ed",
+    "asset_name": "4341524b",
+    "asset_name_ascii": "Cardano Ark Token",
+    "ticker": "CARK",
+    "description": "Utility token for the Cardano Ark",
+    "url": "https://www.cardanoark.com/",
+    "decimals": 0,
+    "logo": ""
+  },
+  ...
+]
+```
+
+#### get_asset_addresses
 Get the list of all addresses holding a given asset<br>
 Parameters:<br>
 Asset Policy<br>
 Asset Name in hexadecimal format (optional), default: all policy assets<br>
-Returns: List of maps with the wallets holding the asset and the amount of assets per wallet<br>
+Returns: List of dictionaries with the wallets holding the asset and the amount of assets per wallet<br>
 Example:<br>
 `asset_address_list = get_asset_address_list('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd', '4379626572696130363936')`<br>
 Example response:
@@ -1120,12 +999,29 @@ Example response:
 ]
 ```
 
+#### get_asset_nft_address
+Get the address where specified NFT currently reside on.<br>
+Parameters:<br>
+Asset Policy<br>
+Asset Name in hexadecimal format<br>
+Returns: The wallet address holding the NFT as a list of one dictionary<br>
+Example:<br>
+`asset_nft_address = get_asset_nft_address('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd', '4379626572696130363936')`<br>
+Example response:
+```json
+[
+  {
+    "payment_address": "addr1qywp2795uk4uusknpseu3fcwy8ew57dnuaeutnxaa5j6ulp4u2anham4xet066yjc6xjxcymujvvwlfhj8k8gxfl2nvs73rvzh"
+  }
+]
+```
+
 #### get_asset_info
 Get the information of an asset including first minting & token registry metadata<br>
 Parameters:
 Asset Policy<br>
 Asset Name in hexadecimal format (optional), default: all policy assets<br>
-Returns: List of maps with the wallets holding the asset and the amount of assets per wallet<br>
+Returns: List of dictionaries with the wallets holding the asset and the amount of assets per wallet<br>
 Example:<br>
 `asset_info = get_asset_info('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd', '4379626572696130363936')`<br>
 Example response:
@@ -1181,12 +1077,89 @@ Example response:
 ]
 ```
 
+#### get_asset_info_bulk
+Get the information of a list of assets including first minting & token registry metadata<br>
+Parameters:<br>
+Assets List in tge following format: `['policy.name_hex']`<br>
+Returns: List of assets including first minting & token registry metadata<br>
+Example:<br>
+`asset_info_bulk = get_asset_info_bulk(['221b1b9ebccab1512262347491557279ac0afac63b4fbd10fc596c8a.437562656e7369734d757368726f6f6d', '221b1b9ebccab1512262347491557279ac0afac63b4fbd10fc596c8a.417a7a69654d757368726f6f6d'])`<br>
+Example response:
+```json
+[
+  {
+    "policy_id": "221b1b9ebccab1512262347491557279ac0afac63b4fbd10fc596c8a",
+    "asset_name": "437562656e7369734d757368726f6f6d",
+    "asset_name_ascii": "CubensisMushroom",
+    "fingerprint": "asset1csgmd2qwycgmqdck4dgqzzwm7xclhkqrhxs2pw",
+    "minting_tx_hash": "c29fd9f0c71793eb06e7cf055e8529740b0486a802b8e9019df4853c6dec03a0",
+    "total_supply": "7576",
+    "mint_cnt": 1,
+    "burn_cnt": 0,
+    "creation_time": 1680393600,
+    "minting_tx_metadata": {
+      "721": {
+        "version": "1.0",
+        "221b1b9ebccab1512262347491557279ac0afac63b4fbd10fc596c8a": {
+          "CubensisMushroom": {
+            "name": "CubensisMushroom",
+            "files": [
+              {
+                "src": "ipfs://QmQNTa19H5WnYtRiHqzNK2drC9rRTzmkxtu7tS57WZkNuZ",
+                "name": "Cubensis",
+                "mediaType": "image/png"
+              }
+            ],
+            "image": "ipfs://QmQNTa19H5WnYtRiHqzNK2drC9rRTzmkxtu7tS57WZkNuZ",
+            "project": "Chilled Kongs",
+            "mediaType": "image/png"
+          }
+        }
+      }
+    },
+    "token_registry_metadata": null
+  },
+  {
+    "policy_id": "221b1b9ebccab1512262347491557279ac0afac63b4fbd10fc596c8a",
+    "asset_name": "417a7a69654d757368726f6f6d",
+    "asset_name_ascii": "AzzieMushroom",
+    "fingerprint": "asset1kfskmlcvlsvpvr093staxj2788qlrkcrssf26a",
+    "minting_tx_hash": "e4b94e3a5e95953acfb50e3c2fd005b2839ca79c4294b62bbf7d2afdf96dd009",
+    "total_supply": "1305",
+    "mint_cnt": 1,
+    "burn_cnt": 0,
+    "creation_time": 1680393600,
+    "minting_tx_metadata": {
+      "721": {
+        "version": "1.0",
+        "221b1b9ebccab1512262347491557279ac0afac63b4fbd10fc596c8a": {
+          "AzzieMushroom": {
+            "name": "AzzieMushroom",
+            "files": [
+              {
+                "src": "ipfs://QmeAdLCKgXhxtDAcpPq5vgpRCqYWCGFMzb9jx4YEif3nWR",
+                "name": "Azzie",
+                "mediaType": "image/png"
+              }
+            ],
+            "image": "ipfs://QmeAdLCKgXhxtDAcpPq5vgpRCqYWCGFMzb9jx4YEif3nWR",
+            "project": "Chilled Kongs",
+            "mediaType": "image/png"
+          }
+        }
+      }
+    },
+    "token_registry_metadata": null
+  }
+]
+```
+
 #### get_asset_history
 Get the mint/burn history of an asset<br>
 Parameters:<br>
 Asset Policy<br>
 Asset Name in hexadecimal format (optional), default: all policy assets<br>
-Returns: List of maps with the mint/burn history of an asset<br>
+Returns: List of dictionaries with the mint/burn history of an asset<br>
 Example:<br>
 `asset_history = get_asset_history('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd', '4379626572696130363936')`<br>
 Example response:
@@ -1245,12 +1218,41 @@ Example response:
 ]
 ```
 
-#### get_asset_policy_info
-Get the information for all assets under the same policy<br>
+#### get_policy_asset_addresses
+Get the list of addresses with quantity for each asset on the given policy<br>
 Parameters: Asset Policy<br>
-Returns: List of maps with the policy assets<br>
+Returns: List of addresses with quantity for each asset on the given policy<br>
 Example:<br>
-`asset_policy_info = get_asset_policy_info('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd')`<br>
+`asset_policy_info = get_policy_asset_addresses('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd')`<br>
+Example response:
+```json
+[
+  {
+    "asset_name": "4379626572696130303233",
+    "payment_address": "addr1qxu5vk5xafdp39d95ya06d6uya8ldua7crpdzd2an07uw8mrtndmfr0d4qarvgj2wasdwlvrnlqt262jn5asnws7aekssq73gf",
+    "quantity": "1"
+  },
+  {
+    "asset_name": "4379626572696130303330",
+    "payment_address": "addr1q9wj7ylly5nz2kel6huy966tcsw2l3ct9at7m3euhfxyv246nlp3dj9pda2rphtzycwexsaapyk73k25y3j5neyhg45s879sk4",
+    "quantity": "1"
+  },
+  ...
+  {
+    "asset_name": "4379626572696132383338",
+    "payment_address": "addr1qxg2l50ryn6z23543v6nujvkql9zwj7f7hvsjwalw6jvf25n5k332a42ge9w5en95g9af59fft32g0la0qtfr9vfyyesccney2",
+    "quantity": "1"
+  }
+]
+```
+
+
+#### get_policy_asset_info
+Get the list of asset under the given policy (including balances)<br>
+Parameters: Asset Policy<br>
+Returns: List of dictionaries with the policy assets<br>
+Example:<br>
+`asset_policy_info = get_policy_asset_info('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd')`<br>
 Example response:
 ```json
 [
@@ -1392,12 +1394,119 @@ Example response:
 ]
 ```
 
+#### get_policy_asset_list
+Get the list of asset under the given policy (including balances)<br>
+Parameters: Asset Policy<br>
+Returns: List of dictionaries with the asset under the given policy<br>
+Example:<br>
+`asset_policy_list = get_policy_asset_list('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd')`<br>
+Example response:
+```json
+[
+  {
+    "asset_name": "",
+    "asset_name_ascii": "",
+    "fingerprint": "asset1pht97cylpt7azuu9mwhmd9c9zdgmumwrrm5yrc",
+    "minting_tx_hash": "90415fda215ff5098d7fa1385c7358c589066332068b720380726e3ef0b26de4",
+    "total_supply": "0",
+    "mint_cnt": 1,
+    "burn_cnt": 1,
+    "creation_time": 1665100800,
+    "minting_tx_metadata": {
+      "777": {
+        "addr": [
+          "addr1qy36jns6h4w4f80u6xed49k6qn9c7tk4x4us5kaxztjq8x3un2me8nvc5ke",
+          "gvll0gnwlj2ypzfhhqpns47u76gafttmq208x4d"
+        ],
+        "rate": "0.05"
+      }
+    },
+    "token_registry_metadata": null
+  },
+  ...
+  {
+    "asset_name": "4379626572696130333939",
+    "asset_name_ascii": "Cyberia0399",
+    "fingerprint": "asset1g7tgq2ly8uhtzcz79uhay8tq46h9rq62arfm8s",
+    "minting_tx_hash": "98db0a36106a92149b256887f6300f2b228e14d24d488e4b1614920083cd64ff",
+    "total_supply": "1",
+    "mint_cnt": 1,
+    "burn_cnt": 0,
+    "creation_time": 1665187200,
+    "minting_tx_metadata": {
+      "721": {
+        "nonce": "c966f455d3e03537",
+        "07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd": {
+          "Cyberia0399": {
+            "Pose": "Lunge pose - Anjaneyasana",
+            "Skin": "Gold",
+            "name": "Cyberia Chakra Planet #0399",
+            "files": [
+              {
+                "src": "ipfs://QmVsMggcQE3da9xuZv7uvJRH84gs5ebGQ8kxVPSQw52XRf",
+                "name": "Please wait while your experience below loads.",
+                "mediaType": "image/jpg"
+              },
+              {
+                "src": "ipfs://QmSHyNm11PrqyrUXszKtsz52ADH6A934c3gw41H7CMCj7D",
+                "mediaType": "text/html"
+              }
+            ],
+            "image": "ipfs://QmVsMggcQE3da9xuZv7uvJRH84gs5ebGQ8kxVPSQw52XRf",
+            "Artist": "Srink",
+            "Avatar": "Male",
+            "Chakra": "Sacral - Svadhisthana",
+            "Mantra": "VAM",
+            "Discord": "https://dsc.gg/cyberiacnft",
+            "Twitter": "https://twitter.com/cyberiaCNFT",
+            "Website": "https://cyberia.gg/",
+            "Function": "Sexual and Creative Energy",
+            "Location": "Below the Belly Button",
+            "Collection": "Chakra Planets",
+            "Planet colour": "Orange"
+          },
+          "Cyberia2795": {
+            "Pose": "Headstand - Sirsasana",
+            "Skin": "Gold",
+            "name": "Cyberia Chakra Planet #2795",
+            "files": [
+              {
+                "src": "ipfs://QmZ4TGY2Jzy5JGaD3S7RLsrP9K8jbp44e7463iHAGitM5a",
+                "name": "Please wait while your experience below loads.",
+                "mediaType": "image/jpg"
+              },
+              {
+                "src": "ipfs://QmcEqKkAcxeGNZimSiQZ2duZA4sx4xJawh35VwuJoS3A9m",
+                "mediaType": "text/html"
+              }
+            ],
+            "image": "ipfs://QmZ4TGY2Jzy5JGaD3S7RLsrP9K8jbp44e7463iHAGitM5a",
+            "Artist": "Srink",
+            "Avatar": "Female",
+            "Chakra": "Crown - Sahasrara",
+            "Mantra": "OM",
+            "Discord": "https://dsc.gg/cyberiacnft",
+            "Twitter": "https://twitter.com/cyberiaCNFT",
+            "Website": "https://cyberia.gg/",
+            "Function": "Spiritual Connection",
+            "Location": "Top of the Head",
+            "Collection": "Chakra Planets",
+            "Planet colour": "Purple"
+          }
+        }
+      }
+    },
+    "token_registry_metadata": null
+  }
+]
+```
+
 #### get_asset_summary
 Get the summary of an asset (total transactions exclude minting/total wallets include only wallets with asset balance)<br>
 Parameters:<br>
 Asset Policy<br>
 Asset Name in hexadecimal format (optional), default: all policy assets<br>
-Returns: List of maps with the mint/burn history of an asset<br>
+Returns: List of dictionaries with the mint/burn history of an asset<br>
 Example:<br>
 `asset_summary = get_asset_summary('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd', '4379626572696131313535')`<br>
 Example response:
@@ -1421,7 +1530,7 @@ Asset Policy<br>
 Asset Name in hexadecimal format (optional), default: all policy assets<br>
 Block number (optional) - return only the transactions after this block<br>
 History boolean (optional) - include all historical transactions, setting to false includes only the non-empty ones<br>
-Returns: List of maps with the mint/burn history of an asset<br>
+Returns: List of dictionaries with the mint/burn history of an asset<br>
 Example:<br>
 `asset_txs = get_asset_txs('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd', '4379626572696131313535')`<br>
 Example response:
@@ -1441,7 +1550,7 @@ Example response:
 #### get_pools_list
 A list of all currently registered/retiring (not retired) pools<br>
 Parameters: none<br>
-Returns: The list of stake pool maps<br>
+Returns: The list of stake pool dictionaries<br>
 Example:<br>
 `pool_list = get_pool_list()`<br>
 Example response:
@@ -1536,7 +1645,7 @@ Example response:
 #### get_pool_stake_snapshot
 Returns Mark, Set and Go stake snapshots for the selected pool, useful for leaderlog calculation<br>
 Parameters: Stake pool bech32 id<br>
-Returns: Pool snapshot as list of maps by epoch (current and previous 2)<br>
+Returns: Pool snapshot as list of dictionaries by epoch (current and previous 2)<br>
 Example:<br>
 `pool_stake_snapshot = get_pool_stake_snapshot('pool155efqn9xpcf73pphkk88cmlkdwx4ulkg606tne970qswczg3asc')`<br>
 Example response:
@@ -1569,7 +1678,7 @@ Example response:
 #### get_pool_delegators
 Returns information about live delegators for a given pool<br>
 Parameters Stake pool bech32 id<br>
-Returns: The list of pool delegators maps<br>
+Returns: The list of pool delegators dictionaries<br>
 Example:<br>
 `pool_delegators = get_pool_delegators('pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd')`<br>
 Example response:
@@ -1602,7 +1711,7 @@ Returns information about active delegators (incl. history) for a given pool and
 Parameters:<br>
 Stake pool bech32 id<br>
 Epoch (optional)<br>
-Returns: The list of pool delegators maps<br>
+Returns: The list of pool delegators dictionaries<br>
 Example:<br>
 `pool_delegators_history = get_pool_delegators_history('pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd', 380)`<br>
 Example response:
@@ -1632,7 +1741,7 @@ Returns information about blocks minted by a given pool for all epochs (or _epoc
 Parameters:<br>
 Stake pool bech32 id<br>
 Epoch (optional)<br>
-Returns: The list of pool blocks maps<br>
+Returns: The list of pool blocks dictionaries<br>
 Example:<br>
 `pool_blocks = get_pool_blocks('pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd', 380)`<br>
 Example response:
@@ -1662,7 +1771,7 @@ Returns information about pool stake, block and reward history in a given epoch 
 Parameters:<br>
 Stake pool bech32 id<br>
 Epoch (optional)<br>
-Returns:  Information about pool stake, block and reward history as a list maps by epoch (descending)<br>
+Returns:  Information about pool stake, block and reward history as a list dictionaries by epoch (descending)<br>
 Example:<br>
 `pool_history = get_pool_history('pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd', 379)`<br>
 Example response:
@@ -1687,7 +1796,7 @@ Example response:
 #### get_pool_updates
 Returns all pool updates for all pools or only updates for specific pool if specified<br>
 Parameters: Stake pool bech32 id (optional)<br>
-Returns: pool updates as a list of maps<br>
+Returns: pool updates as a list of dictionaries<br>
 Example:<br>
 `pool_updates = get_pool_updates('pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd')`<br>
 Example response:
@@ -1776,7 +1885,7 @@ Example response:
 #### get_pool_relays
 A list of registered relays for all currently registered/retiring (not retired) pools<br>
 Parameters: none<br>
-Returns: The list of relays maps by stake pool<br>
+Returns: The list of relays dictionaries by stake pool<br>
 Example:<br>
 `pool_relays = get_pool_relays()`<br>
 Example response:
@@ -1825,7 +1934,7 @@ Example response:
 #### get_pool_metadata
 A list of registered relays for all currently registered/retiring (not retired) pools<br>
 Parameters: Stake pool bech32 ID(s) as string (for one stake pool) or list of stake pool bech32 IDs (for multiple stake pools)<br>
-Returns: The list of pool metadata maps<br>
+Returns: The list of pool metadata dictionaries<br>
 Example:<br>
 `pool_metadata = get_pool_metadata('pool1auvwj75q70s7jce63nvptujs6460kvyxqn0wjegkz4mhja7g5t6')`<br>
 Example response:
@@ -1848,7 +1957,7 @@ Example response:
 #### get_retiring_pools
 Get the retiring stake pools list<br>
 Parameters: none<br>
-Returns: The list of retiring pools maps<br>
+Returns: The list of retiring pools dictionaries<br>
 Example:<br>
 `retiring_pools = get_retiring_pools()`<br>
 Example response:
@@ -1920,7 +2029,7 @@ Example response:
 #### get_native_script_list
 List of all existing native script hashes along with their creation transaction hashes<br>
 Parameters: none<br>
-Returns: The list of all native scripts maps<br>
+Returns: The list of all native scripts dictionaries<br>
 Example:<br>
 `native_script_list = get_native_script_list()`<br>
 Example response:
@@ -1973,7 +2082,7 @@ Example response:
 #### get_plutus_script_list
 List of all existing native script hashes along with their creation transaction hashes<br>
 Parameters: none<br>
-Returns: The list of all plutus scripts maps<br>
+Returns: The list of all plutus scripts dictionaries<br>
 Example:<br>
 `plutus_script_list = get_plutus_script_list()`<br>
 Example response:
@@ -1998,7 +2107,7 @@ Example response:
 #### get_script_redeemers
 List of all redeemers for a given script hash<br>
 Parameters: Script hash<br>
-Returns: Redeemers list as map<br>
+Returns: Redeemers list as dictionary<br>
 Example:<br>
 `script_redeemers = get_script_redeemers('c1996b36d11bf42103745844cc5ee9bf13fde475fa909809e2da7261')`<br>
 Example response:
@@ -2027,7 +2136,7 @@ Example response:
 #### get_datum_info
 List of datum information for given datum hashes<br>
 Parameters: Datum hash(es) as string (for one datum hash) or list (for a list of datum hashes)<br>
-Returns Datum information as list of maps<br>
+Returns Datum information as list of dictionaries<br>
 Example:<br>
 `datum_info = get_datum_info('45b0cfc220ceec5b7c1c62c4d4193d38e4eba48e8815729ce75f9c0ab0e4c1c0')`<br>
 Example response:
@@ -2039,6 +2148,296 @@ Example response:
       "list": []
     },
     "bytes": "80"
+  }
+]
+```
+
+### Stake Account
+
+#### get_account_list
+Get a list of all accounts<br>
+Parameters:<br>
+The offset (optional) to start from, default 0<br>
+The maximum number of accounts to return (optional), default 0 (no limit)<br>
+Returns: The list of accounts dictionaries<br>
+This takes a very long time to execute (about one hour), because the total number of accounts is in the millions range.<br>
+Example:<br>
+`account_list = get_account_list()`<br>
+Example response:
+```json
+[
+  {
+    "id": "stake1uyfmzu5qqy70a8kq4c8rw09q0w0ktfcxppwujejnsh6tyrg5c774g"
+  },
+  {
+    "id": "stake1uydhlh7f2kkw9eazct5zyzlrvj32gjnkmt2v5qf6t8rut4qwch8ey"
+  },
+  {
+    "id": "stake1uxsgkz6fvgws5wn80vckwvghzapnhfmf0672nmmkm2tt9fcaau5sw"
+  },
+  ...
+]
+```
+
+#### get_account_info
+Get the account information for given stake addresses (accounts)<br>
+Parameters: Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
+Returns: The list of account information dictionaries<br>
+Example:<br>
+`account_info = get_account_info('stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j')`<br>
+Example response:
+```json
+[
+  {
+    "stake_address": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
+    "status": "registered",
+    "delegated_pool": "pool18r2y72aue5nmv489xtnfxl36vzusq95qst6urd87yd5hgzms04c",
+    "total_balance": "20418617",
+    "utxo": "20418617",
+    "rewards": "0",
+    "withdrawals": "0",
+    "rewards_available": "0",
+    "reserves": "0",
+    "treasury": "0"
+  }
+]
+```
+
+#### get_account_utxos
+Get a list of assets registered via token registry on github<br>
+Parameters: Stake address<br>
+Returns: The list of all UTxOs at all payment addresses associated with the stake address<br>
+Example:<br>
+`account_utxos = get_account_utxos('stake1ux5r7myfhycj234wpqyhh3h8skgwvq0hsstpw52f66857uq95cas6')`
+Example response:<br>
+```json
+[
+  {
+	"tx_hash": "215bcaa7b13c491db28d5525d9b2a13a7d8ddabd563da8113a449ab33a6a60be",
+	"tx_index": 2,
+	"address": "addr1q9dwzug2qzdsqvpvrn886nqdtwr02n9kxtwqsxce2gacvedg8akgnwf3y4r2uzqf00rw0pvsucql0pqkzag5n450facqeuerev",
+	"value": "85813474",
+	"block_height": 8214437,
+	"block_time": 1672580966
+  },
+  {
+	"tx_hash": "1eb26dce2f471fbe32aa8cb303f5e8d8078d1da4dbbb78a7bc135036bb3f2f9c",
+	"tx_index": 0,
+	"address": "addr1q88u9gz83nhs9p5pud9kyucx8sg0ygae2p9a4g2p2y55c4ag8akgnwf3y4r2uzqf00rw0pvsucql0pqkzag5n450facqqyd2n7",
+	"value": "110094569",
+	"block_height": 8406870,
+	"block_time": 1676555396
+  },
+  {
+	"tx_hash": "d530de851c2f867f2174c1073b04bdb9f2e2d16029fcfb488e8150ba66976d43",
+	"tx_index": 0,
+	"address": "addr1qxyp2wsafavj47dpc6uqgqx8se3969jn4crfk7y4zwd7vfag8akgnwf3y4r2uzqf00rw0pvsucql0pqkzag5n450facqlyvudm",
+	"value": "1249900",
+	"block_height": 8489290,
+	"block_time": 1678248733
+  },
+  ...
+  {
+	"tx_hash": "d8e3ca8b36f9a785ff33f01aa5460f9248ea94acd621ea187093206b04aa6e30",
+	"tx_index": 0,
+	"address": "addr1q8txa88kt6rpdv3zzn8ghx7u4udf6rpj690rfdvlqn35fldg8akgnwf3y4r2uzqf00rw0pvsucql0pqkzag5n450facqplx97u",
+	"value": "54000000",
+	"block_height": 8759577,
+	"block_time": 1683809438
+  }
+]
+```
+
+#### get_account_info_cached
+Get the cached account information for given stake addresses (accounts)<br>
+Parameters: Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
+Returns: The list of account information dictionaries<br>
+Example:<br>
+`account_info_cached = get_account_info_cached('stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j')`<br>
+Example response:
+```json
+[
+  {
+    "stake_address": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
+    "status": "registered",
+    "delegated_pool": "pool18r2y72aue5nmv489xtnfxl36vzusq95qst6urd87yd5hgzms04c",
+    "total_balance": "20418617",
+    "utxo": "20418617",
+    "rewards": "0",
+    "withdrawals": "0",
+    "rewards_available": "0",
+    "reserves": "0",
+    "treasury": "0"
+  }
+]
+```
+
+#### get_account_rewards
+Get the full rewards history (including MIR) for given stake addresses (accounts)<br>
+Parameters:<br>
+Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
+Epoch (optional), default: current epoch<br>
+Returns: The list of rewards dictionaries by account (stake address)<br>
+Example:<br>
+`account_rewards = get_account_rewards('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`<br>
+Example response:
+```json
+[
+  {
+    "stake_address": "stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z",
+    "rewards": [
+      {
+        "earned_epoch": 233,
+        "spendable_epoch": 235,
+        "amount": "3990414",
+        "type": "member",
+        "pool_id": "pool1jdhjfcu34lq88rypdtslzwyf27uh0h3apcr9mjd68zhc69r29fy"
+      },
+      {
+        "earned_epoch": 234,
+        "spendable_epoch": 236,
+        "amount": "2792902",
+        "type": "member",
+        "pool_id": "pool1jdhjfcu34lq88rypdtslzwyf27uh0h3apcr9mjd68zhc69r29fy"
+      },
+      ...
+      {
+        "earned_epoch": 379,
+        "spendable_epoch": 381,
+        "amount": "6496870",
+        "type": "member",
+        "pool_id": "pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd"
+      }
+    ]
+  }
+]
+```
+
+#### get_account_updates
+Get the account updates (registration, deregistration, delegation and withdrawals) for given stake addresses (accounts)<br>
+Parameters: Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
+Returns: The list of account updates dictionaries by account (stake address)<br>
+Example:<br>
+`account_updates = get_account_updates('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`<br>
+Example response:
+```json
+[
+  {
+    "stake_address": "stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z",
+    "updates": [
+      {
+        "action_type": "withdrawal",
+        "tx_hash": "487bc75f00fe934dad33683271cca8540fe868eef7025962678f179a1a111ecc",
+        "epoch_no": 324,
+        "epoch_slot": 70687,
+        "absolute_slot": 54675487,
+        "block_time": 1646241778
+      },
+      {
+        "action_type": "withdrawal",
+        "tx_hash": "eb3ffa01f434e210716151fd9001af82529e371a91c20af02512942f988a2119",
+        "epoch_no": 269,
+        "epoch_slot": 339679,
+        "absolute_slot": 31184479,
+        "block_time": 1622750770
+      },
+      ...
+      {
+        "action_type": "withdrawal",
+        "tx_hash": "b056dcbff9b908e1bd3ed015466f64486538058ba3553dbf885b216d88343370",
+        "epoch_no": 252,
+        "epoch_slot": 58375,
+        "absolute_slot": 23559175,
+        "block_time": 1615125466
+      }
+    ]
+  }
+]
+```
+
+#### get_account_addresses
+Get all addresses associated with given staking accounts<br>
+Parameters: Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
+Returns: The list of addresses dictionaries by account (stake address)<br>
+Example:<br>
+`account_addresses = get_account_addresses('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`<br>
+Example response:
+```json
+[
+  {
+    "stake_address": "stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z",
+    "addresses": [
+      "addr1qxwjxvzv8rmyutcjp0647w4n05wv7aez9jdmqcxn8a9sshll0qre4udr9ny9sj8020uxher08k44ssl9pxlk3w5f4x2qjyz9yf"
+    ]
+  }
+]
+```
+
+#### get_account_assets
+Get the native asset balance of given accounts<br>
+Parameters: Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
+Returns: The list of account assets dictionaries by account (stake address)<br>
+Example:<br>
+`account_assets = get_account_assets('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`<br>
+Example response:
+```json
+[
+  {
+    "stake_address": "stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z",
+    "asset_list": [
+      {
+        "policy_id": "0029cb7c88c7567b63d1a512c0ed626aa169688ec980730c0473b913",
+        "asset_name": "6c70202302",
+        "fingerprint": "asset1awuysx8hc686uz0dykmvmc7jfut2ulceucf6yc",
+        "quantity": "418089787"
+      },
+      {
+        "policy_id": "0029cb7c88c7567b63d1a512c0ed626aa169688ec980730c0473b913",
+        "asset_name": "6c7020f302",
+        "fingerprint": "asset1mcq0awl6awlaqg0ywukf94q0mnau263l9rght5",
+        "quantity": "586811406"
+      },
+      ...
+      {
+        "policy_id": "ea2d23f1fa631b414252824c153f2d6ba833506477a929770a4dd9c2",
+        "asset_name": "4d414442554c",
+        "fingerprint": "asset1q0kwjy669gmsqpvxp4lr0sp26pdm0dafme3qp2",
+        "quantity": "500"
+      }
+    ]
+  }
+]
+```
+
+#### get_account_history
+Get the staking history of given stake addresses (accounts)<br>
+Parameters: Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
+Returns: The list of staking history dictionaries by account (stake address)<br>
+Example:<br>
+`account_history = get_account_history('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`<br>
+Example response:
+```json
+[
+  {
+    "stake_address": "stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z",
+    "history": [
+      {
+        "pool_id": "pool1jdhjfcu34lq88rypdtslzwyf27uh0h3apcr9mjd68zhc69r29fy",
+        "epoch_no": 233,
+        "active_stake": "4655706122"
+      },
+      {
+        "pool_id": "pool1jdhjfcu34lq88rypdtslzwyf27uh0h3apcr9mjd68zhc69r29fy",
+        "epoch_no": 234,
+        "active_stake": "5020706122"
+      },
+      ...
+      {
+        "pool_id": "pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd",
+        "epoch_no": 381,
+        "active_stake": "10247851319"
+      }
+    ]
   }
 ]
 ```

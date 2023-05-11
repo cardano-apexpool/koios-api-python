@@ -137,7 +137,7 @@ def get_asset_address_list(policy: str, name: str = '') -> list:
     return wallets
 
 
-def get_nft_address(policy: str, name: str = '') -> list:
+def get_asset_nft_address(policy: str, name: str = '') -> list:
     """
     https://api.koios.rest/#get-/asset_nft_address
     Get the address where specified NFT currently reside on.
