@@ -40,6 +40,7 @@ def get_address_txs(addr: [str, list], block_height: int = 0) -> list:
     """
     url = API_BASE_URL + '/address_txs'
     headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    parameters = {}
     addresses = {}
     if isinstance(addr, list):
         addresses['_addresses'] = addr
@@ -47,15 +48,26 @@ def get_address_txs(addr: [str, list], block_height: int = 0) -> list:
         addresses['_addresses'] = [addr]
     if block_height > 0:
         addresses['_after_block_height'] = block_height
+    txs = []
+    offset = 0
     while True:
-        try:
-            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(addresses)).text)
-            break
-        except Exception as e:
-            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
-            sleep(SLEEP_TIME)
+        if offset > 0:
+            parameters['offset'] = offset
+        while True:
+            try:
+                resp = json.loads(requests.post(url, headers=headers, params=parameters,
+                                                data=json.dumps(addresses)).text)
+                break
+            except Exception as e:
+                print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
+                sleep(SLEEP_TIME)
             print('retrying...')
-    return resp
+        txs += resp
+        if len(resp) < API_RESP_COUNT:
+            break
+        else:
+            offset += len(resp)
+    return txs
 
 
 def get_credential_utxos(cred: [str, list]) -> list:

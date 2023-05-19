@@ -100,7 +100,7 @@ The result will be identical.
 [get_asset_txs](#get_asset_txs) Get the list of all asset transaction hashes (the newest first)<br>
 
 [Pool](#Pool)<br>
-[get_pools_list](#get_pools_list) A list of all currently registered/retiring (not retired) pools<br>
+[get_pool_list](#get_pool_list) A list of all currently registered/retiring (not retired) pools<br>
 [get_pool_info](#get_pool_info) Current pool statuses and details for a specified list of pool ids<br>
 [get_pool_stake_snapshot](#get_pool_stake_snapshot) Returns Mark, Set and Go stake snapshots for the selected pool, useful for leaderlog calculation<br>
 [get_pool_delegators](#get_pool_delegators) Returns information about live delegators for a given pool<br>
@@ -1547,7 +1547,7 @@ Example response:
 
 ### Pool
 
-#### get_pools_list
+#### get_pool_list
 A list of all currently registered/retiring (not retired) pools<br>
 Parameters: none<br>
 Returns: The list of stake pool dictionaries<br>

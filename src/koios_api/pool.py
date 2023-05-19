@@ -5,7 +5,7 @@ from time import sleep
 from .__config__ import *
 
 
-def get_pools_list() -> list:
+def get_pool_list() -> list:
     """
     https://api.koios.rest/#get-/pool_list
     A list of all currently registered/retiring (not retired) pools
