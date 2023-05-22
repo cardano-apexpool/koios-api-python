@@ -180,23 +180,27 @@ def get_account_updates(addr: [str, list]) -> list:
     return resp
 
 
-def get_account_addresses(addr: [str, list]) -> list:
+def get_account_addresses(addr: [str, list], first_only: bool = False, empty: bool = True) -> list:
     """
     https://api.koios.rest/#post-/account_addresses
     Get all addresses associated with given staking accounts
     :param addr: Stake address(es), as a string (for one address) or a list (for multiple addresses)
+    :param first_only: Return only the first address if True
+    :param empty: Return also addresses with 0 balance if True
     :returns: The list of addresses maps by account (stake address)
     """
     url = API_BASE_URL + '/account_addresses'
     headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
-    stake_addresses = {}
+    parameters = {}
     if isinstance(addr, list):
-        stake_addresses['_stake_addresses'] = addr
+        parameters['_stake_addresses'] = addr
     else:
-        stake_addresses['_stake_addresses'] = [addr]
+        parameters['_stake_addresses'] = [addr]
+    parameters['_first_only'] = first_only
+    parameters['_empty'] = empty
     while True:
         try:
-            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(stake_addresses)).text)
+            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(parameters)).text)
             break
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")

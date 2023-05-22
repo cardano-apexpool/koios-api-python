@@ -132,24 +132,27 @@ def get_address_assets(addr: [str, list]) -> list:
     return assets
 
 
-def get_credential_txs(cred: [str, list]) -> list:
+def get_credential_txs(cred: [str, list], after_block: int = 0) -> list:
     """
     https://api.koios.rest/#post-/credential_txs
     Get the transaction hash list of input payment credential array,
     optionally filtering after specified block height (inclusive)
     :param cred: Credential(s) as string (for one credential) or list (for multiple credentials)
+    :param after_block: Only fetch information after specific block height
     :returns: The list of address information maps
     """
     url = API_BASE_URL + '/credential_txs'
     headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
-    credentials = {}
+    parameters = {}
     if isinstance(cred, list):
-        credentials['_payment_credentials'] = cred
+        parameters['_payment_credentials'] = cred
     else:
-        credentials['_payment_credentials'] = [cred]
+        parameters['_payment_credentials'] = [cred]
+    if after_block:
+        parameters['_after_block_height'] = after_block
     while True:
         try:
-            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(credentials)).text)
+            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(parameters)).text)
             break
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")

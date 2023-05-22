@@ -875,7 +875,9 @@ Example response:
 
 #### get_credential_txs
 Get the transaction hash list of input payment credential array, optionally filtering after specified block height (inclusive)<br>
-Parameters: Credential(s) as string (for one credential) or list (for multiple credentials)<br>
+Parameters: <br>
+Credential(s) as string (for one credential) or list (for multiple credentials)<br>
+After block height (optional): Only fetch information after specific block height<br> 
 Returns: The list of address information dictionaries<br>
 Example:<br>
 `credential_txs = get_credential_txs('dcc3fb415f1e0bf25bbabae6e261c61f85a1a23e4e063145b1efcc39')`<br>
@@ -2357,7 +2359,10 @@ Example response:
 
 #### get_account_addresses
 Get all addresses associated with given staking accounts<br>
-Parameters: Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
+Parameters: <br>
+Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
+First Only boolean (optional): Only return the first result (default False)<br>
+Empty boolean (optional): Include zero quantity entries (default True)<br>
 Returns: The list of addresses dictionaries by account (stake address)<br>
 Example:<br>
 `account_addresses = get_account_addresses('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`<br>

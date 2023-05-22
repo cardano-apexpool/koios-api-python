@@ -3,7 +3,7 @@ requires = ['setuptools>=61.0']
 build-backend = 'setuptools.build_meta'
 [project]
 name = "koios-api"
-version = "1.0.10.2"
+version = "1.0.10.3"
 authors = [
   { name="APEX Stake Pool", email="cardanoapexpool@gmail.com" },
 ]
