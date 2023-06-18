@@ -20,12 +20,16 @@ def get_native_script_list() -> list:
             parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(url, params=parameters).text)
-                break
+                response = requests.get(url, params=parameters)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('Offset %d, retrying...' % offset)
+                print(f"offset: {offset}, retrying...")
         scripts_list += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -49,12 +53,16 @@ def get_plutus_script_list() -> list:
             parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(url, params=parameters).text)
-                break
+                response = requests.get(url, params=parameters)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('Offset %d, retrying...' % offset)
+                print(f"offset: {offset}, retrying...")
         scripts_list += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -74,8 +82,12 @@ def get_script_redeemers(script: str) -> list:
     parameters = {'_script_hash':  script}
     while True:
         try:
-            resp = json.loads(requests.get(url, params=parameters).text)
-            break
+            response = requests.get(url, params=parameters)
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
@@ -99,8 +111,12 @@ def get_datum_info(datum: [str, list]) -> list:
         datum_hashes['_datum_hashes'] = [datum]
     while True:
         try:
-            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(datum_hashes)).text)
-            break
+            response = requests.post(url, headers=headers, data=json.dumps(datum_hashes))
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)

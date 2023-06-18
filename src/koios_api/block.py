@@ -23,12 +23,16 @@ def get_blocks(limit: int = 0) -> list:
             parameters['limit'] = limit
         while True:
             try:
-                resp = json.loads(requests.get(url, params=parameters).text)
-                break
+                response = requests.get(url, params=parameters)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('retrying...')
+                print(f"offset: {offset}, retrying...")
         blocks += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -58,8 +62,12 @@ def get_block_info(block: [str, list]) -> list:
         block_hashes['_block_hashes'] = [block]
     while True:
         try:
-            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(block_hashes)).text)
-            break
+            response = requests.post(url, headers=headers, data=json.dumps(block_hashes))
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
@@ -83,8 +91,12 @@ def get_block_txs(block: [str, list]) -> list:
         block_hashes['_block_hashes'] = [block]
     while True:
         try:
-            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(block_hashes)).text)
-            break
+            response = requests.post(url, headers=headers, data=json.dumps(block_hashes))
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)

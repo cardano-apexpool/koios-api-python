@@ -26,6 +26,15 @@ To work with a custom Api URL, set the environment variable:
 export API_BASE_URL=https://custom.url/api/v0
 ```
 
+Other environment variables that can be set, and their default versions, are:
+
+```bash
+SLEEP_TIME=1
+API_RESP_COUNT=1000
+```
+
+SLEEP_TIME is the time between retries after an API errors and API_RESP_COUNT is the maximum number of records the API should return (1000 is the absolute maximum supported by the Koios API).
+
 ## Using the module
 Importing the complete module:
 ```python

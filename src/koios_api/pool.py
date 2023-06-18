@@ -21,12 +21,16 @@ def get_pool_list() -> list:
             parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(url, headers=headers, params=parameters).text)
-                break
+                response = requests.get(url, headers=headers, params=parameters)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('retrying...')
+                print(f"offset: {offset}, retrying...")
         pools_list += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -52,8 +56,12 @@ def get_pool_info(pool_id: [str, list]) -> list:
         pool_ids['_pool_bech32_ids'] = [pool_id]
     while True:
         try:
-            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(pool_ids)).text)
-            break
+            response = requests.post(url, headers=headers, data=json.dumps(pool_ids))
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
@@ -72,8 +80,12 @@ def get_pool_stake_snapshot(pool_id: str) -> list:
     parameters = {'_pool_bech32': pool_id}
     while True:
         try:
-            resp = json.loads(requests.get(url, params=parameters).text)
-            break
+            response = requests.get(url, params=parameters)
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
@@ -84,7 +96,7 @@ def get_pool_stake_snapshot(pool_id: str) -> list:
 def get_pool_delegators(pool_id: str) -> list:
     """
     https://api.koios.rest/#get-/pool_delegators
-    Return information about live delegators for a given pool.
+    Return information about live delegators for a given pool
     :param pool_id: stake pool bech32 id
     :returns: The list of pool delegators maps
     """
@@ -97,12 +109,16 @@ def get_pool_delegators(pool_id: str) -> list:
             parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(url, params=parameters).text)
-                break
+                response = requests.get(url, params=parameters)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('retrying...')
+                print(f"offset: {offset}, retrying...")
         delegators += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -115,7 +131,7 @@ def get_pool_delegators_history(pool_id: str, epoch: int = 0) -> list:
     """
     https://api.koios.rest/#get-/pool_delegators_history
     Return information about active delegators (incl. history) for a given pool and epoch number
-    (all epochs if not specified).
+    (all epochs if not specified)
     :param pool_id: stake pool bech32 id
     :param epoch: (optional) epoch
     :returns: The list of pool delegators maps
@@ -131,12 +147,16 @@ def get_pool_delegators_history(pool_id: str, epoch: int = 0) -> list:
             parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(url, params=parameters).text)
-                break
+                response = requests.get(url, params=parameters)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('retrying...')
+                print(f"offset: {offset}, retrying...")
         delegators += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -164,12 +184,16 @@ def get_pool_blocks(pool_id: str, epoch: int = 0) -> list:
             parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(url, params=parameters).text)
-                break
+                response = requests.get(url, params=parameters)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('retrying...')
+                print(f"offset: {offset}, retrying...")
         blocks += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -193,8 +217,12 @@ def get_pool_history(pool_id: str, epoch: int = 0) -> list:
         parameters['_epoch_no'] = epoch
     while True:
         try:
-            resp = json.loads(requests.get(url, params=parameters).text)
-            break
+            response = requests.get(url, params=parameters)
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
@@ -220,12 +248,16 @@ def get_pool_updates(pool_id: str = '') -> list:
             parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(url, params=parameters).text)
-                break
+                response = requests.get(url, params=parameters)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('retrying...')
+                print(f"offset: {offset}, retrying...")
         pool_updates += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -249,12 +281,16 @@ def get_pool_relays() -> list:
             parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(url, params=parameters).text)
-                break
+                response = requests.get(url, params=parameters)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('retrying...')
+                print(f"offset: {offset}, retrying...")
         relays += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -279,8 +315,12 @@ def get_pool_metadata(pool_id: str) -> list:
         pool_ids['_pool_bech32_ids'] = [pool_id]
     while True:
         try:
-            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(pool_ids)).text)
-            break
+            response = requests.post(url, headers=headers, data=json.dumps(pool_ids))
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
@@ -298,8 +338,12 @@ def get_retiring_pools() -> list:
     parameters = {'pool_status': 'eq.retiring'}
     while True:
         try:
-            resp = json.loads(requests.get(url, headers=headers, params=parameters).text)
-            break
+            response = requests.get(url, headers=headers, params=parameters)
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)

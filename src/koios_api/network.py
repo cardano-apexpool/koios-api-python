@@ -14,8 +14,12 @@ def get_tip() -> list:
     url = API_BASE_URL + '/tip'
     while True:
         try:
-            resp = json.loads(requests.get(url).text)
-            break
+            response = requests.get(url)
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
@@ -32,8 +36,12 @@ def get_genesis() -> list:
     url = API_BASE_URL + '/genesis'
     while True:
         try:
-            resp = json.loads(requests.get(url).text)
-            break
+            response = requests.get(url)
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
@@ -55,8 +63,12 @@ def get_totals(epoch: int = 0) -> list:
         parameters['_epoch_no'] = epoch
     while True:
         try:
-            resp = json.loads(requests.get(url, params=parameters).text)
-            break
+            response = requests.get(url, params=parameters)
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
@@ -73,8 +85,12 @@ def get_param_updates() -> list:
     url = API_BASE_URL + '/param_updates'
     while True:
         try:
-            resp = json.loads(requests.get(url).text)
-            break
+            response = requests.get(url)
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)

@@ -22,12 +22,16 @@ def get_account_list(offset: int = 0, limit: int = 0) -> list:
             parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(url, headers=headers, params=parameters).text)
-                break
+                response = requests.get(url, headers=headers, params=parameters)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('offset: %s, retrying...' % offset)
+                print(f"offset: {offset}, retrying...")
         account_list += resp
         if len(resp) < API_RESP_COUNT:
             if 0 < limit <= len(account_list):
@@ -57,8 +61,12 @@ def get_account_info(addr: [str, list]) -> list:
         stake_addresses['_stake_addresses'] = [addr]
     while True:
         try:
-            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(stake_addresses)).text)
-            break
+            response = requests.post(url, headers=headers, data=json.dumps(stake_addresses))
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
@@ -82,12 +90,16 @@ def get_account_utxos(addr: str, offset: int = 0, limit: int = 0) -> list:
             parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(url, params=parameters).text)
-                break
+                response = requests.get(url, params=parameters)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('retrying...')
+                print(f"offset: {offset}, retrying...")
         utxos += resp
         if len(resp) < API_RESP_COUNT:
             if 0 < limit <= len(utxos):
@@ -117,8 +129,12 @@ def get_account_info_cached(addr: [str, list]) -> list:
         stake_addresses['_stake_addresses'] = [addr]
     while True:
         try:
-            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(stake_addresses)).text)
-            break
+            response = requests.post(url, headers=headers, data=json.dumps(stake_addresses))
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
@@ -145,8 +161,12 @@ def get_account_rewards(addr: [str, list], epoch: int = 0) -> list:
         stake_addresses['_epoch_no'] = epoch
     while True:
         try:
-            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(stake_addresses)).text)
-            break
+            response = requests.post(url, headers=headers, data=json.dumps(stake_addresses))
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
@@ -171,8 +191,12 @@ def get_account_updates(addr: [str, list]) -> list:
         stake_addresses['_stake_addresses'] = [addr]
     while True:
         try:
-            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(stake_addresses)).text)
-            break
+            response = requests.post(url, headers=headers, data=json.dumps(stake_addresses))
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
@@ -200,8 +224,12 @@ def get_account_addresses(addr: [str, list], first_only: bool = False, empty: bo
     parameters['_empty'] = empty
     while True:
         try:
-            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(parameters)).text)
-            break
+            response = requests.post(url, headers=headers, data=json.dumps(parameters))
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
@@ -231,13 +259,16 @@ def get_account_assets(addr: [str, list]) -> list:
             parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.post(url, headers=headers, params=parameters,
-                                                data=json.dumps(stake_addresses)).text)
-                break
+                response = requests.post(url, headers=headers, params=parameters, data=json.dumps(stake_addresses))
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('retrying...')
+                print(f"offset: {offset}, retrying...")
         assets += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -265,8 +296,12 @@ def get_account_history(addr: [str, list], epoch: int = 0) -> list:
         stake_addresses['_epoch_no'] = epoch
     while True:
         try:
-            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(stake_addresses)).text)
-            break
+            response = requests.post(url, headers=headers, data=json.dumps(stake_addresses))
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)

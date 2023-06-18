@@ -1,5 +1,5 @@
 import os
-VERSION = '1.0.10'
+VERSION = '1.0.10.4'
 env = dict(os.environ)
 if 'SLEEP_TIME' not in env:
     SLEEP_TIME = 1

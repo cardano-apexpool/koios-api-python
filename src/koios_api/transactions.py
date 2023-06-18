@@ -21,8 +21,12 @@ def get_tx_info(txs: [str, list]) -> list:
         tx_hashes['_tx_hashes'] = [txs]
     while True:
         try:
-            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(tx_hashes)).text)
-            break
+            response = requests.post(url, headers=headers, data=json.dumps(tx_hashes))
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
@@ -33,7 +37,7 @@ def get_tx_info(txs: [str, list]) -> list:
 def get_tx_utxos(txs: [str, list]) -> list:
     """
     https://api.koios.rest/#post-/tx_utxos
-    Get UTxO set (inputs/outputs) of transactions.
+    Get UTxO set (inputs/outputs) of transactions
     :param txs: transaction hash as a string (for one transaction) or list (for multiple transactions)
     :returns: The list of transactions UTxOs maps
     """
@@ -46,8 +50,12 @@ def get_tx_utxos(txs: [str, list]) -> list:
         tx_hashes['_tx_hashes'] = [txs]
     while True:
         try:
-            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(tx_hashes)).text)
-            break
+            response = requests.post(url, headers=headers, data=json.dumps(tx_hashes))
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
@@ -71,8 +79,12 @@ def get_tx_metadata(txs: [str, list]) -> list:
         tx_hashes['_tx_hashes'] = [txs]
     while True:
         try:
-            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(tx_hashes)).text)
-            break
+            response = requests.post(url, headers=headers, data=json.dumps(tx_hashes))
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
@@ -95,12 +107,16 @@ def get_tx_metalabels() -> list:
             parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(url, params=parameters).text)
-                break
+                response = requests.get(url, params=parameters)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print(f"Offset {offset}, retrying...")
+                print(f"offset: {offset}, retrying...")
         metalabels_list += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -112,7 +128,7 @@ def get_tx_metalabels() -> list:
 def submit_tx(tx: str) -> str:
     """
     https://api.koios.rest/#post-/submittx
-    Submit an already serialized transaction to the network.
+    Submit an already serialized transaction to the network
     :param tx: transaction in cbor format
     :returns: transaction hash
     """
@@ -120,8 +136,12 @@ def submit_tx(tx: str) -> str:
     headers = {'Accept': 'application/json', 'Content-Type': 'application/cbor'}
     while True:
         try:
-            resp = json.loads(requests.post(url, headers=headers, data=tx).text)
-            break
+            response = requests.post(url, headers=headers, data=tx)
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
@@ -145,8 +165,12 @@ def get_tx_status(txs: [str, list]) -> list:
         tx_hashes['_tx_hashes'] = [txs]
     while True:
         try:
-            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(tx_hashes)).text)
-            break
+            response = requests.post(url, headers=headers, data=json.dumps(tx_hashes))
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)

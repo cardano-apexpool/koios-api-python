@@ -24,12 +24,16 @@ def get_asset_list(policy: str = '', offset: int = 0, limit: int = 0) -> list:
             parameters['policy_id'] = 'eq.' + policy
         while True:
             try:
-                resp = json.loads(requests.get(url, params=parameters).text)
-                break
+                response = requests.get(url, params=parameters)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('retrying...')
+                print(f"offset: {offset}, retrying...")
         assets_names_hex += resp
         if len(resp) < API_RESP_COUNT:
             if 0 < limit <= len(assets_names_hex):
@@ -58,12 +62,16 @@ def get_asset_token_registry() -> list:
             parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(url, params=parameters).text)
-                break
+                response = requests.get(url, params=parameters)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('offset: %d, retrying...' % offset)
+                print(f"offset: {offset}, retrying...")
         assets_token_registry += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -91,12 +99,16 @@ def get_asset_addresses(policy: str, name: str = '') -> list:
             parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(url, params=parameters).text)
-                break
+                response = requests.get(url, params=parameters)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('offset: %d, retrying...' % offset)
+                print(f"offset: {offset}, retrying...")
         wallets += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -123,12 +135,16 @@ def get_asset_address_list(policy: str, name: str = '') -> list:
         paginated_url = url + '&offset=%d' % offset
         while True:
             try:
-                resp = json.loads(requests.get(paginated_url).text)
-                break
+                response = requests.get(paginated_url)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('offset: %d, retrying...' % offset)
+                print(f"offset: {offset}, retrying...")
         wallets += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -140,7 +156,7 @@ def get_asset_address_list(policy: str, name: str = '') -> list:
 def get_asset_nft_address(policy: str, name: str = '') -> list:
     """
     https://api.koios.rest/#get-/asset_nft_address
-    Get the address where specified NFT currently reside on.
+    Get the address where specified NFT currently reside on
     :param policy: Asset Policy
     :param name: Asset Name in hexadecimal format
     :returns: List of maps with the wallets holding the asset and the amount of assets per wallet
@@ -154,12 +170,16 @@ def get_asset_nft_address(policy: str, name: str = '') -> list:
             parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(url, params=parameters).text)
-                break
+                response = requests.get(url, params=parameters)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('offset: %d, retrying...' % offset)
+                print(f"offset: {offset}, retrying...")
         wallets += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -180,8 +200,12 @@ def get_asset_info(policy: str, name: str = '') -> list:
     parameters = {'_asset_policy': policy, '_asset_name': name}
     while True:
         try:
-            resp = json.loads(requests.get(url, params=parameters).text)
-            break
+            response = requests.get(url, params=parameters)
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
@@ -204,8 +228,12 @@ def get_asset_info_bulk(assets: list) -> list:
         parameters['_asset_list'].append([asset_split[0], asset_split[1]])
     while True:
         try:
-            resp = json.loads(requests.post(url, headers=headers, data=json.dumps(parameters)).text)
-            break
+            response = requests.post(url, headers=headers, data=json.dumps(parameters))
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
@@ -232,12 +260,16 @@ def get_asset_history(policy: str, name: str = '') -> list:
             parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(url, params=parameters).text)
-                break
+                response = requests.get(url, params=parameters)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('retrying...')
+                print(f"offset: {offset}, retrying...")
         assets += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -263,12 +295,16 @@ def get_policy_asset_addresses(policy: str, offset: int = 0, limit: int = 0) -> 
             parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(url, params=parameters).text)
-                break
+                response = requests.get(url, params=parameters)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('retrying...')
+                print(f"offset: {offset}, retrying...")
         asset_addresses += resp
         if len(resp) < API_RESP_COUNT:
             if 0 < limit <= len(asset_addresses):
@@ -299,12 +335,16 @@ def get_policy_asset_info(policy: str, offset: int = 0, limit: int = 0) -> list:
             parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(url, params=parameters).text)
-                break
+                response = requests.get(url, params=parameters)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('retrying...')
+                print(f"offset: {offset}, retrying...")
         assets += resp
         if len(resp) < API_RESP_COUNT:
             if 0 < limit <= len(assets):
@@ -333,12 +373,16 @@ def get_asset_policy_info(policy: str) -> list:
         paginated_url = url + '&offset=%d' % offset
         while True:
             try:
-                resp = json.loads(requests.get(paginated_url).text)
-                break
+                response = requests.get(paginated_url)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('retrying...')
+                print(f"offset: {offset}, retrying...")
         assets += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -364,12 +408,16 @@ def get_policy_asset_list(policy: str, offset: int = 0, limit: int = 0) -> list:
             parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(url, params=parameters).text)
-                break
+                response = requests.get(url, params=parameters)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('retrying...')
+                print(f"offset: {offset}, retrying...")
         assets += resp
         if len(resp) < API_RESP_COUNT:
             if 0 < limit <= len(assets):
@@ -395,8 +443,12 @@ def get_asset_summary(policy: str, name: str = '') -> list:
     parameters = {'_asset_policy': policy, '_asset_name': name}
     while True:
         try:
-            resp = json.loads(requests.get(url, params=parameters).text)
-            break
+            response = requests.get(url, params=parameters)
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
         except Exception as e:
             print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
             sleep(SLEEP_TIME)
@@ -427,12 +479,16 @@ def get_asset_txs(policy: str, name: str = '', block: int = 0, history: bool = F
             parameters['offset'] = offset
         while True:
             try:
-                resp = json.loads(requests.get(url, params=parameters).text)
-                break
+                response = requests.get(url, params=parameters)
+                if response.status_code == 200:
+                    resp = json.loads(response.text)
+                    break
+                else:
+                    print(f"status code: {response.status_code}, retrying...")
             except Exception as e:
                 print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
                 sleep(SLEEP_TIME)
-                print('retrying...')
+                print(f"offset: {offset}, retrying...")
         assets_txs += resp
         if len(resp) < API_RESP_COUNT:
             break
