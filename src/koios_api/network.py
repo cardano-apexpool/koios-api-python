@@ -9,7 +9,7 @@ def get_tip() -> list:
     """
     https://api.koios.rest/#get-/tip
     Get the tip info about the latest block seen by chain
-    :returns: A list with the tip as a map
+    :returns: The list of block summary (limit+paginated)
     """
     url = API_BASE_URL + '/tip'
     while True:
@@ -31,7 +31,7 @@ def get_genesis() -> list:
     """
     https://api.koios.rest/#get-/genesis
     Get the Genesis parameters used to start specific era on chain
-    :returns: A list with the genesis parameters map
+    :returns: The list of genesis parameters used to start each era on chain
     """
     url = API_BASE_URL + '/genesis'
     while True:
@@ -55,7 +55,7 @@ def get_totals(epoch: int = 0) -> list:
     Get the circulating utxo, treasury, rewards, supply and reserves in lovelace
     for specified epoch, all epochs if empty
     :param epoch: (Optional) The epoch
-    :returns: The list of tokenomic stats maps
+    :returns: The list of supply/reserves/utxo/fees/treasury stats
     """
     url = API_BASE_URL + '/totals'
     parameters = {}
@@ -80,9 +80,53 @@ def get_param_updates() -> list:
     """
     https://api.koios.rest/#get-/param_updates
     Get all parameter update proposals submitted to the chain starting Shelley era
-    :returns: A list with the parameters updates
+    :returns: The list of unique param update proposals submitted on chain
     """
     url = API_BASE_URL + '/param_updates'
+    while True:
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
+        except Exception as e:
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
+            sleep(SLEEP_TIME)
+            print('retrying...')
+    return resp
+
+
+def get_reserve_withdrawals() -> list:
+    """
+    https://api.koios.rest/#get-/reserve_withdrawals
+    List of all withdrawals from reserves against stake accounts
+    :returns: The list of withdrawals from reserves against stake accounts
+    """
+    url = API_BASE_URL + '/reserve_withdrawals'
+    while True:
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:
+                resp = json.loads(response.text)
+                break
+            else:
+                print(f"status code: {response.status_code}, retrying...")
+        except Exception as e:
+            print(f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {e}")
+            sleep(SLEEP_TIME)
+            print('retrying...')
+    return resp
+
+
+def get_treasury_withdrawals() -> list:
+    """
+    https://api.koios.rest/#get-/treasury_withdrawals
+    List of all withdrawals from treasury against stake accounts
+    :returns: The list of withdrawals from treasury against stake accounts
+    """
+    url = API_BASE_URL + '/treasury_withdrawals'
     while True:
         try:
             response = requests.get(url)

@@ -10,7 +10,7 @@ def get_blocks(limit: int = 0) -> list:
     https://api.koios.rest/#get-/blocks
     Get summarised details about all blocks (paginated - latest first)
     :param limit: the limit of the returned blocks number
-    :returns: The list of block maps (the newest first)
+    :returns: The list of block information (the newest first)
     """
     url = API_BASE_URL + '/blocks'
     parameters = {}
@@ -51,18 +51,18 @@ def get_block_info(block: [str, list]) -> list:
     https://api.koios.rest/#post-/block_info
     Get detailed information about a specific block
     :param block: Block hash as string (for one block) or list of block hashes (for multiple blocks)
-    :returns: The list of block maps
+    :returns: The list of detailed block information
     """
     url = API_BASE_URL + '/block_info'
     headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
-    block_hashes = {}
+    parameters = {}
     if isinstance(block, list):
-        block_hashes['_block_hashes'] = block
+        parameters['_block_hashes'] = block
     else:
-        block_hashes['_block_hashes'] = [block]
+        parameters['_block_hashes'] = [block]
     while True:
         try:
-            response = requests.post(url, headers=headers, data=json.dumps(block_hashes))
+            response = requests.post(url, headers=headers, data=json.dumps(parameters))
             if response.status_code == 200:
                 resp = json.loads(response.text)
                 break
@@ -80,18 +80,18 @@ def get_block_txs(block: [str, list]) -> list:
     https://api.koios.rest/#post-/block_txs
     Get a list of all transactions included in provided blocks
     :param block: Block hash as string (for one block) or list of block hashes (for multiple blocks)
-    :returns: The list of transaction maps by block
+    :returns: The list of transactions hashes
     """
     url = API_BASE_URL + '/block_txs'
     headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
-    block_hashes = {}
+    parameters = {}
     if isinstance(block, list):
-        block_hashes['_block_hashes'] = block
+        parameters['_block_hashes'] = block
     else:
-        block_hashes['_block_hashes'] = [block]
+        parameters['_block_hashes'] = [block]
     while True:
         try:
-            response = requests.post(url, headers=headers, data=json.dumps(block_hashes))
+            response = requests.post(url, headers=headers, data=json.dumps(parameters))
             if response.status_code == 200:
                 resp = json.loads(response.text)
                 break

@@ -23,7 +23,7 @@ export CARDANO_NET=preview
 To work with a custom Api URL, set the environment variable:
 
 ```bash
-export API_BASE_URL=https://custom.url/api/v0
+export API_BASE_URL=https://custom.url/api/v1
 ```
 
 Other environment variables that can be set, and their default versions, are:
