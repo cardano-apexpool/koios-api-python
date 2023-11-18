@@ -1,0 +1,7 @@
+# Configuration file for Markdown lint. Add exceptions here.
+default: true
+
+# Exceptions
+MD013: false  # no "Line length"
+MD051: false  # no "Link fragments should be valid"
+

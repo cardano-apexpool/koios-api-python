@@ -1,5 +1,8 @@
 __pycache__
 .idea
+.pytest_cache
+.ruff_cache
+.tox
 .vscode
 venv
 dist

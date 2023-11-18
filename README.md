@@ -1,14 +1,21 @@
+
 # koios-api-python
-A python package for the Cardano Blockchain Koios API (https://api.koios.rest/)
+
+A python package for the Cardano Blockchain [Koios API](https://api.koios.rest/).
 
 ## Install
+
 To install the module, type the following command:
+
 ```bash
 pip3 install koios_api
 ```
+
 ## Environment
-By default, koios_api works with mainnet, but it can also work with the preview and preprod testnets, and even with custom Api URLs (because anyone can install an own Koios Api).
-To use a testnet you can set the environment variable:
+
+By default, koios_api works with mainnet, but it can also work with the preview
+and preprod testnets, and even with custom Api URLs (because anyone can install
+an own Koios Api). To use a testnet you can set the environment variable:
 
 ```bash
 #preprod
@@ -31,17 +38,25 @@ Other environment variables that can be set, and their default versions, are:
 ```bash
 SLEEP_TIME=1
 API_RESP_COUNT=1000
+REQUEST_TIMEOUT=60
 ```
 
-SLEEP_TIME is the time between retries after an API errors and API_RESP_COUNT is the maximum number of records the API should return (1000 is the absolute maximum supported by the Koios API).
+SLEEP_TIME is the time between retries after an API errors. API_RESP_COUNT
+is the maximum number of records the API should return (1000 is the absolute
+maximum supported by the Koios API). REQUEST_TIMEOUT is the timeout for get
+and post requests to the Koios API.
 
 ## Using the module
+
 Importing the complete module:
+
 ```python
 import koios_api
 koios_api.get_tip()
 ```
+
 The result will be like this:
+
 ```json
 [
   {
@@ -54,99 +69,161 @@ The result will be like this:
   }
 ]
 ```
+
 Import only specific functions:
+
 ```python
 from koios_api.network import get_tip
 get_tip()
 ```
+
 The result will be identical.
 
 ## Modules
 
-[Network](#Network)<br>
-[get_tip](#get_tip) Get the tip info about the latest block seen by chain<br>
-[get_genesis](#get_genesis) Get the Genesis parameters used to start specific era on chain<br>
-[get_totals](#get_totals) Get the circulating utxo, treasury, rewards, supply and reserves in lovelace for specified epoch, all epochs if empty<br>
-[get_param_updates](#get_param_updates) Get all parameter update proposals submitted to the chain starting Shelley era<br>
+[Network](#Network)\
+[get_tip](#get_tip) Get the tip info about the latest block seen by chain\
+[get_genesis](#get_genesis) Get the Genesis parameters used to start specific\
+era on chain\
+[get_totals](#get_totals) Get the circulating utxo, treasury, rewards, supply
+and reserves in lovelace for specified epoch, all epochs if empty\
+[get_param_updates](#get_param_updates) Get all parameter update proposals
+submitted to the chain starting Shelley era
 
-[Epoch](#Epoch)<br>
-[get_epoch_info](#get_epoch_info) Get the epoch information, all epochs if no epoch specified<br>
-[get_epoch_params](#get_epoch_params) Get the protocol parameters for specific epoch, returns information about all epochs if no epoch specified<br>
-[get_epoch_block_protocols](#get_epoch_block_protocols) Get the information about block protocol distribution in epoch<br>
+[Epoch](#Epoch)\
+[get_epoch_info](#get_epoch_info) Get the epoch information, all epochs
+if no epoch specified\
+[get_epoch_params](#get_epoch_params) Get the protocol parameters for
+specific epoch, returns information about all epochs if no epoch specified\
+[get_epoch_block_protocols](#get_epoch_block_protocols) Get the information
+about block protocol distribution in epoch
 
-[Block](#Block)<br>
-[get_blocks](#get_blocks) Get summarised details about all blocks (paginated, the latest first)<br>
-[get_block_info](#get_block_info) Get detailed information about a specific block<br>
-[get_block_txs](#get_block_txs) Get a list of all transactions included in provided blocks<br>
+[Block](#Block)\
+[get_blocks](#get_blocks) Get summarised details about all blocks (paginated,
+the latest first)\
+[get_block_info](#get_block_info) Get detailed information about a specific
+block\
+[get_block_txs](#get_block_txs) Get a list of all transactions included in
+provided blocks
 
-[Transactions](#Transactions)<br>
-[get_tx_info](#get_tx_info) Get detailed information about transaction(s)<br>
-[get_tx_utxos](#get_tx_utxos) Get UTxO set (inputs/outputs) of transactions<br>
-[get_tx_metadata](#get_tx_metadata) Get metadata information (if any) for given transaction(s)<br>
-[get_tx_metalabels](#get_tx_metalabels) Get a list of all transaction metadata labels<br>
-[submit_tx](#submit_tx) Submit an already serialized transaction to the network<br>
-[get_tx_status](#get_tx_status) Get the number of block confirmations for a given transaction hash list<br>
+[Transactions](#Transactions)\
+[get_tx_info](#get_tx_info) Get detailed information about transaction(s)\
+[get_tx_utxos](#get_tx_utxos) Get UTxO set (inputs/outputs) of transactions\
+[get_tx_metadata](#get_tx_metadata) Get metadata information (if any)
+for given transaction(s)\
+[get_tx_metalabels](#get_tx_metalabels) Get a list of all transaction
+metadata labels\
+[submit_tx](#submit_tx) Submit an already serialized transaction
+to the network\
+[get_tx_status](#get_tx_status) Get the number of block confirmations
+for a given transaction hash list
 
-[Address](#Address)<br>
-[get_address_info](#get_address_info) Get the transaction hash list of input address array, optionally filtering after specified block height (inclusive)<br>
-[get_address_txs](#get_address_txs) Get the transaction hash list of input address array, optionally filtering after specified block height (inclusive)<br>
-[get_credential_utxos](#get_credential_utxos) Get a list of UTxO against input payment credential array including their balances<br>
-[get_address_assets](#get_address_assets) Get the list of all the assets (policy, name and quantity) for given addresses<br>
-[get_credential_txs](#get_credential_txs) Get the transaction hash list of input payment credential array, optionally filtering after specified block height (inclusive)<br>
+[Address](#Address)\
+[get_address_info](#get_address_info) Get the transaction hash list of input
+address array, optionally filtering after specified block height (inclusive)\
+[get_address_txs](#get_address_txs) Get the transaction hash list of input
+address array, optionally filtering after specified block height (inclusive)\
+[get_credential_utxos](#get_credential_utxos) Get a list of UTxO against input
+payment credential array including their balances\
+[get_address_assets](#get_address_assets) Get the list of all the assets
+(policy, name and quantity) for given addresses\
+[get_credential_txs](#get_credential_txs) Get the transaction hash list
+of input payment credential array, optionally filtering after specified block
+height (inclusive)
 
-[Asset](#Asset)<br>
-[get_asset_list](#get_asset_list) Get the list of all native assets (paginated)<br>
-[get_asset_token_registry](#get_asset_token_registry) Get a list of assets registered via token registry on github<br>
-[get_asset_addresses](#get_asset_addresses) Get the list of all addresses holding a given asset<br>
-[get_asset_nft_address](#get_asset_nft_address) Get the address where specified NFT currently reside on.<br>
-[get_asset_info](#get_asset_info) Get the information of an asset including first minting & token registry metadata<br>
-[get_asset_info_bulk](#get_asset_info_bulk) Get the information of a list of assets including first minting & token registry metadata<br>
-[get_asset_history](#get_asset_history) Get the mint/burn history of an asset<br>
-[get_policy_asset_addresses](#get_policy_asset_addresses) Get the list of addresses with quantity for each asset on the given policy<br>
-[get_policy_asset_info](#get_policy_asset_info) Get the information for all assets under the same policy<br>
-[get_policy_asset_list](#get_policy_asset_list) Get the list of asset under the given policy (including balances)<br>
-[get_asset_summary](#get_asset_summary) Get the summary of an asset (total transactions exclude minting/total wallets include only wallets with asset balance)<br>
-[get_asset_txs](#get_asset_txs) Get the list of all asset transaction hashes (the newest first)<br>
+[Asset](#Asset)\
+[get_asset_list](#get_asset_list) Get the list of all native assets
+(paginated)\
+[get_asset_token_registry](#get_asset_token_registry) Get a list of assets
+registered via token registry on github\
+[get_asset_addresses](#get_asset_addresses) Get the list of all addresses
+holding a given asset\
+[get_asset_nft_address](#get_asset_nft_address) Get the address where specified
+NFT currently reside on.\
+[get_asset_info](#get_asset_info) Get the information of an asset including
+first minting & token registry metadata\
+[get_asset_info_bulk](#get_asset_info_bulk) Get the information of a list
+of assets including first minting & token registry metadata\
+[get_asset_history](#get_asset_history) Get the mint/burn history
+of an asset\
+[get_policy_asset_addresses](#get_policy_asset_addresses) Get the list of
+addresses with quantity for each asset on the given policy\
+[get_policy_asset_info](#get_policy_asset_info) Get the information for
+all assets under the same policy\
+[get_policy_asset_list](#get_policy_asset_list) Get the list of asset under
+the given policy (including balances)\
+[get_asset_summary](#get_asset_summary) Get the summary of an asset
+(total transactions exclude minting/total wallets include only wallets
+with asset balance)\
+[get_asset_txs](#get_asset_txs) Get the list of all asset transaction
+hashes (the newest first)
 
-[Pool](#Pool)<br>
-[get_pool_list](#get_pool_list) A list of all currently registered/retiring (not retired) pools<br>
-[get_pool_info](#get_pool_info) Current pool statuses and details for a specified list of pool ids<br>
-[get_pool_stake_snapshot](#get_pool_stake_snapshot) Returns Mark, Set and Go stake snapshots for the selected pool, useful for leaderlog calculation<br>
-[get_pool_delegators](#get_pool_delegators) Returns information about live delegators for a given pool<br>
-[get_pool_delegators_history](#get_pool_delegators_history) Returns information about active delegators (incl. history) for a given pool and epoch number (all epochs if not specified)<br>
-[get_pool_blocks](#get_pool_blocks) Returns information about blocks minted by a given pool for all epochs (or _epoch_no if provided)<br>
-[get_pool_history](#get_pool_history) Returns information about pool stake, block and reward history in a given epoch (or all epochs that pool existed for, in descending order if no epoch number was provided)<br>
-[get_pool_updates](#get_pool_updates) Returns all pool updates for all pools or only updates for specific pool if specified<br>
-[get_pool_relays](#get_pool_relays) A list of registered relays for all currently registered/retiring (not retired) pools<br>
-[get_pool_metadata](#get_pool_metadata) A list of registered relays for all currently registered/retiring (not retired) pools<br>
-[get_retiring_pools](#get_retiring_pools) Get the retiring stake pools list<br>
+[Pool](#Pool)\
+[get_pool_list](#get_pool_list) A list of all currently registered/retiring
+(not retired) pools\
+[get_pool_info](#get_pool_info) Current pool statuses and details for
+a specified list of pool ids\
+[get_pool_stake_snapshot](#get_pool_stake_snapshot) Returns Mark, Set and Go
+stake snapshots for the selected pool, useful for leaderlog calculation\
+[get_pool_delegators](#get_pool_delegators) Returns information about live
+delegators for a given pool\
+[get_pool_delegators_history](#get_pool_delegators_history) Returns information
+about active delegators (incl. history) for a given pool and epoch number
+(all epochs if not specified)\
+[get_pool_blocks](#get_pool_blocks) Returns information about blocks minted
+by a given pool for all epochs (or _epoch_no if provided)\
+[get_pool_history](#get_pool_history) Returns information about pool stake,
+block and reward history in a given epoch (or all epochs that pool existed for,
+in descending order if no epoch number was provided)\
+[get_pool_updates](#get_pool_updates) Returns all pool updates for all pools
+or only updates for specific pool if specified\
+[get_pool_relays](#get_pool_relays) A list of registered relays for all
+currently registered/retiring (not retired) pools\
+[get_pool_metadata](#get_pool_metadata) A list of registered relays for all
+currently registered/retiring (not retired) pools\
+[get_retiring_pools](#get_retiring_pools) Get the retiring stake pools list
 
-[Script](#Script)<br>
-[get_native_script_list](#get_native_script_list) The list of all existing native script hashes along with their creation transaction hashes<br>
-[get_plutus_script_list](#get_plutus_script_list) The list of all existing native script hashes along with their creation transaction hashes<br>
-[get_script_redeemers](#get_script_redeemers) The list of all redeemers for a given script hash<br>
-[get_datum_info](#get_datum_info) The list of datum information for given datum hashes<br>
+[Script](#Script)\
+[get_native_script_list](#get_native_script_list) The list of all existing
+native script hashes along with their creation transaction hashes\
+[get_plutus_script_list](#get_plutus_script_list) The list of all existing
+native script hashes along with their creation transaction hashes\
+[get_script_redeemers](#get_script_redeemers) The list of all redeemers
+for a given script hash\
+[get_datum_info](#get_datum_info) The list of datum information for
+given datum hashes
 
-[Stake Account](#Stake Account)<br>
-[get_account_list](#get_account_list) Get a list of all accounts<br>
-[get_account_info](#get_account_info) Get the account information for given stake addresses (accounts)<br>
-[get_account_utxos](#get_account_utxos) Get a list of all UTxOs for a given stake address (account)<br>
-[get_account_info_cached](#get_account_info_cached) Get the cached account information for given stake addresses (accounts)<br>
-[get_account_rewards](#get_account_rewards) Get the full rewards history (including MIR) for given stake addresses (accounts)<br>
-[get_account_updates](#get_account_updates) Get the account updates (registration, deregistration, delegation and withdrawals) for given stake addresses (accounts)<br>
-[get_account_addresses](#get_account_addresses) Get all addresses associated with given staking accounts<br>
-[get_account_assets](#get_account_assets) Get the native asset balance of given accounts<br>
-[get_account_history](#get_account_history) Get the staking history of given stake addresses (accounts)<br>
+[Stake Account](#Stake Account)\
+[get_account_list](#get_account_list) Get a list of all accounts\
+[get_account_info](#get_account_info) Get the account information for
+given stake addresses (accounts)\
+[get_account_utxos](#get_account_utxos) Get a list of all UTxOs for a
+given stake address (account)\
+[get_account_info_cached](#get_account_info_cached) Get the cached account
+information for given stake addresses (accounts)\
+[get_account_rewards](#get_account_rewards) Get the full rewards history
+(including MIR) for given stake addresses (accounts)\
+[get_account_updates](#get_account_updates) Get the account updates
+(registration, deregistration, delegation and withdrawals) for
+given stake addresses (accounts)\
+[get_account_addresses](#get_account_addresses) Get all addresses associated
+with given staking accounts\
+[get_account_assets](#get_account_assets) Get the native asset balance of
+given accounts\
+[get_account_history](#get_account_history) Get the staking history of
+given stake addresses (accounts)
 
 ### Network
 
 #### get_tip
-Get the tip info about the latest block seen by chain<br>
-Parameters: none<br>
-Returns: The tip information as a list of one dictionary<br>
-Example:<br>
-`tip = get_tip()`<br>
+
+Get the tip info about the latest block seen by chain\
+Parameters: none\
+Returns: The tip information as a list of one dictionary\
+Example:\
+`tip = get_tip()`\
 Example response:
+
 ```json
 [
   {
@@ -161,12 +238,15 @@ Example response:
 ```
 
 #### get_genesis
-Get the Genesis parameters used to start specific era on chain<br>
-Parameters: none<br>
-Returns: Genesis parameters used to start each era on chain as a list of one dictionary<br>
-Example:<br>
-`genesis = get_genesis()`<br>
+
+Get the Genesis parameters used to start specific era on chain\
+Parameters: none\
+Returns: Genesis parameters used to start each era on chain as a list of
+one dictionary\
+Example:\
+`genesis = get_genesis()`\
 Example response:
+
 ```json
 [
   {
@@ -187,12 +267,17 @@ Example response:
 ```
 
 #### get_totals
-Get the circulating utxo, treasury, rewards, supply and reserves in lovelace for specified epoch, all epochs if empty<br>
-Parameters: Epoch (optional)<br>
-Returns: Supply/reserves/utxo/fees/treasury stats as a list of one dictionary (if the epoch is specified) or a list of all available epochs (if the epoch parameter is not specified)<br>
-Example:<br>
-`totals = get_totals(380)`<br>
+
+Get the circulating utxo, treasury, rewards, supply and reserves in lovelace
+for specified epoch, all epochs if empty\
+Parameters: Epoch (optional)\
+Returns: Supply/reserves/utxo/fees/treasury stats as a list of one dictionary
+(if the epoch is specified) or a list of all available epochs
+(if the epoch parameter is not specified)\
+Example:\
+`totals = get_totals(380)`\
 Example response:
+
 ```json
 [
   {
@@ -207,11 +292,14 @@ Example response:
 ```
 
 #### get_param_updates
-Get all parameter update proposals submitted to the chain starting Shelley era<br>
-Parameters: none<br>
-Returns: All parameter update proposals<br>
-Example:<br>
-`param_updates = get_param_updates()`<br>
+
+Get all parameter update proposals submitted to the chain starting
+Shelley era\
+Parameters: none\
+Returns: All parameter update proposals\
+Example:\
+`param_updates = get_param_updates()`
+
 ```json
 [
   {
@@ -239,12 +327,14 @@ Example:<br>
 ### Epoch
 
 #### get_epoch_info
-Get the epoch information, all epochs if no epoch specified<br>
-Parameters: Epoch (optional)<br>
-Returns: The list of epoch info dictionaries<br>
-Example:<br>
-`epoch_info = get_epoch_info(379)`<br>
+
+Get the epoch information, all epochs if no epoch specified\
+Parameters: Epoch (optional)\
+Returns: The list of epoch info dictionaries\
+Example:\
+`epoch_info = get_epoch_info(379)`\
 Example response:
+
 ```json
 [
   {
@@ -265,12 +355,15 @@ Example response:
 ```
 
 #### get_epoch_params
-Get the protocol parameters for specific epoch, returns information about all epochs if no epoch specified<br>
-Parameters: Epoch (optional)<br>
-Returns: The list of epoch protocol parameters dictionaries<br>
-Example:<br>
-`epoch_params = get_epoch_params(380)`<br>
+
+Get the protocol parameters for specific epoch, returns information
+about all epochs if no epoch specified\
+Parameters: Epoch (optional)\
+Returns: The list of epoch protocol parameters dictionaries\
+Example:\
+`epoch_params = get_epoch_params(380)`\
 Example response:
+
 ```json
 [
   {
@@ -311,12 +404,14 @@ Example response:
 ```
 
 #### get_epoch_block_protocols
-Get the information about block protocol distribution in epoch<br>
-Parameters: Epoch (optional)<br>
-Returns: The list of epoch protocol distribution dictionaries<br>
-Example:<br>
-`epoch_block_protocols = get_epoch_block_protocols(380)`<br>
+
+Get the information about block protocol distribution in epoch\
+Parameters: Epoch (optional)\
+Returns: The list of epoch protocol distribution dictionaries\
+Example:\
+`epoch_block_protocols = get_epoch_block_protocols(380)`\
 Example response:
+
 ```json
 [
   {
@@ -335,12 +430,14 @@ Example response:
 ### Block
 
 #### get_blocks
-Get summarised details about all blocks (paginated - latest first)<br>
-Parameters: The maximum number of blocks to return<br>
-Returns: The list of block dictionaries (the newest first)<br>
-Example:<br>
-`blocks = get_blocks(3)`<br>
+
+Get summarised details about all blocks (paginated - latest first)\
+Parameters: The maximum number of blocks to return\
+Returns: The list of block dictionaries (the newest first)\
+Example:\
+`blocks = get_blocks(3)`\
 Example response:
+
 ```json
 [
   {
@@ -392,12 +489,15 @@ Example response:
 ```
 
 #### get_block_info
-Get detailed information about a specific block<br>
-Parameters: Block hash as string (for one block) or list of block hashes (for multiple blocks)<br>
-Returns: The list of block dictionaries<br>
-Example:<br>
-`block_info = get_block_info('8e33bb588feff6414469779d724923064688615535280f8982c9981410cd06f6')`<br>
+
+Get detailed information about a specific block\
+Parameters: Block hash as string (for one block) or list of block hashes
+(for multiple blocks)\
+Returns: The list of block dictionaries\
+Example:\
+`block_info = get_block_info('8e33bb588feff6414469779d724923064688615535280f8982c9981410cd06f6')`\
 Example response:
+
 ```json
 [
   {
@@ -425,12 +525,15 @@ Example response:
 ```
 
 #### get_block_txs
-Get a list of all transactions included in provided blocks<br>
-Parameters: Block(s) hash(es) as string (for one block) or list of block hashes (for multiple blocks)<br>
-Returns: The list of transaction dictionaries by block<br>
-Example:<br>
-`block_txs = get_block_txs('8e33bb588feff6414469779d724923064688615535280f8982c9981410cd06f6')`<br>
+
+Get a list of all transactions included in provided blocks\
+Parameters: Block(s) hash(es) as string (for one block) or list of block hashes
+(for multiple blocks)\
+Returns: The list of transaction dictionaries by block\
+Example:\
+`block_txs = get_block_txs('8e33bb588feff6414469779d724923064688615535280f8982c9981410cd06f6')`\
 Example response:
+
 ```json
 [
   {
@@ -463,12 +566,15 @@ Example response:
 ### Transactions
 
 #### get_tx_info
-Get detailed information about transaction(s)<br>
-Parameters: Transaction(s) hash(es) as a string (for one transaction) or list (for multiple transactions)<br>
-Returns: The list of transactions details dictionaries<br>
-Example:<br>
-`tx_info = get_tx_info('99f2aefba2a4a5a550aeed9d91d3adabe77a286ec45c345c7980a208364f76c6')`<br>
+
+Get detailed information about transaction(s)\
+Parameters: Transaction(s) hash(es) as a string (for one transaction)
+or list (for multiple transactions)\
+Returns: The list of transactions details dictionaries\
+Example:\
+`tx_info = get_tx_info('99f2aefba2a4a5a550aeed9d91d3adabe77a286ec45c345c7980a208364f76c6')`\
 Example response:
+
 ```json
 [
   {
@@ -565,12 +671,15 @@ Example response:
 ```
 
 #### get_tx_utxos
-Get UTxO set (inputs/outputs) of transactions<br>
-Parameters: Transaction(s) hash(es) as a string (for one transaction) or list (for multiple transactions)<br>
-Returns: The list of transactions UTxOs dictionaries<br>
-Example:<br>
-`tx_utxos = get_tx_utxos('bf685dde61d36b8acd259b2bd00a69a2e8359d2a69b75aa3a0eff9d38ca1f2ef')`<br>
+
+Get UTxO set (inputs/outputs) of transactions\
+Parameters: Transaction(s) hash(es) as a string (for one transaction)
+or list (for multiple transactions)\
+Returns: The list of transactions UTxOs dictionaries\
+Example:\
+`tx_utxos = get_tx_utxos('bf685dde61d36b8acd259b2bd00a69a2e8359d2a69b75aa3a0eff9d38ca1f2ef')`\
 Example response:
+
 ```json
 [
   {
@@ -642,12 +751,15 @@ Example response:
 ```
 
 #### get_tx_metadata
-Get metadata information (if any) for given transaction(s)<br>
-Parameters: Transaction(s) hash(es) as a string (for one transaction) or list (for multiple transactions)<br>
-Returns: The list of transactions metadata dictionaries<br>
-Example:<br>
-`tx_metadata = get_tx_metadata('291b5533227331999eca2e63934c1061e5f85993e77747a90d9901413d7bb937')`<br>
+
+Get metadata information (if any) for given transaction(s)\
+Parameters: Transaction(s) hash(es) as a string (for one transaction)
+or list (for multiple transactions)\
+Returns: The list of transactions metadata dictionaries\
+Example:\
+`tx_metadata = get_tx_metadata('291b5533227331999eca2e63934c1061e5f85993e77747a90d9901413d7bb937')`\
 Example response:
+
 ```json
 [
   {
@@ -670,12 +782,14 @@ Example response:
 ```
 
 #### get_tx_metalabels
-Get a list of all transaction metadata labels<br>
-Parameters: none<br>
-Returns: The list of transaction metadata labels dictionaries<br>
-Example:<br>
-`tx_metalabels = get_tx_metalabels()`<br>
+
+Get a list of all transaction metadata labels\
+Parameters: none\
+Returns: The list of transaction metadata labels dictionaries\
+Example:\
+`tx_metalabels = get_tx_metalabels()`\
 Example response:
+
 ```json
 [
   {
@@ -707,23 +821,28 @@ Example response:
 ```
 
 #### submit_tx
-Submit an already serialized transaction to the network<br>
-Parameters: Transaction in cbor format<br>
-Returns: Transaction hash<br>
-Example:<br>
-`response = submit_tx(tx)`<br>
+
+Submit an already serialized transaction to the network\
+Parameters: Transaction in cbor format\
+Returns: Transaction hash\
+Example:\
+`response = submit_tx(tx)`\
 Example response:
-```
+
+```text
 0eec38dc1d2d021f477a890d754e66c49fe74a9fd972793076587496c9850060
 ```
 
 #### get_tx_status
-Get the number of block confirmations for a given transaction hash list<br>
-Parameters: Transaction(s) hash(es) as a string (for one transaction) or list (for multiple transactions)<br>
-Returns: The list of transactions block confirmations dictionaries<br>
-Example:<br>
-`tx_status = get_tx_status('0eec38dc1d2d021f477a890d754e66c49fe74a9fd972793076587496c9850060')`<br>
+
+Get the number of block confirmations for a given transaction hash list\
+Parameters: Transaction(s) hash(es) as a string (for one transaction)
+or list (for multiple transactions)\
+Returns: The list of transactions block confirmations dictionaries\
+Example:\
+`tx_status = get_tx_status('0eec38dc1d2d021f477a890d754e66c49fe74a9fd972793076587496c9850060')`\
 Example response:
+
 ```json
 [
   {
@@ -736,12 +855,16 @@ Example response:
 ### Address
 
 #### get_address_info
-Get the transaction hash list of input address array, optionally filtering after specified block height (inclusive)<br>
-Parameters: Payment address(es) as string (for one address) or list (for multiple addresses)<br>
-Returns: The list of transactions dictionaries<br>
-Example:<br>
-`address_info = get_address_info('addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7')`<br>
+
+Get the transaction hash list of input address array, optionally filtering
+after specified block height (inclusive)\
+Parameters: Payment address(es) as string (for one address) or list
+(for multiple addresses)\
+Returns: The list of transactions dictionaries\
+Example:\
+`address_info = get_address_info('addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7')`\
 Example response:
+
 ```json
 [
   {
@@ -767,12 +890,16 @@ Example response:
 ```
 
 #### get_address_txs
-Get the transaction hash list of input address array, optionally filtering after specified block height (inclusive)<br>
-Parameters: Payment address(es) as string (for one address) or list (for multiple addresses)<br>
-Returns: The list of transactions dictionaries<br>
-Example:<br>
-`address_txs = get_address_txs('addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7')`<br>
+
+Get the transaction hash list of input address array, optionally filtering
+after specified block height (inclusive)\
+Parameters: Payment address(es) as string (for one address) or list
+(for multiple addresses)\
+Returns: The list of transactions dictionaries\
+Example:\
+`address_txs = get_address_txs('addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7')`\
 Example response:
+
 ```json
 [
   {
@@ -804,12 +931,17 @@ Example response:
 ```
 
 #### get_credential_utxos
-Get a list of UTxO against input payment credential array including their balances<br>
-Parameters: Payment credential(s) as string (for one credential) or list (for multiple credentials)<br>
-Returns: The list of UTxO against input payment credential array including their balances<br>
-Example:<br>
-`credential_utxos = get_credential_utxos('0c35748e147183cd784875e78a5b372fa6975e9ac6406d6015c09bac')`<br>
-Example response:<br>
+
+Get a list of UTxO against input payment credential array including their
+balances\
+Parameters: Payment credential(s) as string (for one credential) or list
+(for multiple credentials)\
+Returns: The list of UTxO against input payment credential array including
+their balances\
+Example:\
+`credential_utxos = get_credential_utxos('0c35748e147183cd784875e78a5b372fa6975e9ac6406d6015c09bac')`\
+Example response:
+
 ```json
 [
   {
@@ -847,12 +979,16 @@ Example response:<br>
 ```
 
 #### get_address_assets
-Get the list of all the assets (policy, name and quantity) for given addresses<br>
-Parameters: Payment address(es) as string (for one address) or list (for multiple addresses)<br>
-Returns: The list of assets dictionaries by address<br>
-Example:<br>
-`address_assets = get_address_assets('addr1qywp2795uk4uusknpseu3fcwy8ew57dnuaeutnxaa5j6ulp4u2anham4xet066yjc6xjxcymujvvwlfhj8k8gxfl2nvs73rvzh')`<br>
+
+Get the list of all the assets (policy, name and quantity) for given
+addresses\
+Parameters: Payment address(es) as string (for one address) or list
+(for multiple addresses)\
+Returns: The list of assets dictionaries by address\
+Example:\
+`address_assets = get_address_assets('addr1qywp2795uk4uusknpseu3fcwy8ew57dnuaeutnxaa5j6ulp4u2anham4xet066yjc6xjxcymujvvwlfhj8k8gxfl2nvs73rvzh')`\
 Example response:
+
 ```json
 [
   {
@@ -883,14 +1019,19 @@ Example response:
 ```
 
 #### get_credential_txs
-Get the transaction hash list of input payment credential array, optionally filtering after specified block height (inclusive)<br>
-Parameters: <br>
-Credential(s) as string (for one credential) or list (for multiple credentials)<br>
-After block height (optional): Only fetch information after specific block height<br> 
-Returns: The list of address information dictionaries<br>
-Example:<br>
-`credential_txs = get_credential_txs('dcc3fb415f1e0bf25bbabae6e261c61f85a1a23e4e063145b1efcc39')`<br>
+
+Get the transaction hash list of input payment credential array,
+optionally filtering after specified block height (inclusive)\
+Parameters: \
+Credential(s) as string (for one credential) or list
+(for multiple credentials)\
+After block height (optional): Only fetch information after
+specific block height\
+Returns: The list of address information dictionaries\
+Example:\
+`credential_txs = get_credential_txs('dcc3fb415f1e0bf25bbabae6e261c61f85a1a23e4e063145b1efcc39')`\
 Example response:
+
 ```json
 [
   {
@@ -918,15 +1059,17 @@ Example response:
 ### Asset
 
 #### get_asset_list
-Get the list of all native assets (paginated)<br>
-Parameters:<br>
-Asset Policy (optional), default: all policies<br>
-The offset (optional) to start from, default 0<br>
-The maximum number of accounts to return (optional), default 0 (no limit)<br>
-Returns: The list of assets dictionaries by policy<br>
-Example:<br>
-`asset_list = get_asset_list()`<br>
+
+Get the list of all native assets (paginated)\
+Parameters:\
+Asset Policy (optional), default: all policies\
+The offset (optional) to start from, default 0\
+The maximum number of accounts to return (optional), default 0 (no limit)\
+Returns: The list of assets dictionaries by policy\
+Example:\
+`asset_list = get_asset_list()`\
 Example response:
+
 ```json
 [
   {
@@ -950,12 +1093,14 @@ Example response:
 ```
 
 #### get_asset_token_registry
-Get a list of assets registered via token registry on github<br>
-Parameters: none<br>
-Returns: The list of assets registered via token registry on github<br>
-Example:<br>
-`asset_token_registry = get_asset_token_registry()`<br>
-Example response:<br>
+
+Get a list of assets registered via token registry on github\
+Parameters: none\
+Returns: The list of assets registered via token registry on github\
+Example:\
+`asset_token_registry = get_asset_token_registry()`\
+Example response:
+
 ```json
 [
   {
@@ -993,14 +1138,18 @@ Example response:<br>
 ```
 
 #### get_asset_addresses
-Get the list of all addresses holding a given asset<br>
-Parameters:<br>
-Asset Policy<br>
-Asset Name in hexadecimal format (optional), default: all policy assets<br>
-Returns: List of dictionaries with the wallets holding the asset and the amount of assets per wallet<br>
-Example:<br>
-`asset_address_list = get_asset_address_list('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd', '4379626572696130363936')`<br>
+
+Get the list of all addresses holding a given asset\
+Parameters:\
+Asset Policy\
+Asset Name in hexadecimal format (optional), default: all policy assets\
+Returns: List of dictionaries with the wallets holding the asset and the
+amount of assets per wallet\
+Example:\
+`asset_address_list = get_asset_address_list('07697e6ca1e21777ac76f26d0779c
+53f7d08e47b9e32d23bd8fed9cd', '4379626572696130363936')`\
 Example response:
+
 ```json
 [
   {
@@ -1011,14 +1160,16 @@ Example response:
 ```
 
 #### get_asset_nft_address
-Get the address where specified NFT currently reside on.<br>
-Parameters:<br>
-Asset Policy<br>
-Asset Name in hexadecimal format<br>
-Returns: The wallet address holding the NFT as a list of one dictionary<br>
-Example:<br>
-`asset_nft_address = get_asset_nft_address('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd', '4379626572696130363936')`<br>
+
+Get the address where specified NFT currently reside on.\
+Parameters:\
+Asset Policy\
+Asset Name in hexadecimal format\
+Returns: The wallet address holding the NFT as a list of one dictionary\
+Example:\
+`asset_nft_address = get_asset_nft_address('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd', '4379626572696130363936')`\
 Example response:
+
 ```json
 [
   {
@@ -1028,14 +1179,18 @@ Example response:
 ```
 
 #### get_asset_info
-Get the information of an asset including first minting & token registry metadata<br>
+
+Get the information of an asset including first minting & token registry
+metadata\
 Parameters:
-Asset Policy<br>
-Asset Name in hexadecimal format (optional), default: all policy assets<br>
-Returns: List of dictionaries with the wallets holding the asset and the amount of assets per wallet<br>
-Example:<br>
-`asset_info = get_asset_info('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd', '4379626572696130363936')`<br>
+Asset Policy\
+Asset Name in hexadecimal format (optional), default: all policy assets\
+Returns: List of dictionaries with the wallets holding the asset and the
+amount of assets per wallet\
+Example:\
+`asset_info = get_asset_info('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd', '4379626572696130363936')`\
 Example response:
+
 ```json
 [
   {
@@ -1068,7 +1223,7 @@ Example response:
               }
             ],
             "image": "ipfs://QmZR6VJJ1hWx2bqKo1o8AUzoMxwrUiqGZMzZv8uHXt7MJX",
-            "Artist": "Srink",
+            "Artist": "Shrink",
             "Avatar": "Male",
             "Chakra": "Root - Muladhara",
             "Mantra": "LAM",
@@ -1089,13 +1244,16 @@ Example response:
 ```
 
 #### get_asset_info_bulk
-Get the information of a list of assets including first minting & token registry metadata<br>
-Parameters:<br>
-Assets List in tge following format: `['policy.name_hex']`<br>
-Returns: List of assets including first minting & token registry metadata<br>
-Example:<br>
-`asset_info_bulk = get_asset_info_bulk(['221b1b9ebccab1512262347491557279ac0afac63b4fbd10fc596c8a.437562656e7369734d757368726f6f6d', '221b1b9ebccab1512262347491557279ac0afac63b4fbd10fc596c8a.417a7a69654d757368726f6f6d'])`<br>
+
+Get the information of a list of assets including first minting & token
+registry metadata\
+Parameters:\
+Assets List in tge following format: `['policy.name_hex']`\
+Returns: List of assets including first minting & token registry metadata\
+Example:\
+`asset_info_bulk = get_asset_info_bulk(['221b1b9ebccab1512262347491557279ac0afac63b4fbd10fc596c8a.437562656e7369734d757368726f6f6d', '221b1b9ebccab1512262347491557279ac0afac63b4fbd10fc596c8a.417a7a69654d757368726f6f6d'])`\
 Example response:
+
 ```json
 [
   {
@@ -1166,14 +1324,16 @@ Example response:
 ```
 
 #### get_asset_history
-Get the mint/burn history of an asset<br>
-Parameters:<br>
-Asset Policy<br>
-Asset Name in hexadecimal format (optional), default: all policy assets<br>
-Returns: List of dictionaries with the mint/burn history of an asset<br>
-Example:<br>
-`asset_history = get_asset_history('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd', '4379626572696130363936')`<br>
+
+Get the mint/burn history of an asset\
+Parameters:\
+Asset Policy\
+Asset Name in hexadecimal format (optional), default: all policy assets\
+Returns: List of dictionaries with the mint/burn history of an asset\
+Example:\
+`asset_history = get_asset_history('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd', '4379626572696130363936')`\
 Example response:
+
 ```json
 [
   {
@@ -1207,7 +1367,7 @@ Example response:
                     }
                   ],
                   "image": "ipfs://QmZR6VJJ1hWx2bqKo1o8AUzoMxwrUiqGZMzZv8uHXt7MJX",
-                  "Artist": "Srink",
+                  "Artist": "Shrink",
                   "Avatar": "Male",
                   "Chakra": "Root - Muladhara",
                   "Mantra": "LAM",
@@ -1230,12 +1390,14 @@ Example response:
 ```
 
 #### get_policy_asset_addresses
-Get the list of addresses with quantity for each asset on the given policy<br>
-Parameters: Asset Policy<br>
-Returns: List of addresses with quantity for each asset on the given policy<br>
-Example:<br>
-`asset_policy_info = get_policy_asset_addresses('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd')`<br>
+
+Get the list of addresses with quantity for each asset on the given policy\
+Parameters: Asset Policy\
+Returns: List of addresses with quantity for each asset on the given policy\
+Example:\
+`asset_policy_info = get_policy_asset_addresses('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd')`\
 Example response:
+
 ```json
 [
   {
@@ -1257,14 +1419,15 @@ Example response:
 ]
 ```
 
-
 #### get_policy_asset_info
-Get the list of asset under the given policy (including balances)<br>
-Parameters: Asset Policy<br>
-Returns: List of dictionaries with the policy assets<br>
-Example:<br>
-`asset_policy_info = get_policy_asset_info('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd')`<br>
+
+Get the list of asset under the given policy (including balances)\
+Parameters: Asset Policy\
+Returns: List of dictionaries with the policy assets\
+Example:\
+`asset_policy_info = get_policy_asset_info('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd')`\
 Example response:
+
 ```json
 [
   {
@@ -1310,7 +1473,7 @@ Example response:
               }
             ],
             "image": "ipfs://QmZR6VJJ1hWx2bqKo1o8AUzoMxwrUiqGZMzZv8uHXt7MJX",
-            "Artist": "Srink",
+            "Artist": "Shrink",
             "Avatar": "Male",
             "Chakra": "Root - Muladhara",
             "Mantra": "LAM",
@@ -1355,7 +1518,7 @@ Example response:
               }
             ],
             "image": "ipfs://QmaNEfYXpqFM3vRdvhUkccFpSHUc6MpA6D1Jriefz5oaZr",
-            "Artist": "Srink",
+            "Artist": "Shrink",
             "Avatar": "Male",
             "Chakra": "Crown - Sahasrara",
             "Mantra": "OM",
@@ -1383,7 +1546,7 @@ Example response:
               }
             ],
             "image": "ipfs://QmdRbAZpWvrXQ1wDqWL7fhifJfd6dowx4oZpufdWFiG5Qo",
-            "Artist": "Srink",
+            "Artist": "Shrink",
             "Avatar": "Female",
             "Chakra": "Crown - Sahasrara",
             "Mantra": "OM",
@@ -1406,12 +1569,14 @@ Example response:
 ```
 
 #### get_policy_asset_list
-Get the list of asset under the given policy (including balances)<br>
-Parameters: Asset Policy<br>
-Returns: List of dictionaries with the asset under the given policy<br>
-Example:<br>
-`asset_policy_list = get_policy_asset_list('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd')`<br>
+
+Get the list of asset under the given policy (including balances)\
+Parameters: Asset Policy\
+Returns: List of dictionaries with the asset under the given policy\
+Example:\
+`asset_policy_list = get_policy_asset_list('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd')`\
 Example response:
+
 ```json
 [
   {
@@ -1464,7 +1629,7 @@ Example response:
               }
             ],
             "image": "ipfs://QmVsMggcQE3da9xuZv7uvJRH84gs5ebGQ8kxVPSQw52XRf",
-            "Artist": "Srink",
+            "Artist": "Shrink",
             "Avatar": "Male",
             "Chakra": "Sacral - Svadhisthana",
             "Mantra": "VAM",
@@ -1492,7 +1657,7 @@ Example response:
               }
             ],
             "image": "ipfs://QmZ4TGY2Jzy5JGaD3S7RLsrP9K8jbp44e7463iHAGitM5a",
-            "Artist": "Srink",
+            "Artist": "Shrink",
             "Avatar": "Female",
             "Chakra": "Crown - Sahasrara",
             "Mantra": "OM",
@@ -1513,14 +1678,17 @@ Example response:
 ```
 
 #### get_asset_summary
-Get the summary of an asset (total transactions exclude minting/total wallets include only wallets with asset balance)<br>
-Parameters:<br>
-Asset Policy<br>
-Asset Name in hexadecimal format (optional), default: all policy assets<br>
-Returns: List of dictionaries with the mint/burn history of an asset<br>
-Example:<br>
-`asset_summary = get_asset_summary('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd', '4379626572696131313535')`<br>
+
+Get the summary of an asset (total transactions exclude minting/total wallets
+include only wallets with asset balance)\
+Parameters:\
+Asset Policy\
+Asset Name in hexadecimal format (optional), default: all policy assets\
+Returns: List of dictionaries with the mint/burn history of an asset\
+Example:\
+`asset_summary = get_asset_summary('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd', '4379626572696131313535')`\
 Example response:
+
 ```json
 [
   {
@@ -1535,16 +1703,19 @@ Example response:
 ```
 
 #### get_asset_txs
-Get the list of all asset transaction hashes (the newest first)<br>
-Parameters:<br>
-Asset Policy<br>
-Asset Name in hexadecimal format (optional), default: all policy assets<br>
-Block number (optional) - return only the transactions after this block<br>
-History boolean (optional) - include all historical transactions, setting to false includes only the non-empty ones<br>
-Returns: List of dictionaries with the mint/burn history of an asset<br>
-Example:<br>
-`asset_txs = get_asset_txs('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd', '4379626572696131313535')`<br>
+
+Get the list of all asset transaction hashes (the newest first)\
+Parameters:\
+Asset Policy\
+Asset Name in hexadecimal format (optional), default: all policy assets\
+Block number (optional) - return only the transactions after this block\
+History boolean (optional) - include all historical transactions, setting to
+false includes only the non-empty ones\
+Returns: List of dictionaries with the mint/burn history of an asset\
+Example:\
+`asset_txs = get_asset_txs('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd', '4379626572696131313535')`\
 Example response:
+
 ```json
 [
   {
@@ -1559,12 +1730,14 @@ Example response:
 ### Pool
 
 #### get_pool_list
-A list of all currently registered/retiring (not retired) pools<br>
-Parameters: none<br>
-Returns: The list of stake pool dictionaries<br>
-Example:<br>
-`pool_list = get_pool_list()`<br>
+
+A list of all currently registered/retiring (not retired) pools\
+Parameters: none\
+Returns: The list of stake pool dictionaries\
+Example:\
+`pool_list = get_pool_list()`\
 Example response:
+
 ```json
 [
   {
@@ -1585,12 +1758,15 @@ Example response:
 ```
 
 #### get_pool_info
-Current pool statuses and details for a specified list of pool ids<br>
-Parameters: Stake pool bech32 ID as string (for one stake pool) or list of stake pool bech32 IDs (for multiple stake pools)<br>
-Returns: Current pool(s) status(es) and details<br>
-Example:<br>
-`pool_info = get_pool_info('pool10ljdn3zwsh7vjkxf6t250423l5qy487x83st7m8a53jxznrkw5g')`<br>
+
+Current pool statuses and details for a specified list of pool ids\
+Parameters: Stake pool bech32 ID as string (for one stake pool) or list of
+stake pool bech32 IDs (for multiple stake pools)\
+Returns: Current pool(s) status(es) and details\
+Example:\
+`pool_info = get_pool_info('pool10ljdn3zwsh7vjkxf6t250423l5qy487x83st7m8a53jxznrkw5g')`\
 Example response:
+
 ```json
 [
   {
@@ -1654,12 +1830,16 @@ Example response:
 ```
 
 #### get_pool_stake_snapshot
-Returns Mark, Set and Go stake snapshots for the selected pool, useful for leaderlog calculation<br>
-Parameters: Stake pool bech32 id<br>
-Returns: Pool snapshot as list of dictionaries by epoch (current and previous 2)<br>
-Example:<br>
-`pool_stake_snapshot = get_pool_stake_snapshot('pool155efqn9xpcf73pphkk88cmlkdwx4ulkg606tne970qswczg3asc')`<br>
+
+Returns Mark, Set and Go stake snapshots for the selected pool, useful for
+leaderlog calculation\
+Parameters: Stake pool bech32 id\
+Returns: Pool snapshot as list of dictionaries by epoch (current and
+previous 2)\
+Example:\
+`pool_stake_snapshot = get_pool_stake_snapshot('pool155efqn9xpcf73pphkk88cmlkdwx4ulkg606tne970qswczg3asc')`\
 Example response:
+
 ```json
 [
   {
@@ -1687,12 +1867,14 @@ Example response:
 ```
 
 #### get_pool_delegators
-Returns information about live delegators for a given pool<br>
-Parameters Stake pool bech32 id<br>
-Returns: The list of pool delegators dictionaries<br>
-Example:<br>
-`pool_delegators = get_pool_delegators('pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd')`<br>
+
+Returns information about live delegators for a given pool\
+Parameters Stake pool bech32 id\
+Returns: The list of pool delegators dictionaries\
+Example:\
+`pool_delegators = get_pool_delegators('pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd')`\
 Example response:
+
 ```json
 [
   {
@@ -1718,14 +1900,17 @@ Example response:
 ```
 
 #### get_pool_delegators_history
-Returns information about active delegators (incl. history) for a given pool and epoch number (all epochs if not specified)<br>
-Parameters:<br>
-Stake pool bech32 id<br>
-Epoch (optional)<br>
-Returns: The list of pool delegators dictionaries<br>
-Example:<br>
-`pool_delegators_history = get_pool_delegators_history('pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd', 380)`<br>
+
+Returns information about active delegators (incl. history) for a given pool
+and epoch number (all epochs if not specified)\
+Parameters:\
+Stake pool bech32 id\
+Epoch (optional)\
+Returns: The list of pool delegators dictionaries\
+Example:\
+`pool_delegators_history = get_pool_delegators_history('pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd', 380)`\
 Example response:
+
 ```json
 [
   {
@@ -1748,14 +1933,17 @@ Example response:
 ```
 
 #### get_pool_blocks
-Returns information about blocks minted by a given pool for all epochs (or _epoch_no if provided)<br>
-Parameters:<br>
-Stake pool bech32 id<br>
-Epoch (optional)<br>
-Returns: The list of pool blocks dictionaries<br>
-Example:<br>
-`pool_blocks = get_pool_blocks('pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd', 380)`<br>
+
+Returns information about blocks minted by a given pool for all epochs
+(or _epoch_no if provided)\
+Parameters:\
+Stake pool bech32 id\
+Epoch (optional)\
+Returns: The list of pool blocks dictionaries\
+Example:\
+`pool_blocks = get_pool_blocks('pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd', 380)`\
 Example response:
+
 ```json
 [
   {
@@ -1778,14 +1966,19 @@ Example response:
 ```
 
 #### get_pool_history
-Returns information about pool stake, block and reward history in a given epoch (or all epochs that pool existed for, in descending order if no epoch number was provided)<br>
-Parameters:<br>
-Stake pool bech32 id<br>
-Epoch (optional)<br>
-Returns:  Information about pool stake, block and reward history as a list dictionaries by epoch (descending)<br>
-Example:<br>
-`pool_history = get_pool_history('pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd', 379)`<br>
+
+Returns information about pool stake, block and reward history in a given epoch
+(or all epochs that pool existed for, in descending order if no epoch number
+was provided)\
+Parameters:\
+Stake pool bech32 id\
+Epoch (optional)\
+Returns:  Information about pool stake, block and reward history as a list
+dictionaries by epoch (descending)\
+Example:\
+`pool_history = get_pool_history('pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd', 379)`\
 Example response:
+
 ```json
 [
   {
@@ -1805,12 +1998,15 @@ Example response:
 ```
 
 #### get_pool_updates
-Returns all pool updates for all pools or only updates for specific pool if specified<br>
-Parameters: Stake pool bech32 id (optional)<br>
-Returns: pool updates as a list of dictionaries<br>
-Example:<br>
-`pool_updates = get_pool_updates('pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd')`<br>
+
+Returns all pool updates for all pools or only updates for specific pool
+if specified\
+Parameters: Stake pool bech32 id (optional)\
+Returns: pool updates as a list of dictionaries\
+Example:\
+`pool_updates = get_pool_updates('pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd')`\
 Example response:
+
 ```json
 [
   {
@@ -1894,12 +2090,15 @@ Example response:
 ```
 
 #### get_pool_relays
-A list of registered relays for all currently registered/retiring (not retired) pools<br>
-Parameters: none<br>
-Returns: The list of relays dictionaries by stake pool<br>
-Example:<br>
-`pool_relays = get_pool_relays()`<br>
+
+A list of registered relays for all currently registered/retiring
+(not retired) pools\
+Parameters: none\
+Returns: The list of relays dictionaries by stake pool\
+Example:\
+`pool_relays = get_pool_relays()`\
 Example response:
+
 ```json
 [
   {
@@ -1943,12 +2142,16 @@ Example response:
 ```
 
 #### get_pool_metadata
-A list of registered relays for all currently registered/retiring (not retired) pools<br>
-Parameters: Stake pool bech32 ID(s) as string (for one stake pool) or list of stake pool bech32 IDs (for multiple stake pools)<br>
-Returns: The list of pool metadata dictionaries<br>
-Example:<br>
-`pool_metadata = get_pool_metadata('pool1auvwj75q70s7jce63nvptujs6460kvyxqn0wjegkz4mhja7g5t6')`<br>
+
+A list of registered relays for all currently registered/retiring
+(not retired) pools\
+Parameters: Stake pool bech32 ID(s) as string (for one stake pool)
+or list of stake pool bech32 IDs (for multiple stake pools)\
+Returns: The list of pool metadata dictionaries\
+Example:\
+`pool_metadata = get_pool_metadata('pool1auvwj75q70s7jce63nvptujs6460kvyxqn0wjegkz4mhja7g5t6')`\
 Example response:
+
 ```json
 [
   {
@@ -1966,12 +2169,14 @@ Example response:
 ```
 
 #### get_retiring_pools
-Get the retiring stake pools list<br>
-Parameters: none<br>
-Returns: The list of retiring pools dictionaries<br>
-Example:<br>
-`retiring_pools = get_retiring_pools()`<br>
+
+Get the retiring stake pools list\
+Parameters: none\
+Returns: The list of retiring pools dictionaries\
+Example:\
+`retiring_pools = get_retiring_pools()`\
 Example response:
+
 ```json
 [
   {
@@ -2038,12 +2243,15 @@ Example response:
 ### Script
 
 #### get_native_script_list
-List of all existing native script hashes along with their creation transaction hashes<br>
-Parameters: none<br>
-Returns: The list of all native scripts dictionaries<br>
-Example:<br>
-`native_script_list = get_native_script_list()`<br>
+
+List of all existing native script hashes along with their creation
+transaction hashes\
+Parameters: none\
+Returns: The list of all native scripts dictionaries\
+Example:\
+`native_script_list = get_native_script_list()`\
 Example response:
+
 ```json
 [
   {
@@ -2091,12 +2299,15 @@ Example response:
 ```
 
 #### get_plutus_script_list
-List of all existing native script hashes along with their creation transaction hashes<br>
-Parameters: none<br>
-Returns: The list of all plutus scripts dictionaries<br>
-Example:<br>
-`plutus_script_list = get_plutus_script_list()`<br>
+
+List of all existing native script hashes along with their creation
+transaction hashes\
+Parameters: none\
+Returns: The list of all plutus scripts dictionaries\
+Example:\
+`plutus_script_list = get_plutus_script_list()`\
 Example response:
+
 ```json
 [
   {
@@ -2116,12 +2327,14 @@ Example response:
 ```
 
 #### get_script_redeemers
-List of all redeemers for a given script hash<br>
-Parameters: Script hash<br>
-Returns: Redeemers list as dictionary<br>
-Example:<br>
-`script_redeemers = get_script_redeemers('c1996b36d11bf42103745844cc5ee9bf13fde475fa909809e2da7261')`<br>
+
+List of all redeemers for a given script hash\
+Parameters: Script hash\
+Returns: Redeemers list as dictionary\
+Example:\
+`script_redeemers = get_script_redeemers('c1996b36d11bf42103745844cc5ee9bf13fde475fa909809e2da7261')`\
 Example response:
+
 ```json
 [
   {
@@ -2145,12 +2358,15 @@ Example response:
 ```
 
 #### get_datum_info
-List of datum information for given datum hashes<br>
-Parameters: Datum hash(es) as string (for one datum hash) or list (for a list of datum hashes)<br>
-Returns Datum information as list of dictionaries<br>
-Example:<br>
-`datum_info = get_datum_info('45b0cfc220ceec5b7c1c62c4d4193d38e4eba48e8815729ce75f9c0ab0e4c1c0')`<br>
+
+List of datum information for given datum hashes\
+Parameters: Datum hash(es) as string (for one datum hash) or list
+(for a list of datum hashes)\
+Returns Datum information as list of dictionaries\
+Example:\
+`datum_info = get_datum_info('45b0cfc220ceec5b7c1c62c4d4193d38e4eba48e8815729ce75f9c0ab0e4c1c0')`\
 Example response:
+
 ```json
 [
   {
@@ -2166,15 +2382,18 @@ Example response:
 ### Stake Account
 
 #### get_account_list
-Get a list of all accounts<br>
-Parameters:<br>
-The offset (optional) to start from, default 0<br>
-The maximum number of accounts to return (optional), default 0 (no limit)<br>
-Returns: The list of accounts dictionaries<br>
-This takes a very long time to execute (about one hour), because the total number of accounts is in the millions range.<br>
-Example:<br>
-`account_list = get_account_list()`<br>
+
+Get a list of all accounts\
+Parameters:\
+The offset (optional) to start from, default 0\
+The maximum number of accounts to return (optional), default 0 (no limit)\
+Returns: The list of accounts dictionaries\
+This takes a very long time to execute (about one hour), because the total
+number of accounts is in the millions range.\
+Example:\
+`account_list = get_account_list()`\
 Example response:
+
 ```json
 [
   {
@@ -2191,12 +2410,15 @@ Example response:
 ```
 
 #### get_account_info
-Get the account information for given stake addresses (accounts)<br>
-Parameters: Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
-Returns: The list of account information dictionaries<br>
-Example:<br>
-`account_info = get_account_info('stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j')`<br>
+
+Get the account information for given stake addresses (accounts)\
+Parameters: Stake address(es), as a string (for one address) or a list
+(for multiple addresses)\
+Returns: The list of account information dictionaries\
+Example:\
+`account_info = get_account_info('stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j')`\
 Example response:
+
 ```json
 [
   {
@@ -2215,57 +2437,63 @@ Example response:
 ```
 
 #### get_account_utxos
-Get a list of assets registered via token registry on github<br>
-Parameters: Stake address<br>
-Returns: The list of all UTxOs at all payment addresses associated with the stake address<br>
-Example:<br>
+
+Get a list of assets registered via token registry on github\
+Parameters: Stake address\
+Returns: The list of all UTxOs at all payment addresses associated with
+the stake address\
+Example:\
 `account_utxos = get_account_utxos('stake1ux5r7myfhycj234wpqyhh3h8skgwvq0hsstpw52f66857uq95cas6')`
-Example response:<br>
+Example response:
+
 ```json
 [
   {
-	"tx_hash": "215bcaa7b13c491db28d5525d9b2a13a7d8ddabd563da8113a449ab33a6a60be",
-	"tx_index": 2,
-	"address": "addr1q9dwzug2qzdsqvpvrn886nqdtwr02n9kxtwqsxce2gacvedg8akgnwf3y4r2uzqf00rw0pvsucql0pqkzag5n450facqeuerev",
-	"value": "85813474",
-	"block_height": 8214437,
-	"block_time": 1672580966
+    "tx_hash": "215bcaa7b13c491db28d5525d9b2a13a7d8ddabd563da8113a449ab33a6a60be",
+    "tx_index": 2,
+    "address": "addr1q9dwzug2qzdsqvpvrn886nqdtwr02n9kxtwqsxce2gacvedg8akgnwf3y4r2uzqf00rw0pvsucql0pqkzag5n450facqeuerev",
+    "value": "85813474",
+    "block_height": 8214437,
+    "block_time": 1672580966
   },
   {
-	"tx_hash": "1eb26dce2f471fbe32aa8cb303f5e8d8078d1da4dbbb78a7bc135036bb3f2f9c",
-	"tx_index": 0,
-	"address": "addr1q88u9gz83nhs9p5pud9kyucx8sg0ygae2p9a4g2p2y55c4ag8akgnwf3y4r2uzqf00rw0pvsucql0pqkzag5n450facqqyd2n7",
-	"value": "110094569",
-	"block_height": 8406870,
-	"block_time": 1676555396
+    "tx_hash": "1eb26dce2f471fbe32aa8cb303f5e8d8078d1da4dbbb78a7bc135036bb3f2f9c",
+    "tx_index": 0,
+    "address": "addr1q88u9gz83nhs9p5pud9kyucx8sg0ygae2p9a4g2p2y55c4ag8akgnwf3y4r2uzqf00rw0pvsucql0pqkzag5n450facqqyd2n7",
+    "value": "110094569",
+    "block_height": 8406870,
+    "block_time": 1676555396
   },
   {
-	"tx_hash": "d530de851c2f867f2174c1073b04bdb9f2e2d16029fcfb488e8150ba66976d43",
-	"tx_index": 0,
-	"address": "addr1qxyp2wsafavj47dpc6uqgqx8se3969jn4crfk7y4zwd7vfag8akgnwf3y4r2uzqf00rw0pvsucql0pqkzag5n450facqlyvudm",
-	"value": "1249900",
-	"block_height": 8489290,
-	"block_time": 1678248733
+    "tx_hash": "d530de851c2f867f2174c1073b04bdb9f2e2d16029fcfb488e8150ba66976d43",
+    "tx_index": 0,
+    "address": "addr1qxyp2wsafavj47dpc6uqgqx8se3969jn4crfk7y4zwd7vfag8akgnwf3y4r2uzqf00rw0pvsucql0pqkzag5n450facqlyvudm",
+    "value": "1249900",
+    "block_height": 8489290,
+    "block_time": 1678248733
   },
   ...
   {
-	"tx_hash": "d8e3ca8b36f9a785ff33f01aa5460f9248ea94acd621ea187093206b04aa6e30",
-	"tx_index": 0,
-	"address": "addr1q8txa88kt6rpdv3zzn8ghx7u4udf6rpj690rfdvlqn35fldg8akgnwf3y4r2uzqf00rw0pvsucql0pqkzag5n450facqplx97u",
-	"value": "54000000",
-	"block_height": 8759577,
-	"block_time": 1683809438
+    "tx_hash": "d8e3ca8b36f9a785ff33f01aa5460f9248ea94acd621ea187093206b04aa6e30",
+    "tx_index": 0,
+    "address": "addr1q8txa88kt6rpdv3zzn8ghx7u4udf6rpj690rfdvlqn35fldg8akgnwf3y4r2uzqf00rw0pvsucql0pqkzag5n450facqplx97u",
+    "value": "54000000",
+    "block_height": 8759577,
+    "block_time": 1683809438
   }
 ]
 ```
 
 #### get_account_info_cached
-Get the cached account information for given stake addresses (accounts)<br>
-Parameters: Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
-Returns: The list of account information dictionaries<br>
-Example:<br>
-`account_info_cached = get_account_info_cached('stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j')`<br>
+
+Get the cached account information for given stake addresses (accounts)\
+Parameters: Stake address(es), as a string (for one address) or a list
+(for multiple addresses)\
+Returns: The list of account information dictionaries\
+Example:\
+`account_info_cached = get_account_info_cached('stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j')`\
 Example response:
+
 ```json
 [
   {
@@ -2284,14 +2512,18 @@ Example response:
 ```
 
 #### get_account_rewards
-Get the full rewards history (including MIR) for given stake addresses (accounts)<br>
-Parameters:<br>
-Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
-Epoch (optional), default: current epoch<br>
-Returns: The list of rewards dictionaries by account (stake address)<br>
-Example:<br>
-`account_rewards = get_account_rewards('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`<br>
+
+Get the full rewards history (including MIR) for given stake addresses
+(accounts)\
+Parameters:\
+Stake address(es), as a string (for one address) or a list
+(for multiple addresses)\
+Epoch (optional), default: current epoch\
+Returns: The list of rewards dictionaries by account (stake address)\
+Example:\
+`account_rewards = get_account_rewards('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`\
 Example response:
+
 ```json
 [
   {
@@ -2325,12 +2557,16 @@ Example response:
 ```
 
 #### get_account_updates
-Get the account updates (registration, deregistration, delegation and withdrawals) for given stake addresses (accounts)<br>
-Parameters: Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
-Returns: The list of account updates dictionaries by account (stake address)<br>
-Example:<br>
-`account_updates = get_account_updates('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`<br>
+
+Get the account updates (registration, deregistration, delegation and
+withdrawals) for given stake addresses (accounts)\
+Parameters: Stake address(es), as a string (for one address) or a list
+(for multiple addresses)\
+Returns: The list of account updates dictionaries by account (stake address)\
+Example:\
+`account_updates = get_account_updates('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`\
 Example response:
+
 ```json
 [
   {
@@ -2367,15 +2603,18 @@ Example response:
 ```
 
 #### get_account_addresses
-Get all addresses associated with given staking accounts<br>
-Parameters: <br>
-Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
-First Only boolean (optional): Only return the first result (default False)<br>
-Empty boolean (optional): Include zero quantity entries (default True)<br>
-Returns: The list of addresses dictionaries by account (stake address)<br>
-Example:<br>
-`account_addresses = get_account_addresses('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`<br>
+
+Get all addresses associated with given staking accounts\
+Parameters: \
+Stake address(es), as a string (for one address) or a list
+(for multiple addresses)\
+First Only boolean (optional): Only return the first result (default False)\
+Empty boolean (optional): Include zero quantity entries (default True)\
+Returns: The list of addresses dictionaries by account (stake address)\
+Example:\
+`account_addresses = get_account_addresses('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`\
 Example response:
+
 ```json
 [
   {
@@ -2388,12 +2627,15 @@ Example response:
 ```
 
 #### get_account_assets
-Get the native asset balance of given accounts<br>
-Parameters: Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
-Returns: The list of account assets dictionaries by account (stake address)<br>
-Example:<br>
-`account_assets = get_account_assets('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`<br>
+
+Get the native asset balance of given accounts\
+Parameters: Stake address(es), as a string (for one address) or a list
+(for multiple addresses)\
+Returns: The list of account assets dictionaries by account (stake address)\
+Example:\
+`account_assets = get_account_assets('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`\
 Example response:
+
 ```json
 [
   {
@@ -2424,12 +2666,15 @@ Example response:
 ```
 
 #### get_account_history
-Get the staking history of given stake addresses (accounts)<br>
-Parameters: Stake address(es), as a string (for one address) or a list (for multiple addresses)<br>
-Returns: The list of staking history dictionaries by account (stake address)<br>
-Example:<br>
-`account_history = get_account_history('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`<br>
+
+Get the staking history of given stake addresses (accounts)\
+Parameters: Stake address(es), as a string (for one address) or a list
+(for multiple addresses)\
+Returns: The list of staking history dictionaries by account (stake address)\
+Example:\
+`account_history = get_account_history('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`\
 Example response:
+
 ```json
 [
   {
