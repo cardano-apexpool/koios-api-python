@@ -1,11 +1,5 @@
 """Pool section functions"""
-import inspect
-import json
-from time import sleep
-
-import requests
-
-from .__config__ import *
+from .library import *
 
 
 def get_pool_list() -> list:
@@ -15,29 +9,13 @@ def get_pool_list() -> list:
     :returns: The list of pool IDs and tickers
     """
     url = API_BASE_URL + "/pool_list"
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
     parameters = {}
     pools_list = []
     offset = 0
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.get(
-                    url, headers=headers, params=parameters, timeout=REQUEST_TIMEOUT
-                )
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_get_request(url, parameters)
         pools_list += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -55,32 +33,12 @@ def get_pool_info(pool_id: [str, list]) -> list:
     :returns: The list of pool information
     """
     url = API_BASE_URL + "/pool_info"
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
     parameters = {}
     if isinstance(pool_id, list):
         parameters["_pool_bech32_ids"] = pool_id
     else:
         parameters["_pool_bech32_ids"] = [pool_id]
-    while True:
-        try:
-            response = requests.post(
-                url,
-                headers=headers,
-                data=json.dumps(parameters),
-                timeout=REQUEST_TIMEOUT,
-            )
-            if response.status_code == 200:
-                resp = json.loads(response.text)
-                break
-            else:
-                logger.warning(f"status code: {response.status_code}, retrying...")
-        except Exception as exc:
-            logger.exception(
-                f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-            )
-            sleep(SLEEP_TIME)
-            logger.warning("retrying...")
-    return resp
+    return koios_post_request(url, parameters)
 
 
 def get_pool_stake_snapshot(pool_id: str) -> list:
@@ -92,21 +50,7 @@ def get_pool_stake_snapshot(pool_id: str) -> list:
     """
     url = API_BASE_URL + "/pool_stake_snapshot"
     parameters = {"_pool_bech32": pool_id}
-    while True:
-        try:
-            response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-            if response.status_code == 200:
-                resp = json.loads(response.text)
-                break
-            else:
-                logger.warning(f"status code: {response.status_code}, retrying...")
-        except Exception as exc:
-            logger.exception(
-                f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-            )
-            sleep(SLEEP_TIME)
-            logger.warning("retrying...")
-    return resp
+    return koios_get_request(url, parameters)
 
 
 def get_pool_delegators(pool_id: str) -> list:
@@ -123,20 +67,7 @@ def get_pool_delegators(pool_id: str) -> list:
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_get_request(url, parameters)
         delegators += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -163,20 +94,7 @@ def get_pool_delegators_history(pool_id: str, epoch: int = 0) -> list:
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_get_request(url, parameters)
         delegators += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -202,20 +120,7 @@ def get_pool_blocks(pool_id: str, epoch: int = 0) -> list:
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_get_request(url, parameters)
         blocks += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -237,21 +142,7 @@ def get_pool_history(pool_id: str, epoch: int = 0) -> list:
     parameters = {"_pool_bech32": pool_id}
     if isinstance(epoch, int) and epoch > 0:
         parameters["_epoch_no"] = epoch
-    while True:
-        try:
-            response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-            if response.status_code == 200:
-                resp = json.loads(response.text)
-                break
-            else:
-                logger.warning(f"status code: {response.status_code}, retrying...")
-        except Exception as exc:
-            logger.exception(
-                f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-            )
-            sleep(SLEEP_TIME)
-            logger.warning("retrying...")
-    return resp
+    return koios_get_request(url, parameters)
 
 
 def get_pool_updates(pool_id: str = "") -> list:
@@ -270,20 +161,7 @@ def get_pool_updates(pool_id: str = "") -> list:
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_get_request(url, parameters)
         pool_updates += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -308,20 +186,7 @@ def get_pool_registrations(epoch: int = 0) -> list:
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_get_request(url, parameters)
         registrations += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -346,20 +211,7 @@ def get_pool_retirements(epoch: int = 0) -> list:
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_get_request(url, parameters)
         retirements += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -381,20 +233,7 @@ def get_pool_relays() -> list:
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_get_request(url, parameters)
         relays += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -411,32 +250,12 @@ def get_pool_metadata(pool_id: str) -> list:
     :returns: The list of pool metadata maps
     """
     url = API_BASE_URL + "/pool_metadata"
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
     parameters = {}
     if isinstance(pool_id, list):
         parameters["_pool_bech32_ids"] = pool_id
     else:
         parameters["_pool_bech32_ids"] = [pool_id]
-    while True:
-        try:
-            response = requests.post(
-                url,
-                headers=headers,
-                data=json.dumps(parameters),
-                timeout=REQUEST_TIMEOUT,
-            )
-            if response.status_code == 200:
-                resp = json.loads(response.text)
-                break
-            else:
-                logger.warning(f"status code: {response.status_code}, retrying...")
-        except Exception as exc:
-            logger.exception(
-                f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-            )
-            sleep(SLEEP_TIME)
-            logger.warning("retrying...")
-    return resp
+    return koios_post_request(url, parameters)
 
 
 def get_retiring_pools() -> list:
@@ -444,23 +263,6 @@ def get_retiring_pools() -> list:
     Get the retiring stake pools list
     :returns: The list of retiring pools maps
     """
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
     url = API_BASE_URL + "/pool_list"
     parameters = {"pool_status": "eq.retiring"}
-    while True:
-        try:
-            response = requests.get(
-                url, headers=headers, params=parameters, timeout=REQUEST_TIMEOUT
-            )
-            if response.status_code == 200:
-                resp = json.loads(response.text)
-                break
-            else:
-                logger.warning(f"status code: {response.status_code}, retrying...")
-        except Exception as exc:
-            logger.exception(
-                f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-            )
-            sleep(SLEEP_TIME)
-            logger.warning("retrying...")
-    return resp
+    return koios_get_request(url, parameters)

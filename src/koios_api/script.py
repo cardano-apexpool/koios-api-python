@@ -1,11 +1,5 @@
 """Script section functions"""
-import inspect
-import json
-from time import sleep
-
-import requests
-
-from .__config__ import *
+from .library import *
 
 
 def get_script_info(script_hashes: [str, list]) -> list:
@@ -16,32 +10,12 @@ def get_script_info(script_hashes: [str, list]) -> list:
     :returns resp: The list of script information for given script hashes
     """
     url = API_BASE_URL + "/script_info"
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
     parameters = {}
     if isinstance(script_hashes, list):
         parameters["_script_hashes"] = script_hashes
     else:
         parameters["_script_hashes"] = [script_hashes]
-    while True:
-        try:
-            response = requests.post(
-                url,
-                headers=headers,
-                data=json.dumps(parameters),
-                timeout=REQUEST_TIMEOUT,
-            )
-            if response.status_code == 200:
-                resp = json.loads(response.text)
-                break
-            else:
-                logger.warning(f"status code: {response.status_code}, retrying...")
-        except Exception as exc:
-            logger.exception(
-                f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-            )
-            sleep(SLEEP_TIME)
-            logger.warning("retrying...")
-    return resp
+    return koios_post_request(url, parameters)
 
 
 def get_native_script_list() -> list:
@@ -57,20 +31,7 @@ def get_native_script_list() -> list:
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_get_request(url, parameters)
         scripts_list += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -92,20 +53,7 @@ def get_plutus_script_list() -> list:
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_get_request(url, parameters)
         scripts_list += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -123,21 +71,7 @@ def get_script_redeemers(script: str) -> list:
     """
     url = API_BASE_URL + "/script_redeemers"
     parameters = {"_script_hash": script}
-    while True:
-        try:
-            response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-            if response.status_code == 200:
-                resp = json.loads(response.text)
-                break
-            else:
-                logger.warning(f"status code: {response.status_code}, retrying...")
-        except Exception as exc:
-            logger.exception(
-                f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-            )
-            sleep(SLEEP_TIME)
-            logger.warning("retrying...")
-    return resp
+    return koios_get_request(url, parameters)
 
 
 def get_script_utxos(script_hash: str, extended: bool = False) -> list:
@@ -158,20 +92,7 @@ def get_script_utxos(script_hash: str, extended: bool = False) -> list:
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_get_request(url, parameters)
         utxos += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -188,29 +109,9 @@ def get_datum_info(datum: [str, list]) -> list:
     :returns resp: datum information as list of maps
     """
     url = API_BASE_URL + "/datum_info"
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
     parameters = {}
     if isinstance(datum, list):
         parameters["_datum_hashes"] = datum
     else:
         parameters["_datum_hashes"] = [datum]
-    while True:
-        try:
-            response = requests.post(
-                url,
-                headers=headers,
-                data=json.dumps(parameters),
-                timeout=REQUEST_TIMEOUT,
-            )
-            if response.status_code == 200:
-                resp = json.loads(response.text)
-                break
-            else:
-                logger.warning(f"status code: {response.status_code}, retrying...")
-        except Exception as exc:
-            logger.exception(
-                f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-            )
-            sleep(SLEEP_TIME)
-            logger.warning("retrying...")
-    return resp
+    return koios_post_request(url, parameters)

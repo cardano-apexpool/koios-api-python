@@ -1,11 +1,5 @@
 """Address section functions"""
-import inspect
-import json
-from time import sleep
-
-import requests
-
-from .__config__ import *
+from .library import *
 
 
 def get_address_info(addr: [str, list]) -> list:
@@ -16,32 +10,12 @@ def get_address_info(addr: [str, list]) -> list:
     :returns: The list of address information
     """
     url = API_BASE_URL + "/address_info"
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
     parameters = {}
     if isinstance(addr, list):
         parameters["_addresses"] = addr
     else:
         parameters["_addresses"] = [addr]
-    while True:
-        try:
-            response = requests.post(
-                url,
-                headers=headers,
-                data=json.dumps(parameters),
-                timeout=REQUEST_TIMEOUT,
-            )
-            if response.status_code == 200:
-                resp = json.loads(response.text)
-                break
-            else:
-                logger.warning(f"status code: {response.status_code}, retrying...")
-        except Exception as exc:
-            logger.exception(
-                f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-            )
-            sleep(SLEEP_TIME)
-            logger.warning("retrying...")
-    return resp
+    return koios_get_request(url, parameters)
 
 
 def get_address_utxos(addr: [str, list], extended: bool = False) -> list:
@@ -53,7 +27,6 @@ def get_address_utxos(addr: [str, list], extended: bool = False) -> list:
     :returns: The list of address UTXOs
     """
     url = API_BASE_URL + "/address_utxos"
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
     parameters = {}
     if isinstance(addr, list):
         parameters["_addresses"] = addr
@@ -65,25 +38,7 @@ def get_address_utxos(addr: [str, list], extended: bool = False) -> list:
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.post(
-                    url,
-                    headers=headers,
-                    data=json.dumps(parameters),
-                    timeout=REQUEST_TIMEOUT,
-                )
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_post_request(url, parameters)
         utxos += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -101,7 +56,6 @@ def get_credential_utxos(cred: [str, list], extended: bool = False) -> list:
     :returns: The list of input payment credentials maps
     """
     url = API_BASE_URL + "/credential_utxos"
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
     parameters = {}
     if isinstance(cred, list):
         parameters["_payment_credentials"] = cred
@@ -113,25 +67,7 @@ def get_credential_utxos(cred: [str, list], extended: bool = False) -> list:
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.post(
-                    url,
-                    headers=headers,
-                    data=json.dumps(parameters),
-                    timeout=REQUEST_TIMEOUT,
-                )
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_post_request(url, parameters)
         utxos += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -149,7 +85,6 @@ def get_address_txs(addr: [str, list], block_height: int = 0) -> list:
     :returns: The list of transaction hashes
     """
     url = API_BASE_URL + "/address_txs"
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
     parameters = {}
     qs_parameters = {}
     if isinstance(addr, list):
@@ -163,26 +98,7 @@ def get_address_txs(addr: [str, list], block_height: int = 0) -> list:
     while True:
         if offset > 0:
             qs_parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.post(
-                    url,
-                    headers=headers,
-                    params=qs_parameters,
-                    data=json.dumps(parameters),
-                    timeout=REQUEST_TIMEOUT,
-                )
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_post_request(url, parameters)
         txs += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -201,7 +117,6 @@ def get_credential_txs(cred: [str, list], block_height: int = 0) -> list:
     :returns: The list of transaction hashes
     """
     url = API_BASE_URL + "/credential_txs"
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
     parameters = {}
     if isinstance(cred, list):
         parameters["_payment_credentials"] = cred
@@ -209,26 +124,7 @@ def get_credential_txs(cred: [str, list], block_height: int = 0) -> list:
         parameters["_payment_credentials"] = [cred]
     if block_height:
         parameters["_after_block_height"] = block_height
-    while True:
-        try:
-            response = requests.post(
-                url,
-                headers=headers,
-                data=json.dumps(parameters),
-                timeout=REQUEST_TIMEOUT,
-            )
-            if response.status_code == 200:
-                resp = json.loads(response.text)
-                break
-            else:
-                logger.warning(f"status code: {response.status_code}, retrying...")
-        except Exception as exc:
-            logger.exception(
-                f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-            )
-            sleep(SLEEP_TIME)
-            logger.warning("retrying...")
-    return resp
+    return koios_post_request(url, parameters)
 
 
 def get_address_assets(addr: [str, list]) -> list:
@@ -239,7 +135,6 @@ def get_address_assets(addr: [str, list]) -> list:
     :returns: The list of address-owned assets
     """
     url = API_BASE_URL + "/address_assets"
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
     parameters = {}
     qs_parameters = {}
     if isinstance(addr, list):
@@ -251,26 +146,7 @@ def get_address_assets(addr: [str, list]) -> list:
     while True:
         if offset > 0:
             qs_parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.post(
-                    url,
-                    headers=headers,
-                    params=qs_parameters,
-                    data=json.dumps(parameters),
-                    timeout=REQUEST_TIMEOUT,
-                )
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_post_request(url, parameters)
         assets += resp
         if len(resp) < API_RESP_COUNT:
             break

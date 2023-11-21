@@ -4,6 +4,10 @@ import os
 from time import gmtime
 
 env = dict(os.environ)
+if "KOIOS_API_TOKEN" not in env:
+    KOIOS_API_TOKEN = ""
+else:
+    KOIOS_API_TOKEN = env["KOIOS_API_TOKEN"]
 if "SLEEP_TIME" not in env:
     SLEEP_TIME = 1
 else:

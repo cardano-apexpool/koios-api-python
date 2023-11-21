@@ -1,11 +1,5 @@
 """Transactions section functions"""
-import inspect
-import json
-from time import sleep
-
-import requests
-
-from .__config__ import *
+from .library import *
 
 
 def get_tx_info(txs: [str, list]) -> list:
@@ -16,32 +10,12 @@ def get_tx_info(txs: [str, list]) -> list:
     :returns: The list of detailed information about transaction(s)
     """
     url = API_BASE_URL + "/tx_info"
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
     parameters = {}
     if isinstance(txs, list):
         parameters["_tx_hashes"] = txs
     else:
         parameters["_tx_hashes"] = [txs]
-    while True:
-        try:
-            response = requests.post(
-                url,
-                headers=headers,
-                data=json.dumps(parameters),
-                timeout=REQUEST_TIMEOUT,
-            )
-            if response.status_code == 200:
-                resp = json.loads(response.text)
-                break
-            else:
-                logger.warning(f"status code: {response.status_code}, retrying...")
-        except Exception as exc:
-            logger.exception(
-                f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-            )
-            sleep(SLEEP_TIME)
-            logger.warning("retrying...")
-    return resp
+    return koios_post_request(url, parameters)
 
 
 def get_utxo_info(utxos: [str, list], extended: bool = False) -> list:
@@ -53,7 +27,6 @@ def get_utxo_info(utxos: [str, list], extended: bool = False) -> list:
     :returns: The list of UTXO details
     """
     url = API_BASE_URL + "/utxo_info"
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
     parameters = {}
     if isinstance(utxos, list):
         parameters["_utxo_refs"] = utxos
@@ -61,26 +34,7 @@ def get_utxo_info(utxos: [str, list], extended: bool = False) -> list:
         parameters["_utxo_refs"] = [utxos]
     if isinstance(extended, bool):
         parameters["_extended"] = str(extended).lower()
-    while True:
-        try:
-            response = requests.post(
-                url,
-                headers=headers,
-                data=json.dumps(parameters),
-                timeout=REQUEST_TIMEOUT,
-            )
-            if response.status_code == 200:
-                resp = json.loads(response.text)
-                break
-            else:
-                logger.warning(f"status code: {response.status_code}, retrying...")
-        except Exception as exc:
-            logger.exception(
-                f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-            )
-            sleep(SLEEP_TIME)
-            logger.warning("retrying...")
-    return resp
+    return koios_post_request(url, parameters)
 
 
 def get_tx_metadata(txs: [str, list]) -> list:
@@ -91,32 +45,12 @@ def get_tx_metadata(txs: [str, list]) -> list:
     :returns: The list of metadata information present in each of the transactions queried
     """
     url = API_BASE_URL + "/tx_metadata"
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
     parameters = {}
     if isinstance(txs, list):
         parameters["_tx_hashes"] = txs
     else:
         parameters["_tx_hashes"] = [txs]
-    while True:
-        try:
-            response = requests.post(
-                url,
-                headers=headers,
-                data=json.dumps(parameters),
-                timeout=REQUEST_TIMEOUT,
-            )
-            if response.status_code == 200:
-                resp = json.loads(response.text)
-                break
-            else:
-                logger.warning(f"status code: {response.status_code}, retrying...")
-        except Exception as exc:
-            logger.exception(
-                f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-            )
-            sleep(SLEEP_TIME)
-            logger.warning("retrying...")
-    return resp
+    return koios_post_request(url, parameters)
 
 
 def get_tx_metalabels() -> list:
@@ -132,20 +66,7 @@ def get_tx_metalabels() -> list:
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_get_request(url, parameters)
         metalabels_list += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -163,6 +84,9 @@ def submit_tx(transaction: str) -> str:
     """
     url = API_BASE_URL + "/submittx"
     headers = {"Accept": "application/json", "Content-Type": "application/cbor"}
+    """
+    if KOIOS_API_TOKEN:
+        headers["Api-Token"] = "Bearer " + KOIOS_API_TOKEN
     while True:
         try:
             response = requests.post(
@@ -179,6 +103,8 @@ def submit_tx(transaction: str) -> str:
             )
             sleep(SLEEP_TIME)
             logger.warning("retrying...")
+    """
+    resp = koios_post_request(url, transaction, headers)
     return resp
 
 
@@ -190,29 +116,9 @@ def get_tx_status(txs: [str, list]) -> list:
     :returns: The list of transaction confirmation counts
     """
     url = API_BASE_URL + "/tx_status"
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
     parameters = {}
     if isinstance(txs, list):
         parameters["_tx_hashes"] = txs
     else:
         parameters["_tx_hashes"] = [txs]
-    while True:
-        try:
-            response = requests.post(
-                url,
-                headers=headers,
-                data=json.dumps(parameters),
-                timeout=REQUEST_TIMEOUT,
-            )
-            if response.status_code == 200:
-                resp = json.loads(response.text)
-                break
-            else:
-                logger.warning(f"status code: {response.status_code}, retrying...")
-        except Exception as exc:
-            logger.exception(
-                f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-            )
-            sleep(SLEEP_TIME)
-            logger.warning("retrying...")
-    return resp
+    return koios_post_request(url, parameters)

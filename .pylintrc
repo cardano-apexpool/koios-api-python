@@ -31,13 +31,14 @@ ignore-paths=
 [MESSAGES CONTROL]
 
 disable =
-    C0301, 	# line-length too long, see Black documented recommendations.
+    W0105,  # String statement has no effect
     C0115,  # No docstring for Class.
+    C0301, 	# line-length too long, see Black documented recommendations.
     W0401,  # Wildcard import.
-    W1203,  # Use lazy % formatting in logging functions
-    W0718,  # Catching too general exception Exception
-    R1723,  # Unnecessary "else" after "break"
     W0614,  # Unused imports
+    W0718,  # Catching too general exception Exception
     R0801,  # Similar lines in 2 files
+    W1203,  # Use lazy % formatting in logging functions
+    R1723,  # Unnecessary "else" after "break"
 
-init-hook='import sys; sys.path.append("src/cnt")'
+init-hook='import sys; sys.path.append("src/koios_api")'

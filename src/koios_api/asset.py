@@ -1,11 +1,5 @@
 """Asset section functions"""
-import inspect
-import json
-from time import sleep
-
-import requests
-
-from .__config__ import *
+from .library import *
 
 
 def get_asset_list(policy: str = "", offset: int = 0, limit: int = 0) -> list:
@@ -25,20 +19,7 @@ def get_asset_list(policy: str = "", offset: int = 0, limit: int = 0) -> list:
             parameters["offset"] = offset
         if isinstance(policy, str) and policy != "":
             parameters["policy_id"] = "eq." + policy
-        while True:
-            try:
-                response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_get_request(url, parameters)
         assets_names_hex += resp
         if len(resp) < API_RESP_COUNT:
             if 0 < limit <= len(assets_names_hex):
@@ -67,20 +48,7 @@ def get_policy_asset_list(policy: str, offset: int = 0, limit: int = 0) -> list:
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_get_request(url, parameters)
         assets += resp
         if len(resp) < API_RESP_COUNT:
             if 0 < limit <= len(assets):
@@ -107,20 +75,7 @@ def get_asset_token_registry() -> list:
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_get_request(url, parameters)
         assets_token_registry += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -137,7 +92,6 @@ def get_asset_info(assets: [str, list]) -> list:
     :returns: List of detailed asset information
     """
     url = API_BASE_URL + "/asset_info"
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
     parameters = {"_asset_list": []}
     if isinstance(assets, str):
         asset_list = [assets]
@@ -146,26 +100,7 @@ def get_asset_info(assets: [str, list]) -> list:
     for asset in asset_list:
         asset_split = asset.split(".")
         parameters["_asset_list"].append([asset_split[0], asset_split[1]])
-    while True:
-        try:
-            response = requests.post(
-                url,
-                headers=headers,
-                data=json.dumps(parameters),
-                timeout=REQUEST_TIMEOUT,
-            )
-            if response.status_code == 200:
-                resp = json.loads(response.text)
-                break
-            else:
-                logger.warning(f"status code: {response.status_code}, retrying...")
-        except Exception as exc:
-            logger.exception(
-                f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-            )
-            sleep(SLEEP_TIME)
-            logger.warning("retrying...")
-    return resp
+    return koios_post_request(url, parameters)
 
 
 def get_asset_utxos(assets: [str, list], extended: bool = False) -> list:
@@ -177,7 +112,6 @@ def get_asset_utxos(assets: [str, list], extended: bool = False) -> list:
     :returns: The list UTXOs for given asset list
     """
     url = API_BASE_URL + "/asset_utxos"
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
     parameters = {"_asset_list": []}
     qs_parameters = {}
     if isinstance(assets, str):
@@ -193,26 +127,7 @@ def get_asset_utxos(assets: [str, list], extended: bool = False) -> list:
     while True:
         if offset > 0:
             qs_parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.post(
-                    url,
-                    headers=headers,
-                    params=qs_parameters,
-                    data=json.dumps(parameters),
-                    timeout=REQUEST_TIMEOUT,
-                )
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_post_request(url, parameters)
         utxos += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -238,20 +153,7 @@ def get_asset_history(policy: str, name: str = "") -> list:
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_get_request(url, parameters)
         assets += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -277,20 +179,7 @@ def get_asset_addresses(policy: str, name: str = "") -> list:
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_get_request(url, parameters)
         wallets += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -314,20 +203,7 @@ def get_asset_nft_address(policy: str, name: str = "") -> list:
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_get_request(url, parameters)
         wallets += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -351,20 +227,7 @@ def get_policy_asset_addresses(policy: str, offset: int = 0, limit: int = 0) -> 
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_get_request(url, parameters)
         asset_addresses += resp
         if len(resp) < API_RESP_COUNT:
             if 0 < limit <= len(asset_addresses):
@@ -393,20 +256,7 @@ def get_policy_asset_info(policy: str, offset: int = 0, limit: int = 0) -> list:
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_get_request(url, parameters)
         assets += resp
         if len(resp) < API_RESP_COUNT:
             if 0 < limit <= len(assets):
@@ -430,21 +280,7 @@ def get_asset_summary(policy: str, name: str = "") -> list:
     """
     url = API_BASE_URL + "/asset_summary"
     parameters = {"_asset_policy": policy, "_asset_name": name}
-    while True:
-        try:
-            response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-            if response.status_code == 200:
-                resp = json.loads(response.text)
-                break
-            else:
-                logger.warning(f"status code: {response.status_code}, retrying...")
-        except Exception as exc:
-            logger.exception(
-                f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-            )
-            sleep(SLEEP_TIME)
-            logger.warning("retrying...")
-    return resp
+    return koios_post_request(url, parameters)
 
 
 def get_asset_txs(
@@ -470,20 +306,7 @@ def get_asset_txs(
     while True:
         if offset > 0:
             parameters["offset"] = offset
-        while True:
-            try:
-                response = requests.get(url, params=parameters, timeout=REQUEST_TIMEOUT)
-                if response.status_code == 200:
-                    resp = json.loads(response.text)
-                    break
-                else:
-                    logger.warning(f"status code: {response.status_code}, retrying...")
-            except Exception as exc:
-                logger.exception(
-                    f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-                )
-                sleep(SLEEP_TIME)
-                logger.warning(f"offset: {offset}, retrying...")
+        resp = koios_get_request(url, parameters)
         assets_txs += resp
         if len(resp) < API_RESP_COUNT:
             break

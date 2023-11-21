@@ -33,6 +33,19 @@ To work with a custom Api URL, set the environment variable:
 export API_BASE_URL=https://custom.url/api/v1
 ```
 
+By default, the requests are unauthenticated (public tier),
+and there is a low limit of requests you can make. In order to increase the
+number of requests, you can authenticate using an API Token that you can obtain
+from the [pricing](https://koios.rest/pricing/Pricing.html) page after
+connecting your wallet and signing a message to prove the ownership on the
+wallet. There is also a free tier with 10x more requests than the public tier.
+You need to set the API Token in the KOIOS_API_TOKEN environment variable
+in order to use it, otherwise the public tier is used.
+
+```bash
+export KOIOS_API_TOKEN="your Koios API Token here"
+```
+
 Other environment variables that can be set, and their default versions, are:
 
 ```bash

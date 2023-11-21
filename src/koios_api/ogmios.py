@@ -18,6 +18,8 @@ def get_ogmios_evaluate_transaction(transaction: str) -> str:
     """
     url = API_BASE_URL + "/ogmios/?EvaluateTransaction"
     headers = {"Accept": "application/json", "Content-Type": "application/cbor"}
+    if KOIOS_API_TOKEN:
+        headers["Api-Token"] = "Bearer " + KOIOS_API_TOKEN
     while True:
         try:
             response = requests.post(
