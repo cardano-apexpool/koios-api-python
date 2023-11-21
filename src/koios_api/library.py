@@ -18,6 +18,18 @@ def koios_get_request(url: str, parameters: dict) -> list:
     headers = {"Accept": "application/json", "Content-Type": "application/json"}
     if KOIOS_API_TOKEN:
         headers["Api-Token"] = "Bearer " + KOIOS_API_TOKEN
+
+    ordered_requests = [
+        "block",
+        "account_txs",
+        "asset_txs",
+        "pool_blocks",
+        "pool_registrations",
+        "pool_retirements",
+        "script_utxos",
+    ]
+    if any(req in url for req in ordered_requests):
+        parameters["order"] = "block_height.asc"
     while True:
         try:
             response = requests.get(
@@ -27,7 +39,10 @@ def koios_get_request(url: str, parameters: dict) -> list:
                 resp = json.loads(response.text)
                 break
             else:
-                logger.warning(f"status code: {response.status_code}, retrying...")
+                error_message = json.loads(response.text)["message"]
+                logger.warning(
+                    f"status code: {response.status_code} ({error_message}), retrying..."
+                )
         except Exception as exc:
             logger.exception(
                 f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
@@ -41,7 +56,7 @@ def koios_get_request(url: str, parameters: dict) -> list:
     return resp
 
 
-def koios_post_request(url: str, parameters: dict, headers: dict = {}) -> list:
+def koios_post_request(url: str, parameters: dict, headers=None) -> list:
     """
     Create a POST request to Koios API using the "requests" library and return the text of the response as a list
     :param url: URL
@@ -49,15 +64,32 @@ def koios_post_request(url: str, parameters: dict, headers: dict = {}) -> list:
     :param headers: Headers to include in the request
     :return: A list with the body of the response
     """
+    if headers is None:
+        headers = {}
     if not headers:
         headers = {"Accept": "application/json", "Content-Type": "application/json"}
     if KOIOS_API_TOKEN:
         headers["Api-Token"] = "Bearer " + KOIOS_API_TOKEN
+    ordered_requests = [
+        "utxo_info",
+        "tx_info",
+        "account_utxos",
+        "address_utxos",
+        "credential_utxos",
+        "address_txs",
+        "credential_txs",
+        "asset_utxos",
+    ]
+    if any(req in url for req in ordered_requests):
+        params = {"order": "block_height.asc"}
+    else:
+        params = {}
     while True:
         try:
             response = requests.post(
                 url,
                 headers=headers,
+                params=params,
                 data=json.dumps(parameters),
                 timeout=REQUEST_TIMEOUT,
             )
@@ -65,7 +97,10 @@ def koios_post_request(url: str, parameters: dict, headers: dict = {}) -> list:
                 resp = json.loads(response.text)
                 break
             else:
-                logger.warning(f"status code: {response.status_code}, retrying...")
+                error_message = json.loads(response.text)["message"]
+                logger.warning(
+                    f"status code: {response.status_code} ({error_message}), retrying..."
+                )
         except Exception as exc:
             logger.exception(
                 f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
