@@ -1,39 +1,36 @@
 """Ogmios section functions"""
-import inspect
-import json
-from time import sleep
-
-import requests
-
-from .__config__ import *
+from .library import *
 
 
-def get_ogmios_evaluate_transaction(transaction: str) -> str:
+def get_ogmios(jsonrpc: str, method: str, params=None) -> list:
     """
-    https://api.koios.rest/#post-/ogmios/-EvaluateTransaction
-    Evaluate execution units of scripts in a well-formed transaction.
-    Please refer to Ogmios documentation here for complete spec
-    :param transaction: CBOR-serialized signed transaction (base16)
-    :returns resp: Evaluate response
+    https://api.koios.rest/#post-/ogmios
+    Multiple ogmios queries are supported,
+    you can read about them here: https://api.koios.rest/#tag--Ogmios).
+    :param jsonrpc: Identifier for JSON-RPC 2.0 standard
+    :param method: The Ogmios method to be called
+        Allowed:
+            queryNetwork/blockHeight
+            queryNetwork/genesisConfiguration
+            queryNetwork/startTime
+            queryNetwork/tip
+            queryLedgerState/epoch
+            queryLedgerState/eraStart
+            queryLedgerState/eraSummaries
+            queryLedgerState/liveStakeDistribution
+            queryLedgerState/protocolParameters
+            queryLedgerState/proposedProtocolParameters
+            queryLedgerState/stakePools
+            submitTransaction
+            evaluateTransaction
+    :param params: Any parameters relevant to the specific method to be called
+    :returns resp: The response for the query
     """
-    url = API_BASE_URL + "/ogmios/?EvaluateTransaction"
-    headers = {"Accept": "application/json", "Content-Type": "application/cbor"}
-    if KOIOS_API_TOKEN:
-        headers["Api-Token"] = "Bearer " + KOIOS_API_TOKEN
-    while True:
-        try:
-            response = requests.post(
-                url, headers=headers, data=transaction, timeout=REQUEST_TIMEOUT
-            )
-            if response.status_code == 200:
-                resp = json.loads(response.text)
-                break
-            else:
-                logger.warning(f"status code: {response.status_code}, retrying...")
-        except Exception as exc:
-            logger.exception(
-                f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-            )
-            sleep(SLEEP_TIME)
-            logger.warning("retrying...")
+    if params is None:
+        params = {}
+    url = API_BASE_URL + "/ogmios"
+    parameters = {"jsonrpc": jsonrpc, "method": method}
+    for param, value in params.items():
+        parameters[param] = value
+    resp = koios_post_request(url, parameters)
     return resp

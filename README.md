@@ -101,7 +101,11 @@ era on chain\
 [get_totals](#get_totals) Get the circulating utxo, treasury, rewards, supply
 and reserves in lovelace for specified epoch, all epochs if empty\
 [get_param_updates](#get_param_updates) Get all parameter update proposals
-submitted to the chain starting Shelley era
+submitted to the chain starting Shelley era\
+[get_reserve_withdrawals](#get_reserve_withdrawals) List of all withdrawals
+from reserves against stake accounts\
+[get_treasury_withdrawals](#get_treasury_withdrawals) List of all withdrawals
+from treasury against stake accounts
 
 [Epoch](#Epoch)\
 [get_epoch_info](#get_epoch_info) Get the epoch information, all epochs
@@ -120,8 +124,8 @@ block\
 provided blocks
 
 [Transactions](#Transactions)\
+[get_utxo_info](#get_utxo_info) Get UTxO set for requested UTxO references\
 [get_tx_info](#get_tx_info) Get detailed information about transaction(s)\
-[get_tx_utxos](#get_tx_utxos) Get UTxO set (inputs/outputs) of transactions\
 [get_tx_metadata](#get_tx_metadata) Get metadata information (if any)
 for given transaction(s)\
 [get_tx_metalabels](#get_tx_metalabels) Get a list of all transaction
@@ -129,82 +133,9 @@ metadata labels\
 [submit_tx](#submit_tx) Submit an already serialized transaction
 to the network\
 [get_tx_status](#get_tx_status) Get the number of block confirmations
-for a given transaction hash list
-
-[Address](#Address)\
-[get_address_info](#get_address_info) Get the transaction hash list of input
-address array, optionally filtering after specified block height (inclusive)\
-[get_address_txs](#get_address_txs) Get the transaction hash list of input
-address array, optionally filtering after specified block height (inclusive)\
-[get_credential_utxos](#get_credential_utxos) Get a list of UTxO against input
-payment credential array including their balances\
-[get_address_assets](#get_address_assets) Get the list of all the assets
-(policy, name and quantity) for given addresses\
-[get_credential_txs](#get_credential_txs) Get the transaction hash list
-of input payment credential array, optionally filtering after specified block
-height (inclusive)
-
-[Asset](#Asset)\
-[get_asset_list](#get_asset_list) Get the list of all native assets
-(paginated)\
-[get_asset_token_registry](#get_asset_token_registry) Get a list of assets
-registered via token registry on github\
-[get_asset_addresses](#get_asset_addresses) Get the list of all addresses
-holding a given asset\
-[get_asset_nft_address](#get_asset_nft_address) Get the address where specified
-NFT currently reside on.\
-[get_asset_info](#get_asset_info) Get the information of an asset including
-first minting & token registry metadata\
-[get_asset_info_bulk](#get_asset_info_bulk) Get the information of a list
-of assets including first minting & token registry metadata\
-[get_asset_history](#get_asset_history) Get the mint/burn history
-of an asset\
-[get_policy_asset_addresses](#get_policy_asset_addresses) Get the list of
-addresses with quantity for each asset on the given policy\
-[get_policy_asset_info](#get_policy_asset_info) Get the information for
-all assets under the same policy\
-[get_policy_asset_list](#get_policy_asset_list) Get the list of asset under
-the given policy (including balances)\
-[get_asset_summary](#get_asset_summary) Get the summary of an asset
-(total transactions exclude minting/total wallets include only wallets
-with asset balance)\
-[get_asset_txs](#get_asset_txs) Get the list of all asset transaction
-hashes (the newest first)
-
-[Pool](#Pool)\
-[get_pool_list](#get_pool_list) A list of all currently registered/retiring
-(not retired) pools\
-[get_pool_info](#get_pool_info) Current pool statuses and details for
-a specified list of pool ids\
-[get_pool_stake_snapshot](#get_pool_stake_snapshot) Returns Mark, Set and Go
-stake snapshots for the selected pool, useful for leaderlog calculation\
-[get_pool_delegators](#get_pool_delegators) Returns information about live
-delegators for a given pool\
-[get_pool_delegators_history](#get_pool_delegators_history) Returns information
-about active delegators (incl. history) for a given pool and epoch number
-(all epochs if not specified)\
-[get_pool_blocks](#get_pool_blocks) Returns information about blocks minted
-by a given pool for all epochs (or _epoch_no if provided)\
-[get_pool_history](#get_pool_history) Returns information about pool stake,
-block and reward history in a given epoch (or all epochs that pool existed for,
-in descending order if no epoch number was provided)\
-[get_pool_updates](#get_pool_updates) Returns all pool updates for all pools
-or only updates for specific pool if specified\
-[get_pool_relays](#get_pool_relays) A list of registered relays for all
-currently registered/retiring (not retired) pools\
-[get_pool_metadata](#get_pool_metadata) A list of registered relays for all
-currently registered/retiring (not retired) pools\
-[get_retiring_pools](#get_retiring_pools) Get the retiring stake pools list
-
-[Script](#Script)\
-[get_native_script_list](#get_native_script_list) The list of all existing
-native script hashes along with their creation transaction hashes\
-[get_plutus_script_list](#get_plutus_script_list) The list of all existing
-native script hashes along with their creation transaction hashes\
-[get_script_redeemers](#get_script_redeemers) The list of all redeemers
-for a given script hash\
-[get_datum_info](#get_datum_info) The list of datum information for
-given datum hashes
+for a given transaction hash list\
+[get_tx_utxos](#get_tx_utxos) Get UTxO set (inputs/outputs) of transactions
+[DEPRECATED - Use /utxo_info instead]
 
 [Stake Account](#Stake Account)\
 [get_account_list](#get_account_list) Get a list of all accounts\
@@ -225,6 +156,417 @@ with given staking accounts\
 given accounts\
 [get_account_history](#get_account_history) Get the staking history of
 given stake addresses (accounts)
+
+### Stake Account
+
+#### get_account_list
+
+Get a list of all accounts\
+Parameters:\
+The offset (optional) to start from, default 0\
+The maximum number of accounts to return (optional), default 0 (no limit)\
+Returns: The list of accounts dictionaries\
+This takes a very long time to execute (about one hour), because the total
+number of accounts is in the millions range.\
+Example:\
+`account_list = get_account_list()`\
+Example response:
+
+```json
+[
+  {
+    "id": "stake1uyfmzu5qqy70a8kq4c8rw09q0w0ktfcxppwujejnsh6tyrg5c774g"
+  },
+  {
+    "id": "stake1uydhlh7f2kkw9eazct5zyzlrvj32gjnkmt2v5qf6t8rut4qwch8ey"
+  },
+  {
+    "id": "stake1uxsgkz6fvgws5wn80vckwvghzapnhfmf0672nmmkm2tt9fcaau5sw"
+  },
+  ...
+]
+```
+
+#### get_account_info
+
+Get the account information for given stake addresses (accounts)\
+Parameters: Stake address(es), as a string (for one address) or a list
+(for multiple addresses)\
+Returns: The list of account information dictionaries\
+Example:\
+`account_info = get_account_info('stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j')`\
+Example response:
+
+```json
+[
+  {
+    "stake_address": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
+    "status": "registered",
+    "delegated_pool": "pool18r2y72aue5nmv489xtnfxl36vzusq95qst6urd87yd5hgzms04c",
+    "total_balance": "20418617",
+    "utxo": "20418617",
+    "rewards": "0",
+    "withdrawals": "0",
+    "rewards_available": "0",
+    "reserves": "0",
+    "treasury": "0"
+  }
+]
+```
+
+#### get_account_utxos
+
+Get a list of assets registered via token registry on github\
+Parameters: Stake address\
+Returns: The list of all UTxOs at all payment addresses associated with
+the stake address\
+Example:\
+`account_utxos = get_account_utxos('stake1ux5r7myfhycj234wpqyhh3h8skgwvq0hsstpw52f66857uq95cas6')`
+Example response:
+
+```json
+[
+  {
+    "tx_hash": "215bcaa7b13c491db28d5525d9b2a13a7d8ddabd563da8113a449ab33a6a60be",
+    "tx_index": 2,
+    "address": "addr1q9dwzug2qzdsqvpvrn886nqdtwr02n9kxtwqsxce2gacvedg8akgnwf3y4r2uzqf00rw0pvsucql0pqkzag5n450facqeuerev",
+    "value": "85813474",
+    "block_height": 8214437,
+    "block_time": 1672580966
+  },
+  {
+    "tx_hash": "1eb26dce2f471fbe32aa8cb303f5e8d8078d1da4dbbb78a7bc135036bb3f2f9c",
+    "tx_index": 0,
+    "address": "addr1q88u9gz83nhs9p5pud9kyucx8sg0ygae2p9a4g2p2y55c4ag8akgnwf3y4r2uzqf00rw0pvsucql0pqkzag5n450facqqyd2n7",
+    "value": "110094569",
+    "block_height": 8406870,
+    "block_time": 1676555396
+  },
+  {
+    "tx_hash": "d530de851c2f867f2174c1073b04bdb9f2e2d16029fcfb488e8150ba66976d43",
+    "tx_index": 0,
+    "address": "addr1qxyp2wsafavj47dpc6uqgqx8se3969jn4crfk7y4zwd7vfag8akgnwf3y4r2uzqf00rw0pvsucql0pqkzag5n450facqlyvudm",
+    "value": "1249900",
+    "block_height": 8489290,
+    "block_time": 1678248733
+  },
+  ...
+  {
+    "tx_hash": "d8e3ca8b36f9a785ff33f01aa5460f9248ea94acd621ea187093206b04aa6e30",
+    "tx_index": 0,
+    "address": "addr1q8txa88kt6rpdv3zzn8ghx7u4udf6rpj690rfdvlqn35fldg8akgnwf3y4r2uzqf00rw0pvsucql0pqkzag5n450facqplx97u",
+    "value": "54000000",
+    "block_height": 8759577,
+    "block_time": 1683809438
+  }
+]
+```
+
+#### get_account_info_cached
+
+Get the cached account information for given stake addresses (accounts)\
+Parameters: Stake address(es), as a string (for one address) or a list
+(for multiple addresses)\
+Returns: The list of account information dictionaries\
+Example:\
+`account_info_cached = get_account_info_cached('stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j')`\
+Example response:
+
+```json
+[
+  {
+    "stake_address": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
+    "status": "registered",
+    "delegated_pool": "pool18r2y72aue5nmv489xtnfxl36vzusq95qst6urd87yd5hgzms04c",
+    "total_balance": "20418617",
+    "utxo": "20418617",
+    "rewards": "0",
+    "withdrawals": "0",
+    "rewards_available": "0",
+    "reserves": "0",
+    "treasury": "0"
+  }
+]
+```
+
+#### get_account_rewards
+
+Get the full rewards history (including MIR) for given stake addresses
+(accounts)\
+Parameters:\
+Stake address(es), as a string (for one address) or a list
+(for multiple addresses)\
+Epoch (optional), default: current epoch\
+Returns: The list of rewards dictionaries by account (stake address)\
+Example:\
+`account_rewards = get_account_rewards('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`\
+Example response:
+
+```json
+[
+  {
+    "stake_address": "stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z",
+    "rewards": [
+      {
+        "earned_epoch": 233,
+        "spendable_epoch": 235,
+        "amount": "3990414",
+        "type": "member",
+        "pool_id": "pool1jdhjfcu34lq88rypdtslzwyf27uh0h3apcr9mjd68zhc69r29fy"
+      },
+      {
+        "earned_epoch": 234,
+        "spendable_epoch": 236,
+        "amount": "2792902",
+        "type": "member",
+        "pool_id": "pool1jdhjfcu34lq88rypdtslzwyf27uh0h3apcr9mjd68zhc69r29fy"
+      },
+      ...
+      {
+        "earned_epoch": 379,
+        "spendable_epoch": 381,
+        "amount": "6496870",
+        "type": "member",
+        "pool_id": "pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd"
+      }
+    ]
+  }
+]
+```
+
+#### get_account_updates
+
+Get the account updates (registration, deregistration, delegation and
+withdrawals) for given stake addresses (accounts)\
+Parameters: Stake address(es), as a string (for one address) or a list
+(for multiple addresses)\
+Returns: The list of account updates dictionaries by account (stake address)\
+Example:\
+`account_updates = get_account_updates('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`\
+Example response:
+
+```json
+[
+  {
+    "stake_address": "stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z",
+    "updates": [
+      {
+        "action_type": "withdrawal",
+        "tx_hash": "487bc75f00fe934dad33683271cca8540fe868eef7025962678f179a1a111ecc",
+        "epoch_no": 324,
+        "epoch_slot": 70687,
+        "absolute_slot": 54675487,
+        "block_time": 1646241778
+      },
+      {
+        "action_type": "withdrawal",
+        "tx_hash": "eb3ffa01f434e210716151fd9001af82529e371a91c20af02512942f988a2119",
+        "epoch_no": 269,
+        "epoch_slot": 339679,
+        "absolute_slot": 31184479,
+        "block_time": 1622750770
+      },
+      ...
+      {
+        "action_type": "withdrawal",
+        "tx_hash": "b056dcbff9b908e1bd3ed015466f64486538058ba3553dbf885b216d88343370",
+        "epoch_no": 252,
+        "epoch_slot": 58375,
+        "absolute_slot": 23559175,
+        "block_time": 1615125466
+      }
+    ]
+  }
+]
+```
+
+#### get_account_addresses
+
+Get all addresses associated with given staking accounts\
+Parameters: \
+Stake address(es), as a string (for one address) or a list
+(for multiple addresses)\
+First Only boolean (optional): Only return the first result (default False)\
+Empty boolean (optional): Include zero quantity entries (default True)\
+Returns: The list of addresses dictionaries by account (stake address)\
+Example:\
+`account_addresses = get_account_addresses('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`\
+Example response:
+
+```json
+[
+  {
+    "stake_address": "stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z",
+    "addresses": [
+      "addr1qxwjxvzv8rmyutcjp0647w4n05wv7aez9jdmqcxn8a9sshll0qre4udr9ny9sj8020uxher08k44ssl9pxlk3w5f4x2qjyz9yf"
+    ]
+  }
+]
+```
+
+#### get_account_assets
+
+Get the native asset balance of given accounts\
+Parameters: Stake address(es), as a string (for one address) or a list
+(for multiple addresses)\
+Returns: The list of account assets dictionaries by account (stake address)\
+Example:\
+`account_assets = get_account_assets('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`\
+Example response:
+
+```json
+[
+  {
+    "stake_address": "stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z",
+    "asset_list": [
+      {
+        "policy_id": "0029cb7c88c7567b63d1a512c0ed626aa169688ec980730c0473b913",
+        "asset_name": "6c70202302",
+        "fingerprint": "asset1awuysx8hc686uz0dykmvmc7jfut2ulceucf6yc",
+        "quantity": "418089787"
+      },
+      {
+        "policy_id": "0029cb7c88c7567b63d1a512c0ed626aa169688ec980730c0473b913",
+        "asset_name": "6c7020f302",
+        "fingerprint": "asset1mcq0awl6awlaqg0ywukf94q0mnau263l9rght5",
+        "quantity": "586811406"
+      },
+      ...
+      {
+        "policy_id": "ea2d23f1fa631b414252824c153f2d6ba833506477a929770a4dd9c2",
+        "asset_name": "4d414442554c",
+        "fingerprint": "asset1q0kwjy669gmsqpvxp4lr0sp26pdm0dafme3qp2",
+        "quantity": "500"
+      }
+    ]
+  }
+]
+```
+
+#### get_account_history
+
+Get the staking history of given stake addresses (accounts)\
+Parameters: Stake address(es), as a string (for one address) or a list
+(for multiple addresses)\
+Returns: The list of staking history dictionaries by account (stake address)\
+Example:\
+`account_history = get_account_history('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`\
+Example response:
+
+```json
+[
+  {
+    "stake_address": "stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z",
+    "history": [
+      {
+        "pool_id": "pool1jdhjfcu34lq88rypdtslzwyf27uh0h3apcr9mjd68zhc69r29fy",
+        "epoch_no": 233,
+        "active_stake": "4655706122"
+      },
+      {
+        "pool_id": "pool1jdhjfcu34lq88rypdtslzwyf27uh0h3apcr9mjd68zhc69r29fy",
+        "epoch_no": 234,
+        "active_stake": "5020706122"
+      },
+      ...
+      {
+        "pool_id": "pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd",
+        "epoch_no": 381,
+        "active_stake": "10247851319"
+      }
+    ]
+  }
+]
+```
+
+[Address](#Address)\
+[get_address_info](#get_address_info) Get the transaction hash list of input
+address array, optionally filtering after specified block height (inclusive)\
+[get_address_utxos](#get_address_utxos) Get UTxO set for given addresses\
+[get_credential_utxos](#get_credential_utxos) Get a list of UTxO against input
+payment credential array including their balances\
+[get_address_txs](#get_address_txs) Get the transaction hash list of input
+address array, optionally filtering after specified block height (inclusive)\
+[get_address_assets](#get_address_assets) Get the list of all the assets
+(policy, name and quantity) for given addresses\
+[get_credential_txs](#get_credential_txs) Get the transaction hash list
+of input payment credential array, optionally filtering after specified block
+height (inclusive)\
+[get_address_assets](#get_address_assets) Get the list of all the assets
+(policy, name and quantity) for given addresses
+
+[Asset](#Asset)\
+[get_asset_list](#get_asset_list) Get the list of all native assets
+(paginated)\
+[get_policy_asset_list](#get_policy_asset_list) Get the list of asset under
+the given policy (including balances)\
+[get_asset_token_registry](#get_asset_token_registry) Get a list of assets
+registered via token registry on github\
+[get_asset_info](#get_asset_info) Get the information of a list of assets
+including first minting & token registry metadata\
+[get_asset_utxos](#get_asset_utxos) Get the UTXO information of a list of
+assets\
+[get_asset_history](#get_asset_history) Get the mint/burn history
+of an asset\
+[get_asset_addresses](#get_asset_addresses) Get the list of all addresses
+holding a given asset\
+[get_asset_nft_address](#get_asset_nft_address) Get the address where specified
+NFT currently reside on.\
+[get_policy_asset_addresses](#get_policy_asset_addresses) Get the list of
+addresses with quantity for each asset on the given policy\
+[get_policy_asset_info](#get_policy_asset_info) Get the information for
+all assets under the same policy\
+[get_asset_summary](#get_asset_summary) Get the summary of an asset
+(total transactions exclude minting/total wallets include only wallets
+with asset balance)\
+[get_asset_txs](#get_asset_txs) Get the list of all asset transaction
+hashes (the newest first)\
+[get_asset_address_list](#get_asset_address_list) Get the list of
+all addresses holding a given asset [DEPRECATED - replaced by asset_addresses]\
+[get_asset_policy_info](#get_asset_policy_info) Get the information for all \
+assets under the same policy (DEPRECATED - replaced by policy_asset_info)
+
+[Pool](#Pool)\
+[get_pool_list](#get_pool_list) A list of all currently registered/retiring
+(not retired) pools\
+[get_pool_info](#get_pool_info) Current pool statuses and details for
+a specified list of pool ids\
+[get_pool_stake_snapshot](#get_pool_stake_snapshot) Returns Mark, Set and Go
+stake snapshots for the selected pool, useful for leaderlog calculation\
+[get_pool_delegators](#get_pool_delegators) Returns information about live
+delegators for a given pool\
+[get_pool_delegators_history](#get_pool_delegators_history) Returns information
+about active delegators (incl. history) for a given pool and epoch number
+(all epochs if not specified)\
+[get_pool_blocks](#get_pool_blocks) Returns information about blocks minted
+by a given pool for all epochs (or _epoch_no if provided)\
+[get_pool_history](#get_pool_history) Returns information about pool stake,
+block and reward history in a given epoch (or all epochs that pool existed for,
+in descending order if no epoch number was provided)\
+[get_pool_updates](#get_pool_updates) Returns all pool updates for all pools
+or only updates for specific pool if specified\
+[get_pool_registrations](#get_pool_registrations) Return all pool registrations
+initiated in the requested epoch\
+[get_pool_retirements](#get_pool_retirements) Return all pool retirements
+initiated in the requested epoch\
+[get_pool_relays](#get_pool_relays) A list of registered relays for all
+currently registered/retiring (not retired) pools\
+[get_pool_metadata](#get_pool_metadata) A list of registered relays for all
+currently registered/retiring (not retired) pools\
+[get_retiring_pools](#get_retiring_pools) Get the retiring stake pools list
+
+[Script](#Script)\
+[get_script_info](#get_script_info) List of script information for given
+script hashes\
+[get_native_script_list](#get_native_script_list) The list of all existing
+native script hashes along with their creation transaction hashes\
+[get_plutus_script_list](#get_plutus_script_list) The list of all existing
+native script hashes along with their creation transaction hashes\
+[get_script_redeemers](#get_script_redeemers) The list of all redeemers
+for a given script hash\
+[get_script_utxos](#get_script_utxos) List of all UTXOs for a given script hash\
+[get_datum_info](#get_datum_info) The list of datum information for
+given datum hashes
 
 ### Network
 
@@ -337,6 +679,52 @@ Example:\
 ]
 ```
 
+#### get_reserve_withdrawals
+
+List of all withdrawals from reserves against stake accounts\
+Parameters: none\
+Returns: The list of withdrawals from reserves against stake accounts\
+Example:\
+
+`reserve_withdrawals = get_reserve_withdrawals()`
+
+```json
+[
+  {
+    "epoch_no": 298,
+    "epoch_slot": 60492,
+    "tx_hash": "03b02cff29a5f2dfc827e00345eaab8b29a3d740e9878aa6e5dd2b52da0763c5",
+    "block_hash": "7650ae0c9508fd236f370f1ac329b2d4ae0f8bcf583f2878dbb568c311d08c7c",
+    "block_height": 6407962,
+    "amount": "66000000000000",
+    "stake_address": "stake1uykws5pmwjxktdhlkz0pac3cu2guw6fjys2zaanmdew6xrs5lgv4n"
+  }
+]
+```
+
+#### get_treasury_withdrawals
+
+List of all withdrawals from treasury against stake accounts\
+Parameters: none\
+Returns: The list of withdrawals from treasury against stake accounts\
+Example:\
+
+`treasury_withdrawals = get_treasury_withdrawals()`
+
+```json
+[
+  {
+    "epoch_no": 441,
+    "epoch_slot": 152858,
+    "tx_hash": "d689bee077e69269ea7e9e8f5b09f5f93af887c117cd7a1157d09bec209900dd",
+    "block_hash": "18add9785eeaacbe0534cf362cd49e78170f23a3a91b862ef5ba2ad444bc2766",
+    "block_height": 9394726,
+    "amount": "50000000000000",
+    "stake_address": "stake1uxv9hwk8523p3asgnnjv0t49qvmlj96j22dw434j2gyks2qn9x52u"
+  }
+]
+```
+
 ### Epoch
 
 #### get_epoch_info
@@ -345,24 +733,24 @@ Get the epoch information, all epochs if no epoch specified\
 Parameters: Epoch (optional)\
 Returns: The list of epoch info dictionaries\
 Example:\
-`epoch_info = get_epoch_info(379)`\
+`epoch_info = get_epoch_info(448)`\
 Example response:
 
 ```json
 [
   {
-    "epoch_no": 379,
-    "out_sum": "64893877572584948",
-    "fees": "109846112870",
-    "tx_count": 338483,
-    "blk_count": 20947,
-    "start_time": 1669931091,
-    "end_time": 1670363091,
-    "first_block_time": 1669931129,
-    "last_block_time": 1670363027,
-    "active_stake": "25058875481572529",
-    "total_rewards": "12661794573764",
-    "avg_blk_reward": "604468161"
+    "epoch_no": 448,
+    "out_sum": "118059162440190062",
+    "fees": "102026957711",
+    "tx_count": 293835,
+    "blk_count": 21134,
+    "start_time": 1699739091,
+    "end_time": 1700171091,
+    "first_block_time": 1699739174,
+    "last_block_time": 1700171052,
+    "active_stake": "22973647281453944",
+    "total_rewards": "10027944051413",
+    "avg_blk_reward": "474493425"
   }
 ]
 ```
@@ -374,13 +762,13 @@ about all epochs if no epoch specified\
 Parameters: Epoch (optional)\
 Returns: The list of epoch protocol parameters dictionaries\
 Example:\
-`epoch_params = get_epoch_params(380)`\
+`epoch_params = get_epoch_params(448)`\
 Example response:
 
 ```json
 [
   {
-    "epoch_no": 380,
+    "epoch_no": 448,
     "min_fee_a": 44,
     "min_fee_b": 155381,
     "max_block_size": 90112,
@@ -395,19 +783,365 @@ Example response:
     "treasury_growth_rate": 0.2,
     "decentralisation": 0,
     "extra_entropy": null,
-    "protocol_major": 7,
+    "protocol_major": 8,
     "protocol_minor": 0,
-    "min_utxo_value": "4310",
-    "min_pool_cost": "340000000",
-    "nonce": "3950677ef48bb212ad335f253ad1998be4e9fe4ae2a26d402607850461398125",
-    "block_hash": "50a41a4841185a4f01def36c35f565ee2e1c27ee0e3ddb56885c244e49b24bf4",
-    "cost_models": "{\"PlutusV1\": {\"bData-cpu-arguments\": 1000, \"iData-cpu-arguments\": 1000, \"trace-cpu-arguments\": 212342, \"mkCons-cpu-arguments\": 65493, \"fstPair-cpu-arguments\": 80436, \"mapData-cpu-arguments\": 64832, \"sndPair-cpu-arguments\": 85931, \"unBData-cpu-arguments\": 31220, \"unIData-cpu-arguments\": 43357, \"bData-memory-arguments\": 32, \"cekLamCost-exBudgetCPU\": 23000, \"cekVarCost-exBudgetCPU\": 23000, \"headList-cpu-arguments\": 43249, \"iData-memory-arguments\": 32, \"listData-cpu-arguments\": 52467, \"nullList-cpu-arguments\": 60091, \"tailList-cpu-arguments\": 41182, \"trace-memory-arguments\": 32, \"mkCons-memory-arguments\": 32, \"mkNilData-cpu-arguments\": 22558, \"unMapData-cpu-arguments\": 38314, \"cekApplyCost-exBudgetCPU\": 23000, \"cekConstCost-exBudgetCPU\": 23000, \"cekDelayCost-exBudgetCPU\": 23000, \"cekForceCost-exBudgetCPU\": 23000, \"chooseData-cpu-arguments\": 19537, \"chooseList-cpu-arguments\": 175354, \"chooseUnit-cpu-arguments\": 46417, \"constrData-cpu-arguments\": 89141, \"fstPair-memory-arguments\": 32, \"ifThenElse-cpu-arguments\": 80556, \"mapData-memory-arguments\": 32, \"mkPairData-cpu-arguments\": 76511, \"sndPair-memory-arguments\": 32, \"unBData-memory-arguments\": 32, \"unIData-memory-arguments\": 32, \"unListData-cpu-arguments\": 32247, \"cekLamCost-exBudgetMemory\": 100, \"cekVarCost-exBudgetMemory\": 100, \"headList-memory-arguments\": 32, \"listData-memory-arguments\": 32, \"nullList-memory-arguments\": 32, \"sha2_256-memory-arguments\": 4, \"sha3_256-memory-arguments\": 4, \"tailList-memory-arguments\": 32, \"cekBuiltinCost-exBudgetCPU\": 23000, \"cekStartupCost-exBudgetCPU\": 100, \"mkNilData-memory-arguments\": 32, \"unConstrData-cpu-arguments\": 32696, \"unMapData-memory-arguments\": 32, \"cekApplyCost-exBudgetMemory\": 100, \"cekConstCost-exBudgetMemory\": 100, \"cekDelayCost-exBudgetMemory\": 100, \"cekForceCost-exBudgetMemory\": 100, \"chooseData-memory-arguments\": 32, \"chooseList-memory-arguments\": 32, \"chooseUnit-memory-arguments\": 4, \"constrData-memory-arguments\": 32, \"equalsData-memory-arguments\": 1, \"ifThenElse-memory-arguments\": 1, \"mkNilPairData-cpu-arguments\": 16563, \"mkPairData-memory-arguments\": 32, \"unListData-memory-arguments\": 32, \"blake2b_256-memory-arguments\": 4, \"sha2_256-cpu-arguments-slope\": 30482, \"sha3_256-cpu-arguments-slope\": 82523, \"cekBuiltinCost-exBudgetMemory\": 100, \"cekStartupCost-exBudgetMemory\": 100, \"equalsString-memory-arguments\": 1, \"indexByteString-cpu-arguments\": 57667, \"unConstrData-memory-arguments\": 32, \"addInteger-cpu-arguments-slope\": 812, \"decodeUtf8-cpu-arguments-slope\": 14068, \"encodeUtf8-cpu-arguments-slope\": 28662, \"equalsData-cpu-arguments-slope\": 12586, \"equalsInteger-memory-arguments\": 1, \"mkNilPairData-memory-arguments\": 32, \"blake2b_256-cpu-arguments-slope\": 10475, \"appendString-cpu-arguments-slope\": 24177, \"equalsString-cpu-arguments-slope\": 52998, \"indexByteString-memory-arguments\": 4, \"lengthOfByteString-cpu-arguments\": 1000, \"lessThanInteger-memory-arguments\": 1, \"sha2_256-cpu-arguments-intercept\": 806990, \"sha3_256-cpu-arguments-intercept\": 1927926, \"addInteger-memory-arguments-slope\": 1, \"decodeUtf8-memory-arguments-slope\": 2, \"encodeUtf8-memory-arguments-slope\": 2, \"equalsByteString-memory-arguments\": 1, \"equalsInteger-cpu-arguments-slope\": 421, \"modInteger-cpu-arguments-constant\": 196500, \"modInteger-memory-arguments-slope\": 1, \"addInteger-cpu-arguments-intercept\": 205665, \"consByteString-cpu-arguments-slope\": 511, \"decodeUtf8-cpu-arguments-intercept\": 497525, \"encodeUtf8-cpu-arguments-intercept\": 1000, \"equalsData-cpu-arguments-intercept\": 1060367, \"appendString-memory-arguments-slope\": 1, \"blake2b_256-cpu-arguments-intercept\": 117366, \"equalsString-cpu-arguments-constant\": 187000, \"lengthOfByteString-memory-arguments\": 10, \"lessThanByteString-memory-arguments\": 1, \"lessThanInteger-cpu-arguments-slope\": 511, \"modInteger-memory-arguments-minimum\": 1, \"multiplyInteger-cpu-arguments-slope\": 11687, \"sliceByteString-cpu-arguments-slope\": 0, \"subtractInteger-cpu-arguments-slope\": 812, \"appendByteString-cpu-arguments-slope\": 571, \"appendString-cpu-arguments-intercept\": 1000, \"divideInteger-cpu-arguments-constant\": 196500, \"divideInteger-memory-arguments-slope\": 1, \"equalsByteString-cpu-arguments-slope\": 62, \"equalsString-cpu-arguments-intercept\": 1000, \"addInteger-memory-arguments-intercept\": 1, \"consByteString-memory-arguments-slope\": 1, \"decodeUtf8-memory-arguments-intercept\": 4, \"encodeUtf8-memory-arguments-intercept\": 4, \"equalsInteger-cpu-arguments-intercept\": 208512, \"modInteger-memory-arguments-intercept\": 0, \"consByteString-cpu-arguments-intercept\": 221973, \"divideInteger-memory-arguments-minimum\": 1, \"lessThanByteString-cpu-arguments-slope\": 156, \"lessThanEqualsInteger-memory-arguments\": 1, \"multiplyInteger-memory-arguments-slope\": 1, \"quotientInteger-cpu-arguments-constant\": 196500, \"quotientInteger-memory-arguments-slope\": 1, \"sliceByteString-memory-arguments-slope\": 0, \"subtractInteger-memory-arguments-slope\": 1, \"appendByteString-memory-arguments-slope\": 1, \"appendString-memory-arguments-intercept\": 4, \"equalsByteString-cpu-arguments-constant\": 245000, \"lessThanInteger-cpu-arguments-intercept\": 208896, \"multiplyInteger-cpu-arguments-intercept\": 69522, \"remainderInteger-cpu-arguments-constant\": 196500, \"remainderInteger-memory-arguments-slope\": 1, \"sliceByteString-cpu-arguments-intercept\": 265318, \"subtractInteger-cpu-arguments-intercept\": 205665, \"verifyEd25519Signature-memory-arguments\": 10, \"appendByteString-cpu-arguments-intercept\": 1000, \"divideInteger-memory-arguments-intercept\": 0, \"equalsByteString-cpu-arguments-intercept\": 216773, \"quotientInteger-memory-arguments-minimum\": 1, \"consByteString-memory-arguments-intercept\": 0, \"lessThanEqualsByteString-memory-arguments\": 1, \"lessThanEqualsInteger-cpu-arguments-slope\": 473, \"remainderInteger-memory-arguments-minimum\": 1, \"lessThanByteString-cpu-arguments-intercept\": 197145, \"multiplyInteger-memory-arguments-intercept\": 0, \"quotientInteger-memory-arguments-intercept\": 0, \"sliceByteString-memory-arguments-intercept\": 4, \"subtractInteger-memory-arguments-intercept\": 1, \"verifyEd25519Signature-cpu-arguments-slope\": 1021, \"appendByteString-memory-arguments-intercept\": 0, \"remainderInteger-memory-arguments-intercept\": 0, \"lessThanEqualsByteString-cpu-arguments-slope\": 156, \"lessThanEqualsInteger-cpu-arguments-intercept\": 204924, \"modInteger-cpu-arguments-model-arguments-slope\": 220, \"verifyEd25519Signature-cpu-arguments-intercept\": 9462713, \"lessThanEqualsByteString-cpu-arguments-intercept\": 197145, \"divideInteger-cpu-arguments-model-arguments-slope\": 220, \"modInteger-cpu-arguments-model-arguments-intercept\": 453240, \"quotientInteger-cpu-arguments-model-arguments-slope\": 220, \"remainderInteger-cpu-arguments-model-arguments-slope\": 220, \"divideInteger-cpu-arguments-model-arguments-intercept\": 453240, \"quotientInteger-cpu-arguments-model-arguments-intercept\": 453240, \"remainderInteger-cpu-arguments-model-arguments-intercept\": 453240}, \"PlutusV2\": {\"bData-cpu-arguments\": 1000, \"iData-cpu-arguments\": 1000, \"trace-cpu-arguments\": 212342, \"mkCons-cpu-arguments\": 65493, \"fstPair-cpu-arguments\": 80436, \"mapData-cpu-arguments\": 64832, \"sndPair-cpu-arguments\": 85931, \"unBData-cpu-arguments\": 31220, \"unIData-cpu-arguments\": 43357, \"bData-memory-arguments\": 32, \"cekLamCost-exBudgetCPU\": 23000, \"cekVarCost-exBudgetCPU\": 23000, \"headList-cpu-arguments\": 43249, \"iData-memory-arguments\": 32, \"listData-cpu-arguments\": 52467, \"nullList-cpu-arguments\": 60091, \"tailList-cpu-arguments\": 41182, \"trace-memory-arguments\": 32, \"mkCons-memory-arguments\": 32, \"mkNilData-cpu-arguments\": 22558, \"unMapData-cpu-arguments\": 38314, \"cekApplyCost-exBudgetCPU\": 23000, \"cekConstCost-exBudgetCPU\": 23000, \"cekDelayCost-exBudgetCPU\": 23000, \"cekForceCost-exBudgetCPU\": 23000, \"chooseData-cpu-arguments\": 19537, \"chooseList-cpu-arguments\": 175354, \"chooseUnit-cpu-arguments\": 46417, \"constrData-cpu-arguments\": 89141, \"fstPair-memory-arguments\": 32, \"ifThenElse-cpu-arguments\": 80556, \"mapData-memory-arguments\": 32, \"mkPairData-cpu-arguments\": 76511, \"sndPair-memory-arguments\": 32, \"unBData-memory-arguments\": 32, \"unIData-memory-arguments\": 32, \"unListData-cpu-arguments\": 32247, \"cekLamCost-exBudgetMemory\": 100, \"cekVarCost-exBudgetMemory\": 100, \"headList-memory-arguments\": 32, \"listData-memory-arguments\": 32, \"nullList-memory-arguments\": 32, \"sha2_256-memory-arguments\": 4, \"sha3_256-memory-arguments\": 4, \"tailList-memory-arguments\": 32, \"cekBuiltinCost-exBudgetCPU\": 23000, \"cekStartupCost-exBudgetCPU\": 100, \"mkNilData-memory-arguments\": 32, \"unConstrData-cpu-arguments\": 32696, \"unMapData-memory-arguments\": 32, \"cekApplyCost-exBudgetMemory\": 100, \"cekConstCost-exBudgetMemory\": 100, \"cekDelayCost-exBudgetMemory\": 100, \"cekForceCost-exBudgetMemory\": 100, \"chooseData-memory-arguments\": 32, \"chooseList-memory-arguments\": 32, \"chooseUnit-memory-arguments\": 4, \"constrData-memory-arguments\": 32, \"equalsData-memory-arguments\": 1, \"ifThenElse-memory-arguments\": 1, \"mkNilPairData-cpu-arguments\": 16563, \"mkPairData-memory-arguments\": 32, \"unListData-memory-arguments\": 32, \"blake2b_256-memory-arguments\": 4, \"sha2_256-cpu-arguments-slope\": 30482, \"sha3_256-cpu-arguments-slope\": 82523, \"cekBuiltinCost-exBudgetMemory\": 100, \"cekStartupCost-exBudgetMemory\": 100, \"equalsString-memory-arguments\": 1, \"indexByteString-cpu-arguments\": 57667, \"unConstrData-memory-arguments\": 32, \"addInteger-cpu-arguments-slope\": 812, \"decodeUtf8-cpu-arguments-slope\": 14068, \"encodeUtf8-cpu-arguments-slope\": 28662, \"equalsData-cpu-arguments-slope\": 12586, \"equalsInteger-memory-arguments\": 1, \"mkNilPairData-memory-arguments\": 32, \"blake2b_256-cpu-arguments-slope\": 10475, \"appendString-cpu-arguments-slope\": 24177, \"equalsString-cpu-arguments-slope\": 52998, \"indexByteString-memory-arguments\": 4, \"lengthOfByteString-cpu-arguments\": 1000, \"lessThanInteger-memory-arguments\": 1, \"sha2_256-cpu-arguments-intercept\": 806990, \"sha3_256-cpu-arguments-intercept\": 1927926, \"addInteger-memory-arguments-slope\": 1, \"decodeUtf8-memory-arguments-slope\": 2, \"encodeUtf8-memory-arguments-slope\": 2, \"equalsByteString-memory-arguments\": 1, \"equalsInteger-cpu-arguments-slope\": 421, \"modInteger-cpu-arguments-constant\": 196500, \"modInteger-memory-arguments-slope\": 1, \"serialiseData-cpu-arguments-slope\": 392670, \"addInteger-cpu-arguments-intercept\": 205665, \"consByteString-cpu-arguments-slope\": 511, \"decodeUtf8-cpu-arguments-intercept\": 497525, \"encodeUtf8-cpu-arguments-intercept\": 1000, \"equalsData-cpu-arguments-intercept\": 1060367, \"appendString-memory-arguments-slope\": 1, \"blake2b_256-cpu-arguments-intercept\": 117366, \"equalsString-cpu-arguments-constant\": 187000, \"lengthOfByteString-memory-arguments\": 10, \"lessThanByteString-memory-arguments\": 1, \"lessThanInteger-cpu-arguments-slope\": 511, \"modInteger-memory-arguments-minimum\": 1, \"multiplyInteger-cpu-arguments-slope\": 11687, \"sliceByteString-cpu-arguments-slope\": 0, \"subtractInteger-cpu-arguments-slope\": 812, \"appendByteString-cpu-arguments-slope\": 571, \"appendString-cpu-arguments-intercept\": 1000, \"divideInteger-cpu-arguments-constant\": 196500, \"divideInteger-memory-arguments-slope\": 1, \"equalsByteString-cpu-arguments-slope\": 62, \"equalsString-cpu-arguments-intercept\": 1000, \"serialiseData-memory-arguments-slope\": 2, \"addInteger-memory-arguments-intercept\": 1, \"consByteString-memory-arguments-slope\": 1, \"decodeUtf8-memory-arguments-intercept\": 4, \"encodeUtf8-memory-arguments-intercept\": 4, \"equalsInteger-cpu-arguments-intercept\": 208512, \"modInteger-memory-arguments-intercept\": 0, \"serialiseData-cpu-arguments-intercept\": 1159724, \"consByteString-cpu-arguments-intercept\": 221973, \"divideInteger-memory-arguments-minimum\": 1, \"lessThanByteString-cpu-arguments-slope\": 156, \"lessThanEqualsInteger-memory-arguments\": 1, \"multiplyInteger-memory-arguments-slope\": 1, \"quotientInteger-cpu-arguments-constant\": 196500, \"quotientInteger-memory-arguments-slope\": 1, \"sliceByteString-memory-arguments-slope\": 0, \"subtractInteger-memory-arguments-slope\": 1, \"appendByteString-memory-arguments-slope\": 1, \"appendString-memory-arguments-intercept\": 4, \"equalsByteString-cpu-arguments-constant\": 245000, \"lessThanInteger-cpu-arguments-intercept\": 208896, \"multiplyInteger-cpu-arguments-intercept\": 69522, \"remainderInteger-cpu-arguments-constant\": 196500, \"remainderInteger-memory-arguments-slope\": 1, \"sliceByteString-cpu-arguments-intercept\": 265318, \"subtractInteger-cpu-arguments-intercept\": 205665, \"verifyEd25519Signature-memory-arguments\": 10, \"appendByteString-cpu-arguments-intercept\": 1000, \"divideInteger-memory-arguments-intercept\": 0, \"equalsByteString-cpu-arguments-intercept\": 216773, \"quotientInteger-memory-arguments-minimum\": 1, \"serialiseData-memory-arguments-intercept\": 0, \"consByteString-memory-arguments-intercept\": 0, \"lessThanEqualsByteString-memory-arguments\": 1, \"lessThanEqualsInteger-cpu-arguments-slope\": 473, \"remainderInteger-memory-arguments-minimum\": 1, \"lessThanByteString-cpu-arguments-intercept\": 197145, \"multiplyInteger-memory-arguments-intercept\": 0, \"quotientInteger-memory-arguments-intercept\": 0, \"sliceByteString-memory-arguments-intercept\": 4, \"subtractInteger-memory-arguments-intercept\": 1, \"verifyEd25519Signature-cpu-arguments-slope\": 1021, \"appendByteString-memory-arguments-intercept\": 0, \"remainderInteger-memory-arguments-intercept\": 0, \"verifyEcdsaSecp256k1Signature-cpu-arguments\": 20000000000, \"lessThanEqualsByteString-cpu-arguments-slope\": 156, \"lessThanEqualsInteger-cpu-arguments-intercept\": 204924, \"modInteger-cpu-arguments-model-arguments-slope\": 220, \"verifyEcdsaSecp256k1Signature-memory-arguments\": 20000000000, \"verifyEd25519Signature-cpu-arguments-intercept\": 9462713, \"lessThanEqualsByteString-cpu-arguments-intercept\": 197145, \"verifySchnorrSecp256k1Signature-memory-arguments\": 20000000000, \"divideInteger-cpu-arguments-model-arguments-slope\": 220, \"modInteger-cpu-arguments-model-arguments-intercept\": 453240, \"quotientInteger-cpu-arguments-model-arguments-slope\": 220, \"verifySchnorrSecp256k1Signature-cpu-arguments-slope\": 0, \"remainderInteger-cpu-arguments-model-arguments-slope\": 220, \"divideInteger-cpu-arguments-model-arguments-intercept\": 453240, \"quotientInteger-cpu-arguments-model-arguments-intercept\": 453240, \"verifySchnorrSecp256k1Signature-cpu-arguments-intercept\": 20000000000, \"remainderInteger-cpu-arguments-model-arguments-intercept\": 453240}}",
+    "min_utxo_value": "0",
+    "min_pool_cost": "170000000",
+    "nonce": "d58c8fdf57a9d20b4e72fce94056ad2ed2b62e40a7b0b35e1f37f267f9546c07",
+    "block_hash": "a74c031d215542d19fdafee6a28fde865c5961d296759e0ae9d19d50aa6f8a12",
+    "cost_models": {
+      "PlutusV1": [
+        205665,
+        812,
+        1,
+        1,
+        1000,
+        571,
+        0,
+        1,
+        1000,
+        24177,
+        4,
+        1,
+        1000,
+        32,
+        117366,
+        10475,
+        4,
+        23000,
+        100,
+        23000,
+        100,
+        23000,
+        100,
+        23000,
+        100,
+        23000,
+        100,
+        23000,
+        100,
+        100,
+        100,
+        23000,
+        100,
+        19537,
+        32,
+        175354,
+        32,
+        46417,
+        4,
+        221973,
+        511,
+        0,
+        1,
+        89141,
+        32,
+        497525,
+        14068,
+        4,
+        2,
+        196500,
+        453240,
+        220,
+        0,
+        1,
+        1,
+        1000,
+        28662,
+        4,
+        2,
+        245000,
+        216773,
+        62,
+        1,
+        1060367,
+        12586,
+        1,
+        208512,
+        421,
+        1,
+        187000,
+        1000,
+        52998,
+        1,
+        80436,
+        32,
+        43249,
+        32,
+        1000,
+        32,
+        80556,
+        1,
+        57667,
+        4,
+        1000,
+        10,
+        197145,
+        156,
+        1,
+        197145,
+        156,
+        1,
+        204924,
+        473,
+        1,
+        208896,
+        511,
+        1,
+        52467,
+        32,
+        64832,
+        32,
+        65493,
+        32,
+        22558,
+        32,
+        16563,
+        32,
+        76511,
+        32,
+        196500,
+        453240,
+        220,
+        0,
+        1,
+        1,
+        69522,
+        11687,
+        0,
+        1,
+        60091,
+        32,
+        196500,
+        453240,
+        220,
+        0,
+        1,
+        1,
+        196500,
+        453240,
+        220,
+        0,
+        1,
+        1,
+        806990,
+        30482,
+        4,
+        1927926,
+        82523,
+        4,
+        265318,
+        0,
+        4,
+        0,
+        85931,
+        32,
+        205665,
+        812,
+        1,
+        1,
+        41182,
+        32,
+        212342,
+        32,
+        31220,
+        32,
+        32696,
+        32,
+        43357,
+        32,
+        32247,
+        32,
+        38314,
+        32,
+        57996947,
+        18975,
+        10
+      ],
+      "PlutusV2": [
+        205665,
+        812,
+        1,
+        1,
+        1000,
+        571,
+        0,
+        1,
+        1000,
+        24177,
+        4,
+        1,
+        1000,
+        32,
+        117366,
+        10475,
+        4,
+        23000,
+        100,
+        23000,
+        100,
+        23000,
+        100,
+        23000,
+        100,
+        23000,
+        100,
+        23000,
+        100,
+        100,
+        100,
+        23000,
+        100,
+        19537,
+        32,
+        175354,
+        32,
+        46417,
+        4,
+        221973,
+        511,
+        0,
+        1,
+        89141,
+        32,
+        497525,
+        14068,
+        4,
+        2,
+        196500,
+        453240,
+        220,
+        0,
+        1,
+        1,
+        1000,
+        28662,
+        4,
+        2,
+        245000,
+        216773,
+        62,
+        1,
+        1060367,
+        12586,
+        1,
+        208512,
+        421,
+        1,
+        187000,
+        1000,
+        52998,
+        1,
+        80436,
+        32,
+        43249,
+        32,
+        1000,
+        32,
+        80556,
+        1,
+        57667,
+        4,
+        1000,
+        10,
+        197145,
+        156,
+        1,
+        197145,
+        156,
+        1,
+        204924,
+        473,
+        1,
+        208896,
+        511,
+        1,
+        52467,
+        32,
+        64832,
+        32,
+        65493,
+        32,
+        22558,
+        32,
+        16563,
+        32,
+        76511,
+        32,
+        196500,
+        453240,
+        220,
+        0,
+        1,
+        1,
+        69522,
+        11687,
+        0,
+        1,
+        60091,
+        32,
+        196500,
+        453240,
+        220,
+        0,
+        1,
+        1,
+        196500,
+        453240,
+        220,
+        0,
+        1,
+        1,
+        1159724,
+        392670,
+        0,
+        2,
+        806990,
+        30482,
+        4,
+        1927926,
+        82523,
+        4,
+        265318,
+        0,
+        4,
+        0,
+        85931,
+        32,
+        205665,
+        812,
+        1,
+        1,
+        41182,
+        32,
+        212342,
+        32,
+        31220,
+        32,
+        32696,
+        32,
+        43357,
+        32,
+        32247,
+        32,
+        38314,
+        32,
+        35892428,
+        10,
+        57996947,
+        18975,
+        10,
+        38887044,
+        32947,
+        10
+      ]
+    },
     "price_mem": 0.0577,
-    "price_step": 0.0000721,
+    "price_step": 7.21e-05,
     "max_tx_ex_mem": 14000000,
     "max_tx_ex_steps": 10000000000,
     "max_block_ex_mem": 62000000,
-    "max_block_ex_steps": 40000000000,
+    "max_block_ex_steps": 20000000000,
     "max_val_size": 5000,
     "collateral_percent": 150,
     "max_collateral_inputs": 3,
@@ -578,6 +1312,38 @@ Example response:
 
 ### Transactions
 
+#### get_utxo_info
+
+Get UTxO set for requested UTxO references\
+Parameters: UTxO(s) hash(es) and index(es) as a string (for one transaction)
+or list (for multiple transactions), with "#" between the UTxO hash
+and the index\
+Returns: The list of complete UTxO information\
+Example:\
+`utxo_info = get_utxo_info('99f2aefba2a4a5a550aeed9d91d3adabe77a286ec45c345c7980a208364f76c6#0')`\
+Example response:
+
+```json
+[
+  {
+    "tx_hash": "99f2aefba2a4a5a550aeed9d91d3adabe77a286ec45c345c7980a208364f76c6",
+    "tx_index": 0,
+    "address": "addr1qy59gr3ylt0us3xj7tawpxfn6ccauxa2upwv04m8mg5jehujfkxey5y9v6huj69rp39fk8zh3gpvrmc0mc4fr0j379kqp865ns",
+    "value": "4817999",
+    "stake_address": "stake1uxfymrvj2zzkdt7fdz3scj5mr3tc5qkpau8au253heglzmqjatts0",
+    "payment_cred": "28540e24fadfc844d2f2fae09933d631de1baae05cc7d767da292cdf",
+    "epoch_no": 381,
+    "block_height": 8129401,
+    "block_time": 1670833226,
+    "datum_hash": null,
+    "inline_datum": null,
+    "reference_script": null,
+    "asset_list": null,
+    "is_spent": true
+  }
+]
+```
+
 #### get_tx_info
 
 Get detailed information about transaction(s)\
@@ -679,86 +1445,6 @@ Example response:
     "certificates": [],
     "native_scripts": [],
     "plutus_contracts": []
-  }
-]
-```
-
-#### get_tx_utxos
-
-Get UTxO set (inputs/outputs) of transactions\
-Parameters: Transaction(s) hash(es) as a string (for one transaction)
-or list (for multiple transactions)\
-Returns: The list of transactions UTxOs dictionaries\
-Example:\
-`tx_utxos = get_tx_utxos('bf685dde61d36b8acd259b2bd00a69a2e8359d2a69b75aa3a0eff9d38ca1f2ef')`\
-Example response:
-
-```json
-[
-  {
-    "tx_hash": "bf685dde61d36b8acd259b2bd00a69a2e8359d2a69b75aa3a0eff9d38ca1f2ef",
-    "inputs": [
-      {
-        "payment_addr": {
-          "bech32": "addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7",
-          "cred": "dcc3fb415f1e0bf25bbabae6e261c61f85a1a23e4e063145b1efcc39"
-        },
-        "stake_addr": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
-        "tx_hash": "2534b92a1d04ef39f9915bef8d7c5246cc4db880ac01f3499fe9aa83ac155a19",
-        "tx_index": 2,
-        "value": "14602840",
-        "asset_list": []
-      },
-      {
-        "payment_addr": {
-          "bech32": "addr1zxgx3far7qygq0k6epa0zcvcvrevmn0ypsnfsue94nsn3tvpw288a4x0xf8pxgcntelxmyclq83s0ykeehchz2wtspks905plm",
-          "cred": "9068a7a3f008803edac87af1619860f2cdcde40c26987325ace138ad"
-        },
-        "stake_addr": "stake1uxqh9rn76n8nynsnyvf4ulndjv0srcc8jtvumut3989cqmgjt49h6",
-        "tx_hash": "2534b92a1d04ef39f9915bef8d7c5246cc4db880ac01f3499fe9aa83ac155a19",
-        "tx_index": 0,
-        "value": "1327480",
-        "asset_list": [
-          {
-            "policy_id": "11ebbfbfd62985cbae7330b95488b9dcf17ecb5e728442031362ad81",
-            "asset_name": "48756e677279436f772333313835",
-            "fingerprint": "asset1kgzw0q7pt42zeerkn9sctpz3s5gan3xfrjpsgd",
-            "quantity": "1"
-          }
-        ]
-      }
-    ],
-    "outputs": [
-      {
-        "payment_addr": {
-          "bech32": "addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7",
-          "cred": "dcc3fb415f1e0bf25bbabae6e261c61f85a1a23e4e063145b1efcc39"
-        },
-        "stake_addr": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
-        "tx_hash": "bf685dde61d36b8acd259b2bd00a69a2e8359d2a69b75aa3a0eff9d38ca1f2ef",
-        "tx_index": 0,
-        "value": "1180940",
-        "asset_list": [
-          {
-            "policy_id": "11ebbfbfd62985cbae7330b95488b9dcf17ecb5e728442031362ad81",
-            "asset_name": "48756e677279436f772333313835",
-            "fingerprint": "asset1kgzw0q7pt42zeerkn9sctpz3s5gan3xfrjpsgd",
-            "quantity": "1"
-          }
-        ]
-      },
-      {
-        "payment_addr": {
-          "bech32": "addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7",
-          "cred": "dcc3fb415f1e0bf25bbabae6e261c61f85a1a23e4e063145b1efcc39"
-        },
-        "stake_addr": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
-        "tx_hash": "bf685dde61d36b8acd259b2bd00a69a2e8359d2a69b75aa3a0eff9d38ca1f2ef",
-        "tx_index": 1,
-        "value": "14481686",
-        "asset_list": []
-      }
-    ]
   }
 ]
 ```
@@ -865,6 +1551,86 @@ Example response:
 ]
 ```
 
+#### get_tx_utxos
+
+Get UTxO set (inputs/outputs) of transactions\
+Parameters: Transaction(s) hash(es) as a string (for one transaction)
+or list (for multiple transactions)\
+Returns: The list of transactions UTxOs dictionaries\
+Example:\
+`tx_utxos = get_tx_utxos('bf685dde61d36b8acd259b2bd00a69a2e8359d2a69b75aa3a0eff9d38ca1f2ef')`\
+Example response:
+
+```json
+[
+  {
+    "tx_hash": "bf685dde61d36b8acd259b2bd00a69a2e8359d2a69b75aa3a0eff9d38ca1f2ef",
+    "inputs": [
+      {
+        "payment_addr": {
+          "bech32": "addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7",
+          "cred": "dcc3fb415f1e0bf25bbabae6e261c61f85a1a23e4e063145b1efcc39"
+        },
+        "stake_addr": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
+        "tx_hash": "2534b92a1d04ef39f9915bef8d7c5246cc4db880ac01f3499fe9aa83ac155a19",
+        "tx_index": 2,
+        "value": "14602840",
+        "asset_list": []
+      },
+      {
+        "payment_addr": {
+          "bech32": "addr1zxgx3far7qygq0k6epa0zcvcvrevmn0ypsnfsue94nsn3tvpw288a4x0xf8pxgcntelxmyclq83s0ykeehchz2wtspks905plm",
+          "cred": "9068a7a3f008803edac87af1619860f2cdcde40c26987325ace138ad"
+        },
+        "stake_addr": "stake1uxqh9rn76n8nynsnyvf4ulndjv0srcc8jtvumut3989cqmgjt49h6",
+        "tx_hash": "2534b92a1d04ef39f9915bef8d7c5246cc4db880ac01f3499fe9aa83ac155a19",
+        "tx_index": 0,
+        "value": "1327480",
+        "asset_list": [
+          {
+            "policy_id": "11ebbfbfd62985cbae7330b95488b9dcf17ecb5e728442031362ad81",
+            "asset_name": "48756e677279436f772333313835",
+            "fingerprint": "asset1kgzw0q7pt42zeerkn9sctpz3s5gan3xfrjpsgd",
+            "quantity": "1"
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "payment_addr": {
+          "bech32": "addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7",
+          "cred": "dcc3fb415f1e0bf25bbabae6e261c61f85a1a23e4e063145b1efcc39"
+        },
+        "stake_addr": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
+        "tx_hash": "bf685dde61d36b8acd259b2bd00a69a2e8359d2a69b75aa3a0eff9d38ca1f2ef",
+        "tx_index": 0,
+        "value": "1180940",
+        "asset_list": [
+          {
+            "policy_id": "11ebbfbfd62985cbae7330b95488b9dcf17ecb5e728442031362ad81",
+            "asset_name": "48756e677279436f772333313835",
+            "fingerprint": "asset1kgzw0q7pt42zeerkn9sctpz3s5gan3xfrjpsgd",
+            "quantity": "1"
+          }
+        ]
+      },
+      {
+        "payment_addr": {
+          "bech32": "addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7",
+          "cred": "dcc3fb415f1e0bf25bbabae6e261c61f85a1a23e4e063145b1efcc39"
+        },
+        "stake_addr": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
+        "tx_hash": "bf685dde61d36b8acd259b2bd00a69a2e8359d2a69b75aa3a0eff9d38ca1f2ef",
+        "tx_index": 1,
+        "value": "14481686",
+        "asset_list": []
+      }
+    ]
+  }
+]
+```
+
 ### Address
 
 #### get_address_info
@@ -902,43 +1668,132 @@ Example response:
 ]
 ```
 
-#### get_address_txs
+#### get_address_utxos
 
-Get the transaction hash list of input address array, optionally filtering
-after specified block height (inclusive)\
-Parameters: Payment address(es) as string (for one address) or list
+Get UTxO set for given addresses\
+Parameters: \
+Address(es): Payment address(es) as string (for one address) or list
 (for multiple addresses)\
+Extended:  Boolean which controls whether certain optional fields supported\
+by a given endpoint are populated as a part of the request\
 Returns: The list of transactions dictionaries\
 Example:\
-`address_txs = get_address_txs('addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7')`\
+`address_utxos = get_address_utxos('addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7')`\
 Example response:
 
 ```json
 [
   {
-    "tx_hash": "c626fe027d09db2b6c63ba67e3638911ff70e3b691a7e5c03e75c0d3a168c973",
-    "epoch_no": 381,
-    "block_height": 8129403,
-    "block_time": 1670833300
+    "tx_hash": "eb9fc5848297ac94903164519dc9955acc5645b831ed48ad03c67edefec9b50d",
+    "tx_index": 1,
+    "address": "addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7",
+    "value": "5459647",
+    "stake_address": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
+    "payment_cred": "dcc3fb415f1e0bf25bbabae6e261c61f85a1a23e4e063145b1efcc39",
+    "epoch_no": 439,
+    "block_height": 9356379,
+    "block_time": 1696084155,
+    "datum_hash": null,
+    "inline_datum": null,
+    "reference_script": null,
+    "asset_list": null,
+    "is_spent": false
   },
   {
-    "tx_hash": "bf685dde61d36b8acd259b2bd00a69a2e8359d2a69b75aa3a0eff9d38ca1f2ef",
-    "epoch_no": 381,
-    "block_height": 8129401,
-    "block_time": 1670833226
+    "tx_hash": "67f7b1240deff9bafd7d5f9da199d40f1072519edfc21592485a583f31a8a966",
+    "tx_index": 1,
+    "address": "addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7",
+    "value": "12740897",
+    "stake_address": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
+    "payment_cred": "dcc3fb415f1e0bf25bbabae6e261c61f85a1a23e4e063145b1efcc39",
+    "epoch_no": 447,
+    "block_height": 9532358,
+    "block_time": 1699686385,
+    "datum_hash": null,
+    "inline_datum": null,
+    "reference_script": null,
+    "asset_list": null,
+    "is_spent": false
   },
   {
-    "tx_hash": "2534b92a1d04ef39f9915bef8d7c5246cc4db880ac01f3499fe9aa83ac155a19",
-    "epoch_no": 380,
-    "block_height": 8127226,
-    "block_time": 1670787767
+    "tx_hash": "cb3646d0739dd1884b2cf16fbc8fc768763103ddcdd3a3f9fc7fd6a0ea75fa63",
+    "tx_index": 1,
+    "address": "addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7",
+    "value": "19778509",
+    "stake_address": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
+    "payment_cred": "dcc3fb415f1e0bf25bbabae6e261c61f85a1a23e4e063145b1efcc39",
+    "epoch_no": 448,
+    "block_height": 9537064,
+    "block_time": 1699782852,
+    "datum_hash": null,
+    "inline_datum": null,
+    "reference_script": null,
+    "asset_list": null,
+    "is_spent": false
   },
-  ...
   {
-    "tx_hash": "3c16d642fc92012a8808446b29fe89028a2bc37508048a9eb465265d30a24386",
-    "epoch_no": 373,
-    "block_height": 7971352,
-    "block_time": 1667570778
+    "tx_hash": "1fc61d4f02f170554e06b2608fc021a5c6910faa125c8baebbaa66d16dadec44",
+    "tx_index": 1,
+    "address": "addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7",
+    "value": "25618819",
+    "stake_address": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
+    "payment_cred": "dcc3fb415f1e0bf25bbabae6e261c61f85a1a23e4e063145b1efcc39",
+    "epoch_no": 448,
+    "block_height": 9538689,
+    "block_time": 1699816992,
+    "datum_hash": null,
+    "inline_datum": null,
+    "reference_script": null,
+    "asset_list": null,
+    "is_spent": false
+  },
+  {
+    "tx_hash": "f38eb43c9c5d899ad9d5a727a6cd64fce34e5ddb0b3cc29a3241931ba323f2d9",
+    "tx_index": 1,
+    "address": "addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7",
+    "value": "16173935",
+    "stake_address": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
+    "payment_cred": "dcc3fb415f1e0bf25bbabae6e261c61f85a1a23e4e063145b1efcc39",
+    "epoch_no": 449,
+    "block_height": 9564511,
+    "block_time": 1700343086,
+    "datum_hash": null,
+    "inline_datum": null,
+    "reference_script": null,
+    "asset_list": null,
+    "is_spent": false
+  },
+  {
+    "tx_hash": "1c00a4087c594c4453c8c3a8f51663d0a9ba59f3e3e02cf961c01d8cc80edd44",
+    "tx_index": 1,
+    "address": "addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7",
+    "value": "15633446",
+    "stake_address": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
+    "payment_cred": "dcc3fb415f1e0bf25bbabae6e261c61f85a1a23e4e063145b1efcc39",
+    "epoch_no": 450,
+    "block_height": 9587376,
+    "block_time": 1700814155,
+    "datum_hash": null,
+    "inline_datum": null,
+    "reference_script": null,
+    "asset_list": null,
+    "is_spent": false
+  },
+  {
+    "tx_hash": "40e3609e2d1c3ea38601d119dbf6711a448defaadc4fa1d1590c0d48f29c240e",
+    "tx_index": 1,
+    "address": "addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7",
+    "value": "12308427",
+    "stake_address": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
+    "payment_cred": "dcc3fb415f1e0bf25bbabae6e261c61f85a1a23e4e063145b1efcc39",
+    "epoch_no": 450,
+    "block_height": 9592563,
+    "block_time": 1700923481,
+    "datum_hash": null,
+    "inline_datum": null,
+    "reference_script": null,
+    "asset_list": null,
+    "is_spent": false
   }
 ]
 ```
@@ -991,42 +1846,43 @@ Example response:
 ]
 ```
 
-#### get_address_assets
+#### get_address_txs
 
-Get the list of all the assets (policy, name and quantity) for given
-addresses\
+Get the transaction hash list of input address array, optionally filtering
+after specified block height (inclusive)\
 Parameters: Payment address(es) as string (for one address) or list
 (for multiple addresses)\
-Returns: The list of assets dictionaries by address\
+Returns: The list of transactions dictionaries\
 Example:\
-`address_assets = get_address_assets('addr1qywp2795uk4uusknpseu3fcwy8ew57dnuaeutnxaa5j6ulp4u2anham4xet066yjc6xjxcymujvvwlfhj8k8gxfl2nvs73rvzh')`\
+`address_txs = get_address_txs('addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7')`\
 Example response:
 
 ```json
 [
   {
-    "address": "addr1qywp2795uk4uusknpseu3fcwy8ew57dnuaeutnxaa5j6ulp4u2anham4xet066yjc6xjxcymujvvwlfhj8k8gxfl2nvs73rvzh",
-    "asset_list": [
-      {
-        "policy_id": "07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd",
-        "asset_name": "4379626572696130363936",
-        "fingerprint": "asset1hf3u704jz0ranfa2ygnq4028ht4vgqz8gsgw70",
-        "quantity": "1"
-      },
-      {
-        "policy_id": "14a95b2a4a863c8074d6a78a6a445150223e867999a90295dc1d0cf6",
-        "asset_name": "50726f6a65637456656e757330303536",
-        "fingerprint": "asset1pdz0dvugfezf6evgyvvyl5zda8mhdfhef8d3fd",
-        "quantity": "1"
-      },
-      ...
-      {
-        "policy_id": "ffff5571ecec795284f04ad6e6852ed2d46d924535ed68ad97fa1e70",
-        "asset_name": "634e4654636f6e486f70706572363935",
-        "fingerprint": "asset1dcn7mx0ccelvmweef6wjcuhur9a2hpg8des4pl",
-        "quantity": "1"
-      }
-    ]
+    "tx_hash": "c626fe027d09db2b6c63ba67e3638911ff70e3b691a7e5c03e75c0d3a168c973",
+    "epoch_no": 381,
+    "block_height": 8129403,
+    "block_time": 1670833300
+  },
+  {
+    "tx_hash": "bf685dde61d36b8acd259b2bd00a69a2e8359d2a69b75aa3a0eff9d38ca1f2ef",
+    "epoch_no": 381,
+    "block_height": 8129401,
+    "block_time": 1670833226
+  },
+  {
+    "tx_hash": "2534b92a1d04ef39f9915bef8d7c5246cc4db880ac01f3499fe9aa83ac155a19",
+    "epoch_no": 380,
+    "block_height": 8127226,
+    "block_time": 1670787767
+  },
+  ...
+  {
+    "tx_hash": "3c16d642fc92012a8808446b29fe89028a2bc37508048a9eb465265d30a24386",
+    "epoch_no": 373,
+    "block_height": 7971352,
+    "block_time": 1667570778
   }
 ]
 ```
@@ -1069,6 +1925,46 @@ Example response:
 ]
 ```
 
+#### get_address_assets
+
+Get the list of all the assets (policy, name and quantity) for given
+addresses\
+Parameters: Payment address(es) as string (for one address) or list
+(for multiple addresses)\
+Returns: The list of assets dictionaries by address\
+Example:\
+`address_assets = get_address_assets('addr1qywp2795uk4uusknpseu3fcwy8ew57dnuaeutnxaa5j6ulp4u2anham4xet066yjc6xjxcymujvvwlfhj8k8gxfl2nvs73rvzh')`\
+Example response:
+
+```json
+[
+  {
+    "address": "addr1qywp2795uk4uusknpseu3fcwy8ew57dnuaeutnxaa5j6ulp4u2anham4xet066yjc6xjxcymujvvwlfhj8k8gxfl2nvs73rvzh",
+    "asset_list": [
+      {
+        "policy_id": "07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd",
+        "asset_name": "4379626572696130363936",
+        "fingerprint": "asset1hf3u704jz0ranfa2ygnq4028ht4vgqz8gsgw70",
+        "quantity": "1"
+      },
+      {
+        "policy_id": "14a95b2a4a863c8074d6a78a6a445150223e867999a90295dc1d0cf6",
+        "asset_name": "50726f6a65637456656e757330303536",
+        "fingerprint": "asset1pdz0dvugfezf6evgyvvyl5zda8mhdfhef8d3fd",
+        "quantity": "1"
+      },
+      ...
+      {
+        "policy_id": "ffff5571ecec795284f04ad6e6852ed2d46d924535ed68ad97fa1e70",
+        "asset_name": "634e4654636f6e486f70706572363935",
+        "fingerprint": "asset1dcn7mx0ccelvmweef6wjcuhur9a2hpg8des4pl",
+        "quantity": "1"
+      }
+    ]
+  }
+]
+```
+
 ### Asset
 
 #### get_asset_list
@@ -1102,6 +1998,115 @@ Example response:
     "fingerprint": "asset12dvnasghksl5k7w696nd5t692j6myexapwjh0d"
   },
   ...
+]
+```
+
+#### get_policy_asset_list
+
+Get the list of asset under the given policy (including balances)\
+Parameters: Asset Policy\
+Returns: List of dictionaries with the asset under the given policy\
+Example:\
+`asset_policy_list = get_policy_asset_list('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd')`\
+Example response:
+
+```json
+[
+  {
+    "asset_name": "",
+    "asset_name_ascii": "",
+    "fingerprint": "asset1pht97cylpt7azuu9mwhmd9c9zdgmumwrrm5yrc",
+    "minting_tx_hash": "90415fda215ff5098d7fa1385c7358c589066332068b720380726e3ef0b26de4",
+    "total_supply": "0",
+    "mint_cnt": 1,
+    "burn_cnt": 1,
+    "creation_time": 1665100800,
+    "minting_tx_metadata": {
+      "777": {
+        "addr": [
+          "addr1qy36jns6h4w4f80u6xed49k6qn9c7tk4x4us5kaxztjq8x3un2me8nvc5ke",
+          "gvll0gnwlj2ypzfhhqpns47u76gafttmq208x4d"
+        ],
+        "rate": "0.05"
+      }
+    },
+    "token_registry_metadata": null
+  },
+  ...
+  {
+    "asset_name": "4379626572696130333939",
+    "asset_name_ascii": "Cyberia0399",
+    "fingerprint": "asset1g7tgq2ly8uhtzcz79uhay8tq46h9rq62arfm8s",
+    "minting_tx_hash": "98db0a36106a92149b256887f6300f2b228e14d24d488e4b1614920083cd64ff",
+    "total_supply": "1",
+    "mint_cnt": 1,
+    "burn_cnt": 0,
+    "creation_time": 1665187200,
+    "minting_tx_metadata": {
+      "721": {
+        "nonce": "c966f455d3e03537",
+        "07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd": {
+          "Cyberia0399": {
+            "Pose": "Lunge pose - Anjaneyasana",
+            "Skin": "Gold",
+            "name": "Cyberia Chakra Planet #0399",
+            "files": [
+              {
+                "src": "ipfs://QmVsMggcQE3da9xuZv7uvJRH84gs5ebGQ8kxVPSQw52XRf",
+                "name": "Please wait while your experience below loads.",
+                "mediaType": "image/jpg"
+              },
+              {
+                "src": "ipfs://QmSHyNm11PrqyrUXszKtsz52ADH6A934c3gw41H7CMCj7D",
+                "mediaType": "text/html"
+              }
+            ],
+            "image": "ipfs://QmVsMggcQE3da9xuZv7uvJRH84gs5ebGQ8kxVPSQw52XRf",
+            "Artist": "Shrink",
+            "Avatar": "Male",
+            "Chakra": "Sacral - Svadhisthana",
+            "Mantra": "VAM",
+            "Discord": "https://dsc.gg/cyberiacnft",
+            "Twitter": "https://twitter.com/cyberiaCNFT",
+            "Website": "https://cyberia.gg/",
+            "Function": "Sexual and Creative Energy",
+            "Location": "Below the Belly Button",
+            "Collection": "Chakra Planets",
+            "Planet colour": "Orange"
+          },
+          "Cyberia2795": {
+            "Pose": "Headstand - Sirsasana",
+            "Skin": "Gold",
+            "name": "Cyberia Chakra Planet #2795",
+            "files": [
+              {
+                "src": "ipfs://QmZ4TGY2Jzy5JGaD3S7RLsrP9K8jbp44e7463iHAGitM5a",
+                "name": "Please wait while your experience below loads.",
+                "mediaType": "image/jpg"
+              },
+              {
+                "src": "ipfs://QmcEqKkAcxeGNZimSiQZ2duZA4sx4xJawh35VwuJoS3A9m",
+                "mediaType": "text/html"
+              }
+            ],
+            "image": "ipfs://QmZ4TGY2Jzy5JGaD3S7RLsrP9K8jbp44e7463iHAGitM5a",
+            "Artist": "Shrink",
+            "Avatar": "Female",
+            "Chakra": "Crown - Sahasrara",
+            "Mantra": "OM",
+            "Discord": "https://dsc.gg/cyberiacnft",
+            "Twitter": "https://twitter.com/cyberiaCNFT",
+            "Website": "https://cyberia.gg/",
+            "Function": "Spiritual Connection",
+            "Location": "Top of the Head",
+            "Collection": "Chakra Planets",
+            "Planet colour": "Purple"
+          }
+        }
+      }
+    },
+    "token_registry_metadata": null
+  }
 ]
 ```
 
@@ -1150,58 +2155,16 @@ Example response:
 ]
 ```
 
-#### get_asset_addresses
-
-Get the list of all addresses holding a given asset\
-Parameters:\
-Asset Policy\
-Asset Name in hexadecimal format (optional), default: all policy assets\
-Returns: List of dictionaries with the wallets holding the asset and the
-amount of assets per wallet\
-Example:\
-`asset_address_list = get_asset_address_list('07697e6ca1e21777ac76f26d0779c
-53f7d08e47b9e32d23bd8fed9cd', '4379626572696130363936')`\
-Example response:
-
-```json
-[
-  {
-    "payment_address": "addr1qywp2795uk4uusknpseu3fcwy8ew57dnuaeutnxaa5j6ulp4u2anham4xet066yjc6xjxcymujvvwlfhj8k8gxfl2nvs73rvzh",
-    "quantity": "1"
-  }
-]
-```
-
-#### get_asset_nft_address
-
-Get the address where specified NFT currently reside on.\
-Parameters:\
-Asset Policy\
-Asset Name in hexadecimal format\
-Returns: The wallet address holding the NFT as a list of one dictionary\
-Example:\
-`asset_nft_address = get_asset_nft_address('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd', '4379626572696130363936')`\
-Example response:
-
-```json
-[
-  {
-    "payment_address": "addr1qywp2795uk4uusknpseu3fcwy8ew57dnuaeutnxaa5j6ulp4u2anham4xet066yjc6xjxcymujvvwlfhj8k8gxfl2nvs73rvzh"
-  }
-]
-```
-
 #### get_asset_info
 
-Get the information of an asset including first minting & token registry
-metadata\
-Parameters:
-Asset Policy\
-Asset Name in hexadecimal format (optional), default: all policy assets\
-Returns: List of dictionaries with the wallets holding the asset and the
-amount of assets per wallet\
+Get the information of a list of assets including first minting &\
+token registry metadata\
+Parameters: Asset(s) as policy id and asset name (hex)\
+("asset_policy.asset_name"), separated by dot ("."), as a string \
+(for one) asset or as a list for multiple assets\
+Returns: The list of assets including first minting & token registry metadata\
 Example:\
-`asset_info = get_asset_info('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd', '4379626572696130363936')`\
+`asset_info = get_asset_info('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd.4379626572696130363936')`\
 Example response:
 
 ```json
@@ -1256,82 +2219,37 @@ Example response:
 ]
 ```
 
-#### get_asset_info_bulk
+#### get_asset_utxos
 
-Get the information of a list of assets including first minting & token
-registry metadata\
+Get the UTXO information of a list of assets\
 Parameters:\
-Assets List in tge following format: `['policy.name_hex']`\
-Returns: List of assets including first minting & token registry metadata\
+Asset(s) as policy id and asset name (hex)\
+("asset_policy.asset_name"), separated by dot ("."), as a string \
+(for one) asset or as a list for multiple assets\
+Extended: Controls whether certain optional fields supported\
+by a given endpoint are populated\
+Returns: List of UTxO information for the requested assets\
 Example:\
-`asset_info_bulk = get_asset_info_bulk(['221b1b9ebccab1512262347491557279ac0afac63b4fbd10fc596c8a.437562656e7369734d757368726f6f6d', '221b1b9ebccab1512262347491557279ac0afac63b4fbd10fc596c8a.417a7a69654d757368726f6f6d'])`\
+`asset_utxos = get_asset_utxos('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd.4379626572696130363936')`\
 Example response:
 
 ```json
 [
   {
-    "policy_id": "221b1b9ebccab1512262347491557279ac0afac63b4fbd10fc596c8a",
-    "asset_name": "437562656e7369734d757368726f6f6d",
-    "asset_name_ascii": "CubensisMushroom",
-    "fingerprint": "asset1csgmd2qwycgmqdck4dgqzzwm7xclhkqrhxs2pw",
-    "minting_tx_hash": "c29fd9f0c71793eb06e7cf055e8529740b0486a802b8e9019df4853c6dec03a0",
-    "total_supply": "7576",
-    "mint_cnt": 1,
-    "burn_cnt": 0,
-    "creation_time": 1680393600,
-    "minting_tx_metadata": {
-      "721": {
-        "version": "1.0",
-        "221b1b9ebccab1512262347491557279ac0afac63b4fbd10fc596c8a": {
-          "CubensisMushroom": {
-            "name": "CubensisMushroom",
-            "files": [
-              {
-                "src": "ipfs://QmQNTa19H5WnYtRiHqzNK2drC9rRTzmkxtu7tS57WZkNuZ",
-                "name": "Cubensis",
-                "mediaType": "image/png"
-              }
-            ],
-            "image": "ipfs://QmQNTa19H5WnYtRiHqzNK2drC9rRTzmkxtu7tS57WZkNuZ",
-            "project": "Chilled Kongs",
-            "mediaType": "image/png"
-          }
-        }
-      }
-    },
-    "token_registry_metadata": null
-  },
-  {
-    "policy_id": "221b1b9ebccab1512262347491557279ac0afac63b4fbd10fc596c8a",
-    "asset_name": "417a7a69654d757368726f6f6d",
-    "asset_name_ascii": "AzzieMushroom",
-    "fingerprint": "asset1kfskmlcvlsvpvr093staxj2788qlrkcrssf26a",
-    "minting_tx_hash": "e4b94e3a5e95953acfb50e3c2fd005b2839ca79c4294b62bbf7d2afdf96dd009",
-    "total_supply": "1305",
-    "mint_cnt": 1,
-    "burn_cnt": 0,
-    "creation_time": 1680393600,
-    "minting_tx_metadata": {
-      "721": {
-        "version": "1.0",
-        "221b1b9ebccab1512262347491557279ac0afac63b4fbd10fc596c8a": {
-          "AzzieMushroom": {
-            "name": "AzzieMushroom",
-            "files": [
-              {
-                "src": "ipfs://QmeAdLCKgXhxtDAcpPq5vgpRCqYWCGFMzb9jx4YEif3nWR",
-                "name": "Azzie",
-                "mediaType": "image/png"
-              }
-            ],
-            "image": "ipfs://QmeAdLCKgXhxtDAcpPq5vgpRCqYWCGFMzb9jx4YEif3nWR",
-            "project": "Chilled Kongs",
-            "mediaType": "image/png"
-          }
-        }
-      }
-    },
-    "token_registry_metadata": null
+    "tx_hash": "0cfaa1a897dcac81d8faf7227f34654532a4b40b82694fe29e68af9bfa300cf8",
+    "tx_index": 3,
+    "address": "addr1qywp2795uk4uusknpseu3fcwy8ew57dnuaeutnxaa5j6ulp4u2anham4xet066yjc6xjxcymujvvwlfhj8k8gxfl2nvs73rvzh",
+    "value": "22424930",
+    "stake_address": "stake1uy679wem7a6nv4hadzfvdrfrvzd7fxx805mermr5ryl4fkgylfnyv",
+    "payment_cred": "1c1578b4e5abce42d30c33c8a70e21f2ea79b3e773c5ccdded25ae7c",
+    "epoch_no": 447,
+    "block_height": 9523865,
+    "block_time": 1699513130,
+    "datum_hash": null,
+    "inline_datum": null,
+    "reference_script": null,
+    "asset_list": null,
+    "is_spent": false
   }
 ]
 ```
@@ -1398,6 +2316,47 @@ Example response:
         ]
       }
     ]
+  }
+]
+```
+
+#### get_asset_addresses
+
+Get the list of all addresses holding a given asset\
+Parameters:\
+Asset Policy\
+Asset Name in hexadecimal format (optional), default: all policy assets\
+Returns: List of dictionaries with the wallets holding the asset and the
+amount of assets per wallet\
+Example:\
+`asset_addresses = get_asset_addresses('07697e6ca1e21777ac76f26d0779c
+53f7d08e47b9e32d23bd8fed9cd', '4379626572696130363936')`\
+Example response:
+
+```json
+[
+  {
+    "payment_address": "addr1qywp2795uk4uusknpseu3fcwy8ew57dnuaeutnxaa5j6ulp4u2anham4xet066yjc6xjxcymujvvwlfhj8k8gxfl2nvs73rvzh",
+    "quantity": "1"
+  }
+]
+```
+
+#### get_asset_nft_address
+
+Get the address where specified NFT currently reside on.\
+Parameters:\
+Asset Policy\
+Asset Name in hexadecimal format\
+Returns: The wallet address holding the NFT as a list of one dictionary\
+Example:\
+`asset_nft_address = get_asset_nft_address('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd', '4379626572696130363936')`\
+Example response:
+
+```json
+[
+  {
+    "payment_address": "addr1qywp2795uk4uusknpseu3fcwy8ew57dnuaeutnxaa5j6ulp4u2anham4xet066yjc6xjxcymujvvwlfhj8k8gxfl2nvs73rvzh"
   }
 ]
 ```
@@ -1581,115 +2540,6 @@ Example response:
 ]
 ```
 
-#### get_policy_asset_list
-
-Get the list of asset under the given policy (including balances)\
-Parameters: Asset Policy\
-Returns: List of dictionaries with the asset under the given policy\
-Example:\
-`asset_policy_list = get_policy_asset_list('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd')`\
-Example response:
-
-```json
-[
-  {
-    "asset_name": "",
-    "asset_name_ascii": "",
-    "fingerprint": "asset1pht97cylpt7azuu9mwhmd9c9zdgmumwrrm5yrc",
-    "minting_tx_hash": "90415fda215ff5098d7fa1385c7358c589066332068b720380726e3ef0b26de4",
-    "total_supply": "0",
-    "mint_cnt": 1,
-    "burn_cnt": 1,
-    "creation_time": 1665100800,
-    "minting_tx_metadata": {
-      "777": {
-        "addr": [
-          "addr1qy36jns6h4w4f80u6xed49k6qn9c7tk4x4us5kaxztjq8x3un2me8nvc5ke",
-          "gvll0gnwlj2ypzfhhqpns47u76gafttmq208x4d"
-        ],
-        "rate": "0.05"
-      }
-    },
-    "token_registry_metadata": null
-  },
-  ...
-  {
-    "asset_name": "4379626572696130333939",
-    "asset_name_ascii": "Cyberia0399",
-    "fingerprint": "asset1g7tgq2ly8uhtzcz79uhay8tq46h9rq62arfm8s",
-    "minting_tx_hash": "98db0a36106a92149b256887f6300f2b228e14d24d488e4b1614920083cd64ff",
-    "total_supply": "1",
-    "mint_cnt": 1,
-    "burn_cnt": 0,
-    "creation_time": 1665187200,
-    "minting_tx_metadata": {
-      "721": {
-        "nonce": "c966f455d3e03537",
-        "07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd": {
-          "Cyberia0399": {
-            "Pose": "Lunge pose - Anjaneyasana",
-            "Skin": "Gold",
-            "name": "Cyberia Chakra Planet #0399",
-            "files": [
-              {
-                "src": "ipfs://QmVsMggcQE3da9xuZv7uvJRH84gs5ebGQ8kxVPSQw52XRf",
-                "name": "Please wait while your experience below loads.",
-                "mediaType": "image/jpg"
-              },
-              {
-                "src": "ipfs://QmSHyNm11PrqyrUXszKtsz52ADH6A934c3gw41H7CMCj7D",
-                "mediaType": "text/html"
-              }
-            ],
-            "image": "ipfs://QmVsMggcQE3da9xuZv7uvJRH84gs5ebGQ8kxVPSQw52XRf",
-            "Artist": "Shrink",
-            "Avatar": "Male",
-            "Chakra": "Sacral - Svadhisthana",
-            "Mantra": "VAM",
-            "Discord": "https://dsc.gg/cyberiacnft",
-            "Twitter": "https://twitter.com/cyberiaCNFT",
-            "Website": "https://cyberia.gg/",
-            "Function": "Sexual and Creative Energy",
-            "Location": "Below the Belly Button",
-            "Collection": "Chakra Planets",
-            "Planet colour": "Orange"
-          },
-          "Cyberia2795": {
-            "Pose": "Headstand - Sirsasana",
-            "Skin": "Gold",
-            "name": "Cyberia Chakra Planet #2795",
-            "files": [
-              {
-                "src": "ipfs://QmZ4TGY2Jzy5JGaD3S7RLsrP9K8jbp44e7463iHAGitM5a",
-                "name": "Please wait while your experience below loads.",
-                "mediaType": "image/jpg"
-              },
-              {
-                "src": "ipfs://QmcEqKkAcxeGNZimSiQZ2duZA4sx4xJawh35VwuJoS3A9m",
-                "mediaType": "text/html"
-              }
-            ],
-            "image": "ipfs://QmZ4TGY2Jzy5JGaD3S7RLsrP9K8jbp44e7463iHAGitM5a",
-            "Artist": "Shrink",
-            "Avatar": "Female",
-            "Chakra": "Crown - Sahasrara",
-            "Mantra": "OM",
-            "Discord": "https://dsc.gg/cyberiacnft",
-            "Twitter": "https://twitter.com/cyberiaCNFT",
-            "Website": "https://cyberia.gg/",
-            "Function": "Spiritual Connection",
-            "Location": "Top of the Head",
-            "Collection": "Chakra Planets",
-            "Planet colour": "Purple"
-          }
-        }
-      }
-    },
-    "token_registry_metadata": null
-  }
-]
-```
-
 #### get_asset_summary
 
 Get the summary of an asset (total transactions exclude minting/total wallets
@@ -1736,6 +2586,63 @@ Example response:
     "epoch_no": 380,
     "block_height": 8112717,,
     "block_time": 1670493734
+  }
+]
+```
+
+#### get_asset_address_list
+
+Get the list of all addresses holding a given asset\
+[DEPRECATED - replaced by asset_addresses]/
+Parameters:\
+Asset Policy\
+Asset Name in hexadecimal format (optional), default: all policy assets\
+Returns: The list of payment addresses holding the given token\
+(including balances) [DEPRECATED - replaced by asset_addresses]\
+Example:\
+`asset_address_list = get_asset_address_list('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd','4379626572696130363936')`\
+Example response:
+
+```json
+[
+  {
+    "payment_address": "addr1qywp2795uk4uusknpseu3fcwy8ew57dnuaeutnxaa5j6ulp4u2anham4xet066yjc6xjxcymujvvwlfhj8k8gxfl2nvs73rvzh",
+    "quantity": "1"
+  }
+]
+```
+
+#### get_asset_policy_info
+
+Get the information for all assets under the same policy\
+(DEPRECATED - replaced by policy_asset_info)/
+Parameters: Asset Policy\
+Returns: The list of detailed information of assets under the same policy\
+[DEPRECATED - replaced by policy_asset_info]\
+Example:\
+`asset_policy_info = get_asset_policy_info('5d16cc1a177b5d9ba9cfa9793b07e60f1fb70fea1f8aef064415d114')`\
+Example response:
+
+```json
+[
+  {
+    "asset_name": "494147",
+    "asset_name_ascii": "IAG",
+    "fingerprint": "asset1z62wksuv4sjkl24kjgr2sm8tfr4p0cf9p32rca",
+    "minting_tx_hash": "8e010a2a46a0302e892bba4627bde44c03e09e9569b18e9818cdcc146f995469",
+    "total_supply": "1000000000000000",
+    "mint_cnt": 1,
+    "burn_cnt": 0,
+    "creation_time": 1649980800,
+    "minting_tx_metadata": null,
+    "token_registry_metadata": {
+      "url": "https://www.iagon.com/",
+      "logo": "iVBORw0KGgoAAAANSUhEUgAAAZ...FhIt8FTG3AAAAAElFTkSuQmCC",
+      "name": "IAGON",
+      "ticker": "IAG",
+      "decimals": 6,
+      "description": "IAGON is a shared storage economy that bridges decentralization and compliance for Web 3.0."
+    }
   }
 ]
 ```
@@ -2102,6 +3009,232 @@ Example response:
 ]
 ```
 
+#### get_pool_registrations
+
+A list all pool registrations initiated in the requested epoch\
+Parameters: Epoch\
+Returns: The list of pool registrations\
+Example:\
+`pool_registrations = get_pool_registrations(450)`\
+Example response:
+
+```json
+[
+  {
+    "pool_id_bech32": "pool1newmccddazerzanrdeeelvzk6vzh9stxn5n8ravshqa05n0t83u",
+    "tx_hash": "02e3644f9bc23e7f0d04addfee80b4f36ba1da774da3c26ec76a7c8ea43a44ac",
+    "block_hash": "8aaec0f14cf462e4fa6e7a3340c85f94c746f4397b027d55202f667bf36843fc",
+    "block_height": 9577227,
+    "epoch_no": 450,
+    "epoch_slot": 2118,
+    "active_epoch_no": 453
+  },
+  {
+    "pool_id_bech32": "pool1q9kwa675j2z53jecrs6pn3fqsc9ypxrsypu5dgu6hammqkagy22",
+    "tx_hash": "56a2a1d4cbb28b09f075a8c1db67f7ad721f003703a1d33aa1b9d9784f1fbccf",
+    "block_hash": "2b3f126ce6381437e9968a6a928a49cd4d1fe09c1cf63648c0fae2bcb4038805",
+    "block_height": 9578008,
+    "epoch_no": 450,
+    "epoch_slot": 17681,
+    "active_epoch_no": 453
+  },
+  {
+    "pool_id_bech32": "pool1yc6f3cqsc7jfh07hcns64v5cp8720mve870pgxf2wkr3u8l7tse",
+    "tx_hash": "5b99ddca8dda03fe9f21be8f36ece2fa22ec97df84d5257f322b948b73e92adb",
+    "block_hash": "2c15575b2ad41a337e375fed103b11eb8f42c086b7cbba23a126c84f24721554",
+    "block_height": 9578511,
+    "epoch_no": 450,
+    "epoch_slot": 28254,
+    "active_epoch_no": 453
+  },
+  {
+    "pool_id_bech32": "pool1m83drqwlugdt9jn7jkz8hx3pne53acfkd539d9cj8yr92dr4k9y",
+    "tx_hash": "42e10b531d571b9a750425c722e8093e6c447e5c5ba5d1ac9357aea179e597c0",
+    "block_hash": "272e94bab3c3a15c440e1e1bf9e430ad3d52d6c536bf60f5ba7ac56a16183d89",
+    "block_height": 9578947,
+    "epoch_no": 450,
+    "epoch_slot": 36901,
+    "active_epoch_no": 453
+  },
+  {
+    "pool_id_bech32": "pool1cuhcw4dhj577rzz847q5swfvrnthj2vn62hry6ljzp6g6v3ag77",
+    "tx_hash": "7c49f3d0360a10526c709b4bcddb33f31e1f74b005b5238eaddde2e4021f9630",
+    "block_hash": "3419666414394246cc24469409acd82f28995fcf3c58f860f7195dbcc1fe266a",
+    "block_height": 9580008,
+    "epoch_no": 450,
+    "epoch_slot": 58006,
+    "active_epoch_no": 452
+  },
+  {
+    "pool_id_bech32": "pool1l6aeyn35nkqkn9lqqlwqnpraakdzuukjrqprcrj3sctk6hhe32k",
+    "tx_hash": "d2a105e8c0822cbd22748c4aa18c28dfd0418709a98c316c32eb44c0d9c7e6d4",
+    "block_hash": "608fb2ebef32d8b10858c726c0a277b627423357eb2f79d739750af80b181131",
+    "block_height": 9580897,
+    "epoch_no": 450,
+    "epoch_slot": 76704,
+    "active_epoch_no": 453
+  },
+  {
+    "pool_id_bech32": "pool1uct8k7ruvu3dgl9hws4pj3tk9stzpls4evnys4r8q5vj2p9w92w",
+    "tx_hash": "27b530a2a786a127277786acf831096b0f1b1f5ae83ce91dfabdb0f7c65b1aa7",
+    "block_hash": "9552a30577df9acad319e2684b850f74f3f559df137b70efe670822bb1834607",
+    "block_height": 9581443,
+    "epoch_no": 450,
+    "epoch_slot": 88553,
+    "active_epoch_no": 452
+  },
+  {
+    "pool_id_bech32": "pool1n940lfxkd7z73qzj5y554yrletrmgg5x2eya9tpglh3uwcqfnud",
+    "tx_hash": "4d389be4801cc2b434913eaec34f21aa1cf531db390c63efa57fe3989cefa70b",
+    "block_hash": "f1867fe6bcd19fd6b01f25c9b1c976c16d4b5be7ba8b195c8ccb2e80f959c1e7",
+    "block_height": 9583181,
+    "epoch_no": 450,
+    "epoch_slot": 125441,
+    "active_epoch_no": 453
+  },
+  {
+    "pool_id_bech32": "pool13hxlxd6qa68fmfhrvvmasa0mjg30tj9p5v2lmgmgsmrp2rgzkfp",
+    "tx_hash": "cdf6afa4b2937f3cd66cceedbeb21fddccea4d05502e5081009d5aba3503002b",
+    "block_hash": "bd4b98742aba98ff82271b3652609ecb85a3ded9320f0f64a66aed436f58ebd9",
+    "block_height": 9587487,
+    "epoch_no": 450,
+    "epoch_slot": 213334,
+    "active_epoch_no": 453
+  },
+  {
+    "pool_id_bech32": "pool1nrmlaqy77txzd4lrayx92x76hmv97sldqgntqc49a820sf4ment",
+    "tx_hash": "44994b6b060e4e80e16bc698de63379d0097db856184d989cc0795d87ad9b7fe",
+    "block_hash": "e05cd9b36fb762a58d72d18618b491586afe29360f76740d55ea757a09411795",
+    "block_height": 9588831,
+    "epoch_no": 450,
+    "epoch_slot": 242054,
+    "active_epoch_no": 453
+  },
+  {
+    "pool_id_bech32": "pool1nrmlaqy77txzd4lrayx92x76hmv97sldqgntqc49a820sf4ment",
+    "tx_hash": "09cb3e784b8ee4173645b1e11fc8bd2d713d7fc1b364c9611eef673be4eae582",
+    "block_hash": "7aeec2cdc64e5cd1c61c173a84986e50f511637d3fe22822c34212e26f8c6210",
+    "block_height": 9588884,
+    "epoch_no": 450,
+    "epoch_slot": 243186,
+    "active_epoch_no": 453
+  },
+  {
+    "pool_id_bech32": "pool1nrmlaqy77txzd4lrayx92x76hmv97sldqgntqc49a820sf4ment",
+    "tx_hash": "7aa6b0d94d87783d73176a39238a3cabc62a27df43cd2762c229c51fa602660d",
+    "block_hash": "42a01085d4f264829f11019bfe3fb670e7e61935dd30b63a5c4ebb7093ee4fd1",
+    "block_height": 9589567,
+    "epoch_no": 450,
+    "epoch_slot": 256996,
+    "active_epoch_no": 453
+  },
+  {
+    "pool_id_bech32": "pool18qahj5ggudguk69g9aaztf5dvapmazql4hdvd7v0947j7gy4wqf",
+    "tx_hash": "1179715221bc784df721c194602029a6a62085766bbc16db622cbd2d0d974faf",
+    "block_hash": "eb9cd7d9566d497f6376971ba7c4d95fa428b1be586b66c89c694a0775d7de4c",
+    "block_height": 9591466,
+    "epoch_no": 450,
+    "epoch_slot": 297514,
+    "active_epoch_no": 453
+  },
+  {
+    "pool_id_bech32": "pool15zn2lqq4849ujttuthaycpamnyr8ae9k2pn2fkrlfzzsx4ek0tc",
+    "tx_hash": "175bf0a069d8e0346218adf9cee275587e7e84a46e9675f6fca38869accd94d4",
+    "block_hash": "ab68b679dc821c949b93732add66c4971939c24396f1b2399a17932e9b250811",
+    "block_height": 9591954,
+    "epoch_no": 450,
+    "epoch_slot": 308121,
+    "active_epoch_no": 453
+  },
+  {
+    "pool_id_bech32": "pool1c2utlagkpht4zj0jetsf245c258geuxnjqp9kf4f2z9rutx9dz4",
+    "tx_hash": "3be74ebb172cfc2ac41082f3a3c8973f02c6cb9799bf6f67959bd694626747b2",
+    "block_hash": "1b1166be3f20cd632babf0bd93e4c5a83be0593de0da713d042ee1eddf1ae9ba",
+    "block_height": 9593244,
+    "epoch_no": 450,
+    "epoch_slot": 334101,
+    "active_epoch_no": 453
+  },
+  {
+    "pool_id_bech32": "pool12jnulzs7j8lsku4r2a7q6tee6tt66872vwhqh8jxvgzn6837jtl",
+    "tx_hash": "016e41bb64e7035476dff7d9dcace3bb6b16ae51e4b3c6da2674be590cd93ac7",
+    "block_hash": "2c654e3fb4175ae986959511b35523d5a2ff4efb67a13a0ff37a97000f86950c",
+    "block_height": 9593277,
+    "epoch_no": 450,
+    "epoch_slot": 334984,
+    "active_epoch_no": 453
+  },
+  {
+    "pool_id_bech32": "pool18a8vhtlcz7t0mahmfdlgtpsspvae62egz936j3dt7f9ykr4j2av",
+    "tx_hash": "7f96bfaca34138de9655119b41b3f34c43adbd4718c0a2d54c3616b546a0ffc8",
+    "block_hash": "0c8e16208e52471e358580e200a9821ef96a44a9bdf93cd8a5e7a958b90388a9",
+    "block_height": 9593628,
+    "epoch_no": 450,
+    "epoch_slot": 342344,
+    "active_epoch_no": 452
+  },
+  {
+    "pool_id_bech32": "pool1vz59e00250xfjck8qd04kns89j56430wjzpdf37zfjnnyxttm37",
+    "tx_hash": "75f3103f3f8d403eb304591d798ae3e3f50f06bd666daa821ebc09e9b945d635",
+    "block_hash": "bc0f759ecd13ca14806186a6a51efc055c62b0cb58133c1dfb0d85ed4133b894",
+    "block_height": 9593801,
+    "epoch_no": 450,
+    "epoch_slot": 345816,
+    "active_epoch_no": 453
+  },
+  {
+    "pool_id_bech32": "pool1vz59e00250xfjck8qd04kns89j56430wjzpdf37zfjnnyxttm37",
+    "tx_hash": "d2da61083e80d53d965df6a7cd15ab951668bb1b813ab5b24066b37e9a98540b",
+    "block_hash": "a98dcc8c557d4e09a41aa2188bd0ea0f25339924c41c408bcdc394b5b2b863a3",
+    "block_height": 9593950,
+    "epoch_no": 450,
+    "epoch_slot": 349251,
+    "active_epoch_no": 453
+  }
+]
+```
+
+#### get_pool_retirements
+
+A list all pool retirements initiated in the requested epoch\
+Parameters: Epoch\
+Returns: The list of pool retirements\
+Example:\
+`pool_retirements = get_pool_retirements(450)`\
+Example response:
+
+```json
+[
+  {
+    "pool_id_bech32": "pool1xzfrmeux886ckdm2ekk3t3xe2ch5666m7zxa6dt0zrfm5mq2ksm",
+    "tx_hash": "5f3bd9d5f64a198536ac02b13e45f24732cca0c818fc10313995763890e5976a",
+    "block_hash": "aee6a51b81927d692e98e461ab70fe0c3b0474dfaafba50d94031e4359ef2d8a",
+    "block_height": 9579834,
+    "epoch_no": 450,
+    "epoch_slot": 54556,
+    "active_epoch_no": 451
+  },
+  {
+    "pool_id_bech32": "pool1m7rvxkzc6rseh8axp7ckk7kwlqzctnvqc4lqq5w84sn4g4j4e90",
+    "tx_hash": "a90f15070843765554f380636101eab57eb41c1055d099d13fd940715081eb04",
+    "block_hash": "2d0843e1fcb595a98efa7d63db61b9756a474a15d090841b73e0e66d3df20e55",
+    "block_height": 9584807,
+    "epoch_no": 450,
+    "epoch_slot": 158485,
+    "active_epoch_no": 451
+  },
+  {
+    "pool_id_bech32": "pool1g3wjq2yyg7hxteky9eym8fhc9xdtut63ss46a96gxndhqjgerqv",
+    "tx_hash": "26cdc11b9fd7412758c8dad42a4b0bd76776fb9d711e3d649a5152441555e8b9",
+    "block_hash": "aef604b4f652b6e276f206c204e30e38c2c17894f6e5e388b75cbeba5f88e784",
+    "block_height": 9593197,
+    "epoch_no": 450,
+    "epoch_slot": 332983,
+    "active_epoch_no": 451
+  }
+]
+```
+
 #### get_pool_relays
 
 A list of registered relays for all currently registered/retiring
@@ -2255,6 +3388,29 @@ Example response:
 
 ### Script
 
+#### get_script_info
+
+List of script information for given script hashes\
+Parameters: Script hash(es) as string (for one script hash) or list
+(for a list of script hashes)\
+Returns The list of information for the requested scripts\
+Example:\
+`script_info = get_script_info('2e221993d37997f1023ad2b207bf75ef0e206de840224c63e94bacc9')`\
+Example response:
+
+```json
+[
+  {
+    "script_hash": "2e221993d37997f1023ad2b207bf75ef0e206de840224c63e94bacc9",
+    "creation_tx_hash": "2da2b7f9b5bd4961e7d347aeed9feeef23f66c1c6d9016d9f8536f8d39445e28",
+    "type": "plutusV2",
+    "value": null,
+    "bytes": "5906ce010000...4980101010001",
+    "size": 1745
+  }
+]
+```
+
 #### get_native_script_list
 
 List of all existing native script hashes along with their creation
@@ -2370,6 +3526,71 @@ Example response:
 ]
 ```
 
+#### get_script_utxos
+
+List of all UTxOs for a given script hash\
+Parameters:\
+Script hash: The script hash\
+Extended:  Boolean which controls whether certain optional fields supported\
+by a given endpoint are populated as a part of the request\
+Returns: The list of UTxOs for a given script hash\
+Example:\
+`script_utxos = get_script_utxos('2e221993d37997f1023ad2b207bf75ef0e206de840224c63e94bacc9')`\
+Example response:
+
+```json
+[
+  {
+    "tx_hash": "2da2b7f9b5bd4961e7d347aeed9feeef23f66c1c6d9016d9f8536f8d39445e28",
+    "tx_index": 0,
+    "address": "addr1zy7z86jxa4dyflaf3rwpt5jlnrdahkt2r4737khf7huv9q5nc4gwrvu5dcuccayqddwpx0l492czzxp7929792qv4grqnc0lf0",
+    "value": "200000000",
+    "stake_address": "stake1uxfu258pkw2xuwvvwjqxkhqn8l6j4vpprqlz4zlz4qx25ps4mt0qn",
+    "payment_cred": "3c23ea46ed5a44ffa988dc15d25f98dbdbd96a1d7d1f5ae9f5f8c282",
+    "epoch_no": 449,
+    "block_height": 9564735,
+    "block_time": 1700347692,
+    "datum_hash": "51fa1feba19dd159a13098a686ad8eb7c273012fc4f64497d474cc322d3578cf",
+    "inline_datum": null,
+    "reference_script": null,
+    "asset_list": null,
+    "is_spent": false
+  },
+  {
+    "tx_hash": "2da2b7f9b5bd4961e7d347aeed9feeef23f66c1c6d9016d9f8536f8d39445e28",
+    "tx_index": 2,
+    "address": "addr1qxxedmtge6np74z5nd9hu72fak9zntc6zu2434u82pnvjmcr378a5cgtgsn6ktj22vew8z9rtrxddfkrh574q28kek0qrtfjqq",
+    "value": "263206568",
+    "stake_address": "stake1uypclr76vy95gfat9e99xvhr3z343nxk5mpm602s9rmvm8synpexp",
+    "payment_cred": "8d96ed68cea61f54549b4b7e7949ed8a29af1a171558d7875066c96f",
+    "epoch_no": 449,
+    "block_height": 9564735,
+    "block_time": 1700347692,
+    "datum_hash": null,
+    "inline_datum": null,
+    "reference_script": null,
+    "asset_list": null,
+    "is_spent": true
+  },
+  {
+    "tx_hash": "2da2b7f9b5bd4961e7d347aeed9feeef23f66c1c6d9016d9f8536f8d39445e28",
+    "tx_index": 1,
+    "address": "addr1qxxedmtge6np74z5nd9hu72fak9zntc6zu2434u82pnvjmcr378a5cgtgsn6ktj22vew8z9rtrxddfkrh574q28kek0qrtfjqq",
+    "value": "1262830",
+    "stake_address": "stake1uypclr76vy95gfat9e99xvhr3z343nxk5mpm602s9rmvm8synpexp",
+    "payment_cred": "8d96ed68cea61f54549b4b7e7949ed8a29af1a171558d7875066c96f",
+    "epoch_no": 449,
+    "block_height": 9564735,
+    "block_time": 1700347692,
+    "datum_hash": null,
+    "inline_datum": null,
+    "reference_script": null,
+    "asset_list": null,
+    "is_spent": true
+  }
+]
+```
+
 #### get_datum_info
 
 List of datum information for given datum hashes\
@@ -2392,324 +3613,42 @@ Example response:
 ]
 ```
 
-### Stake Account
+### Ogmios
 
-#### get_account_list
+#### ogmios
 
-Get a list of all accounts\
-Parameters:\
-The offset (optional) to start from, default 0\
-The maximum number of accounts to return (optional), default 0 (no limit)\
-Returns: The list of accounts dictionaries\
-This takes a very long time to execute (about one hour), because the total
-number of accounts is in the millions range.\
+Multiple ogmios queries are supported, you can read about them\
+[here](https://api.koios.rest/#tag--Ogmios).
+
+Query Examples
+
+Query the current tip of the Network\
 Example:\
-`account_list = get_account_list()`\
+`tip = get_ogmios("2.0", "queryNetwork/tip")`\
 Example response:
 
 ```json
-[
-  {
-    "id": "stake1uyfmzu5qqy70a8kq4c8rw09q0w0ktfcxppwujejnsh6tyrg5c774g"
+{
+  "jsonrpc": "2.0",
+  "method": "queryNetwork/tip",
+  "result": {
+    "slot": 109429505,
+    "id": "d7d8b03d8f2def0b2239f17374900e281bbe548fbaaa45b014baac8c8a1bd48b"
   },
-  {
-    "id": "stake1uydhlh7f2kkw9eazct5zyzlrvj32gjnkmt2v5qf6t8rut4qwch8ey"
-  },
-  {
-    "id": "stake1uxsgkz6fvgws5wn80vckwvghzapnhfmf0672nmmkm2tt9fcaau5sw"
-  },
-  ...
-]
+  "id": null
+}
 ```
 
-#### get_account_info
-
-Get the account information for given stake addresses (accounts)\
-Parameters: Stake address(es), as a string (for one address) or a list
-(for multiple addresses)\
-Returns: The list of account information dictionaries\
+Query the current block height\
 Example:\
-`account_info = get_account_info('stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j')`\
-Example response:
+`block_height = get_ogmios("2.0", "queryNetwork/blockHeight")`\
+Example response:\
 
 ```json
-[
-  {
-    "stake_address": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
-    "status": "registered",
-    "delegated_pool": "pool18r2y72aue5nmv489xtnfxl36vzusq95qst6urd87yd5hgzms04c",
-    "total_balance": "20418617",
-    "utxo": "20418617",
-    "rewards": "0",
-    "withdrawals": "0",
-    "rewards_available": "0",
-    "reserves": "0",
-    "treasury": "0"
-  }
-]
-```
-
-#### get_account_utxos
-
-Get a list of assets registered via token registry on github\
-Parameters: Stake address\
-Returns: The list of all UTxOs at all payment addresses associated with
-the stake address\
-Example:\
-`account_utxos = get_account_utxos('stake1ux5r7myfhycj234wpqyhh3h8skgwvq0hsstpw52f66857uq95cas6')`
-Example response:
-
-```json
-[
-  {
-    "tx_hash": "215bcaa7b13c491db28d5525d9b2a13a7d8ddabd563da8113a449ab33a6a60be",
-    "tx_index": 2,
-    "address": "addr1q9dwzug2qzdsqvpvrn886nqdtwr02n9kxtwqsxce2gacvedg8akgnwf3y4r2uzqf00rw0pvsucql0pqkzag5n450facqeuerev",
-    "value": "85813474",
-    "block_height": 8214437,
-    "block_time": 1672580966
-  },
-  {
-    "tx_hash": "1eb26dce2f471fbe32aa8cb303f5e8d8078d1da4dbbb78a7bc135036bb3f2f9c",
-    "tx_index": 0,
-    "address": "addr1q88u9gz83nhs9p5pud9kyucx8sg0ygae2p9a4g2p2y55c4ag8akgnwf3y4r2uzqf00rw0pvsucql0pqkzag5n450facqqyd2n7",
-    "value": "110094569",
-    "block_height": 8406870,
-    "block_time": 1676555396
-  },
-  {
-    "tx_hash": "d530de851c2f867f2174c1073b04bdb9f2e2d16029fcfb488e8150ba66976d43",
-    "tx_index": 0,
-    "address": "addr1qxyp2wsafavj47dpc6uqgqx8se3969jn4crfk7y4zwd7vfag8akgnwf3y4r2uzqf00rw0pvsucql0pqkzag5n450facqlyvudm",
-    "value": "1249900",
-    "block_height": 8489290,
-    "block_time": 1678248733
-  },
-  ...
-  {
-    "tx_hash": "d8e3ca8b36f9a785ff33f01aa5460f9248ea94acd621ea187093206b04aa6e30",
-    "tx_index": 0,
-    "address": "addr1q8txa88kt6rpdv3zzn8ghx7u4udf6rpj690rfdvlqn35fldg8akgnwf3y4r2uzqf00rw0pvsucql0pqkzag5n450facqplx97u",
-    "value": "54000000",
-    "block_height": 8759577,
-    "block_time": 1683809438
-  }
-]
-```
-
-#### get_account_info_cached
-
-Get the cached account information for given stake addresses (accounts)\
-Parameters: Stake address(es), as a string (for one address) or a list
-(for multiple addresses)\
-Returns: The list of account information dictionaries\
-Example:\
-`account_info_cached = get_account_info_cached('stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j')`\
-Example response:
-
-```json
-[
-  {
-    "stake_address": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
-    "status": "registered",
-    "delegated_pool": "pool18r2y72aue5nmv489xtnfxl36vzusq95qst6urd87yd5hgzms04c",
-    "total_balance": "20418617",
-    "utxo": "20418617",
-    "rewards": "0",
-    "withdrawals": "0",
-    "rewards_available": "0",
-    "reserves": "0",
-    "treasury": "0"
-  }
-]
-```
-
-#### get_account_rewards
-
-Get the full rewards history (including MIR) for given stake addresses
-(accounts)\
-Parameters:\
-Stake address(es), as a string (for one address) or a list
-(for multiple addresses)\
-Epoch (optional), default: current epoch\
-Returns: The list of rewards dictionaries by account (stake address)\
-Example:\
-`account_rewards = get_account_rewards('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`\
-Example response:
-
-```json
-[
-  {
-    "stake_address": "stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z",
-    "rewards": [
-      {
-        "earned_epoch": 233,
-        "spendable_epoch": 235,
-        "amount": "3990414",
-        "type": "member",
-        "pool_id": "pool1jdhjfcu34lq88rypdtslzwyf27uh0h3apcr9mjd68zhc69r29fy"
-      },
-      {
-        "earned_epoch": 234,
-        "spendable_epoch": 236,
-        "amount": "2792902",
-        "type": "member",
-        "pool_id": "pool1jdhjfcu34lq88rypdtslzwyf27uh0h3apcr9mjd68zhc69r29fy"
-      },
-      ...
-      {
-        "earned_epoch": 379,
-        "spendable_epoch": 381,
-        "amount": "6496870",
-        "type": "member",
-        "pool_id": "pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd"
-      }
-    ]
-  }
-]
-```
-
-#### get_account_updates
-
-Get the account updates (registration, deregistration, delegation and
-withdrawals) for given stake addresses (accounts)\
-Parameters: Stake address(es), as a string (for one address) or a list
-(for multiple addresses)\
-Returns: The list of account updates dictionaries by account (stake address)\
-Example:\
-`account_updates = get_account_updates('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`\
-Example response:
-
-```json
-[
-  {
-    "stake_address": "stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z",
-    "updates": [
-      {
-        "action_type": "withdrawal",
-        "tx_hash": "487bc75f00fe934dad33683271cca8540fe868eef7025962678f179a1a111ecc",
-        "epoch_no": 324,
-        "epoch_slot": 70687,
-        "absolute_slot": 54675487,
-        "block_time": 1646241778
-      },
-      {
-        "action_type": "withdrawal",
-        "tx_hash": "eb3ffa01f434e210716151fd9001af82529e371a91c20af02512942f988a2119",
-        "epoch_no": 269,
-        "epoch_slot": 339679,
-        "absolute_slot": 31184479,
-        "block_time": 1622750770
-      },
-      ...
-      {
-        "action_type": "withdrawal",
-        "tx_hash": "b056dcbff9b908e1bd3ed015466f64486538058ba3553dbf885b216d88343370",
-        "epoch_no": 252,
-        "epoch_slot": 58375,
-        "absolute_slot": 23559175,
-        "block_time": 1615125466
-      }
-    ]
-  }
-]
-```
-
-#### get_account_addresses
-
-Get all addresses associated with given staking accounts\
-Parameters: \
-Stake address(es), as a string (for one address) or a list
-(for multiple addresses)\
-First Only boolean (optional): Only return the first result (default False)\
-Empty boolean (optional): Include zero quantity entries (default True)\
-Returns: The list of addresses dictionaries by account (stake address)\
-Example:\
-`account_addresses = get_account_addresses('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`\
-Example response:
-
-```json
-[
-  {
-    "stake_address": "stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z",
-    "addresses": [
-      "addr1qxwjxvzv8rmyutcjp0647w4n05wv7aez9jdmqcxn8a9sshll0qre4udr9ny9sj8020uxher08k44ssl9pxlk3w5f4x2qjyz9yf"
-    ]
-  }
-]
-```
-
-#### get_account_assets
-
-Get the native asset balance of given accounts\
-Parameters: Stake address(es), as a string (for one address) or a list
-(for multiple addresses)\
-Returns: The list of account assets dictionaries by account (stake address)\
-Example:\
-`account_assets = get_account_assets('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`\
-Example response:
-
-```json
-[
-  {
-    "stake_address": "stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z",
-    "asset_list": [
-      {
-        "policy_id": "0029cb7c88c7567b63d1a512c0ed626aa169688ec980730c0473b913",
-        "asset_name": "6c70202302",
-        "fingerprint": "asset1awuysx8hc686uz0dykmvmc7jfut2ulceucf6yc",
-        "quantity": "418089787"
-      },
-      {
-        "policy_id": "0029cb7c88c7567b63d1a512c0ed626aa169688ec980730c0473b913",
-        "asset_name": "6c7020f302",
-        "fingerprint": "asset1mcq0awl6awlaqg0ywukf94q0mnau263l9rght5",
-        "quantity": "586811406"
-      },
-      ...
-      {
-        "policy_id": "ea2d23f1fa631b414252824c153f2d6ba833506477a929770a4dd9c2",
-        "asset_name": "4d414442554c",
-        "fingerprint": "asset1q0kwjy669gmsqpvxp4lr0sp26pdm0dafme3qp2",
-        "quantity": "500"
-      }
-    ]
-  }
-]
-```
-
-#### get_account_history
-
-Get the staking history of given stake addresses (accounts)\
-Parameters: Stake address(es), as a string (for one address) or a list
-(for multiple addresses)\
-Returns: The list of staking history dictionaries by account (stake address)\
-Example:\
-`account_history = get_account_history('stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z')`\
-Example response:
-
-```json
-[
-  {
-    "stake_address": "stake1u8lhspu67x3jejzcfrh487rtu3hnm26cg0jsn0mgh2y6n9q9ve26z",
-    "history": [
-      {
-        "pool_id": "pool1jdhjfcu34lq88rypdtslzwyf27uh0h3apcr9mjd68zhc69r29fy",
-        "epoch_no": 233,
-        "active_stake": "4655706122"
-      },
-      {
-        "pool_id": "pool1jdhjfcu34lq88rypdtslzwyf27uh0h3apcr9mjd68zhc69r29fy",
-        "epoch_no": 234,
-        "active_stake": "5020706122"
-      },
-      ...
-      {
-        "pool_id": "pool12wpfng6cu7dz38yduaul3ngfm44xhv5xmech68m5fwe4wu77udd",
-        "epoch_no": 381,
-        "active_stake": "10247851319"
-      }
-    ]
-  }
-]
+{
+  "jsonrpc": "2.0",
+  "method": "queryNetwork/blockHeight",
+  "result": 9596049,
+  "id": null
+}
 ```

@@ -20,7 +20,7 @@ def koios_get_request(url: str, parameters: dict) -> list:
         headers["Api-Token"] = "Bearer " + KOIOS_API_TOKEN
 
     ordered_requests = [
-        "block",
+        "blocks",
         "account_txs",
         "asset_txs",
         "pool_blocks",

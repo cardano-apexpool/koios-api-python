@@ -106,7 +106,7 @@ def get_asset_info(assets: [str, list]) -> list:
 def get_asset_utxos(assets: [str, list], extended: bool = False) -> list:
     """
     https://api.koios.rest/#post-/asset_utxos
-    Get the UTXO information of a list of assets including
+    Get the UTXO information of a list of assets
     :param assets: Assets as string (for one asset) or list (for multiple assets)
     :param extended: (optional) Include certain optional fields are populated as a part of the call
     :returns: The list UTXOs for given asset list

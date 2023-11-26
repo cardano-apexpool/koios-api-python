@@ -54,7 +54,19 @@ def get_reserve_withdrawals() -> list:
     :returns: The list of withdrawals from reserves against stake accounts
     """
     url = API_BASE_URL + "/reserve_withdrawals"
-    return koios_get_request(url, {})
+    parameters = {}
+    withdrawals = []
+    offset = 0
+    while True:
+        if offset > 0:
+            parameters["offset"] = offset
+        resp = koios_get_request(url, parameters)
+        withdrawals += resp
+        if len(resp) < API_RESP_COUNT:
+            break
+        else:
+            offset += len(resp)
+    return withdrawals
 
 
 def get_treasury_withdrawals() -> list:
@@ -64,4 +76,16 @@ def get_treasury_withdrawals() -> list:
     :returns: The list of withdrawals from treasury against stake accounts
     """
     url = API_BASE_URL + "/treasury_withdrawals"
-    return koios_get_request(url, {})
+    parameters = {}
+    withdrawals = []
+    offset = 0
+    while True:
+        if offset > 0:
+            parameters["offset"] = offset
+        resp = koios_get_request(url, parameters)
+        withdrawals += resp
+        if len(resp) < API_RESP_COUNT:
+            break
+        else:
+            offset += len(resp)
+    return withdrawals
