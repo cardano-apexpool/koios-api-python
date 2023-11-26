@@ -8,6 +8,23 @@ import requests
 from .__config__ import *
 
 
+def get_error_message(response: requests.Response) -> str:
+    """
+    Get the error message from the response
+    :param response: The response to the request
+    :return: The error message
+    """
+    try:
+        error_message = json.loads(response.text)["message"]
+    except json.decoder.JSONDecodeError:
+        error_message = response.text
+        if not error_message:
+            error_message = response.reason
+        if "deny-reason" in response.headers:
+            error_message += " " + response.headers["deny-reason"]
+    return error_message
+
+
 def koios_get_request(url: str, parameters: dict) -> list:
     """
     Create a GET request to Koios API using the "requests" library and return the text of the response as a list
@@ -17,7 +34,7 @@ def koios_get_request(url: str, parameters: dict) -> list:
     """
     headers = {"Accept": "application/json", "Content-Type": "application/json"}
     if KOIOS_API_TOKEN:
-        headers["Api-Token"] = "Bearer " + KOIOS_API_TOKEN
+        headers["Authorization"] = "Bearer " + KOIOS_API_TOKEN
 
     ordered_requests = [
         "blocks",
@@ -39,10 +56,12 @@ def koios_get_request(url: str, parameters: dict) -> list:
                 resp = json.loads(response.text)
                 break
             else:
-                error_message = json.loads(response.text)["message"]
+                error_message = get_error_message(response)
                 logger.warning(
                     f"status code: {response.status_code} ({error_message}), retrying..."
                 )
+                logger.error(inspect.stack()[-1])
+                sleep(SLEEP_TIME)
         except Exception as exc:
             logger.exception(
                 f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
@@ -69,7 +88,7 @@ def koios_post_request(url: str, parameters: dict, headers=None) -> list:
     if not headers:
         headers = {"Accept": "application/json", "Content-Type": "application/json"}
     if KOIOS_API_TOKEN:
-        headers["Api-Token"] = "Bearer " + KOIOS_API_TOKEN
+        headers["Authorization"] = "Bearer " + KOIOS_API_TOKEN
     ordered_requests = [
         "utxo_info",
         "tx_info",
@@ -97,10 +116,12 @@ def koios_post_request(url: str, parameters: dict, headers=None) -> list:
                 resp = json.loads(response.text)
                 break
             else:
-                error_message = json.loads(response.text)["message"]
+                error_message = get_error_message(response)
                 logger.warning(
                     f"status code: {response.status_code} ({error_message}), retrying..."
                 )
+                logger.error(inspect.stack()[-1])
+                sleep(SLEEP_TIME)
         except Exception as exc:
             logger.exception(
                 f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"

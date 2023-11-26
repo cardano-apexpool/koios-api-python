@@ -15,7 +15,7 @@ def get_address_info(addr: [str, list]) -> list:
         parameters["_addresses"] = addr
     else:
         parameters["_addresses"] = [addr]
-    return koios_get_request(url, parameters)
+    return koios_post_request(url, parameters)
 
 
 def get_address_utxos(addr: [str, list], extended: bool = False) -> list:
