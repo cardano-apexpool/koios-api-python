@@ -1,0 +1,44 @@
+# Pylint configuration.
+#
+# .pylintrc guide: https://github.com/PyCQA/pylint/blob/cfc393a8dff9ec09bd2fcb25857e772ae04a4991/examples/pylintrc
+#
+
+[MAIN]
+extension-pkg-whitelist=
+    pydantic, # binary module validation, Pydantic/Pylint recommendation.
+
+ignore=
+    LICENSE,
+    .pylintrc,
+
+ignore-patterns=
+    ^(.+).ini$,
+    ^(.+).md$,
+    ^(.+).png$,
+    ^(.+).sh$,
+    ^(.+).service$,
+    ^(.+).json,
+    ^(.+).yml,
+    ^(.+).yaml,
+    ^(.+).toml,
+    ^\.,
+
+ignore-paths=
+    requirements/.,
+    tests/fixtures/vcrpy/.,
+    Makefile,
+
+[MESSAGES CONTROL]
+
+disable =
+    W0105,  # String statement has no effect
+    C0115,  # No docstring for Class.
+    C0301, 	# line-length too long, see Black documented recommendations.
+    W0401,  # Wildcard import.
+    W0614,  # Unused imports
+    W0718,  # Catching too general exception Exception
+    R0801,  # Similar lines in 2 files
+    W1203,  # Use lazy % formatting in logging functions
+    R1723,  # Unnecessary "else" after "break"
+
+init-hook='import sys; sys.path.append("src/koios_api")'
