@@ -35,19 +35,19 @@ jobs:
             experimental: true
     steps:
       - name: "check out repository"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v4"
         with:
           submodules: 'true'
       - name: "set up python ${{ matrix.python-version }}"
-        uses: "actions/setup-python@v2"
+        uses: "actions/setup-python@v4"
         with:
           python-version: "${{ matrix.python-version }}"
       - name: "get pip cache dir"
         id: "pip-cache"
         run: |
-          echo "::set-output name=dir::$(pip cache dir)"
+          echo "{name}={$(pip cache dir)}" >> $GITHUB_OUTPUT
       - name: "cache pip packages"
-        uses: "actions/cache@v2"
+        uses: "actions/cache@v3"
         with:
           path: "${{ steps.pip-cache.outputs.dir }}"
           key: "${{ runner.os }}-pip-${{ hashFiles('**/base.txt', '**/local.txt') }}"

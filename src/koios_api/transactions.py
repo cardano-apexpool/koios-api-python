@@ -2,22 +2,6 @@
 from .library import *
 
 
-def get_tx_info(txs: [str, list]) -> list:
-    """
-    https://api.koios.rest/#post-/tx_info
-    Get detailed information about transaction(s)
-    :param txs: transaction hash as a string (for one transaction) or list (for multiple transactions)
-    :returns: The list of detailed information about transaction(s)
-    """
-    url = API_BASE_URL + "/tx_info"
-    parameters = {}
-    if isinstance(txs, list):
-        parameters["_tx_hashes"] = txs
-    else:
-        parameters["_tx_hashes"] = [txs]
-    return koios_post_request(url, parameters)
-
-
 def get_utxo_info(utxos: [str, list], extended: bool = False) -> list:
     """
     https://api.koios.rest/#post-/utxo_info
@@ -34,6 +18,22 @@ def get_utxo_info(utxos: [str, list], extended: bool = False) -> list:
         parameters["_utxo_refs"] = [utxos]
     if isinstance(extended, bool):
         parameters["_extended"] = str(extended).lower()
+    return koios_post_request(url, parameters)
+
+
+def get_tx_info(txs: [str, list]) -> list:
+    """
+    https://api.koios.rest/#post-/tx_info
+    Get detailed information about transaction(s)
+    :param txs: transaction hash as a string (for one transaction) or list (for multiple transactions)
+    :returns: The list of detailed information about transaction(s)
+    """
+    url = API_BASE_URL + "/tx_info"
+    parameters = {}
+    if isinstance(txs, list):
+        parameters["_tx_hashes"] = txs
+    else:
+        parameters["_tx_hashes"] = [txs]
     return koios_post_request(url, parameters)
 
 
