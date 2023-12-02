@@ -134,17 +134,17 @@ metadata labels\
 to the network\
 [get_tx_status](#get_tx_status) Get the number of block confirmations
 for a given transaction hash list\
-[get_tx_utxos](#get_tx_utxos) Get UTxO set (inputs/outputs) of transactions
-[DEPRECATED - Use /utxo_info instead]
 
-[Stake Account](#Stake Account)\
+[Stake Account](#Stake_Account)\
 [get_account_list](#get_account_list) Get a list of all accounts\
 [get_account_info](#get_account_info) Get the account information for
 given stake addresses (accounts)\
-[get_account_utxos](#get_account_utxos) Get a list of all UTxOs for a
-given stake address (account)\
 [get_account_info_cached](#get_account_info_cached) Get the cached account
 information for given stake addresses (accounts)\
+[get_account_utxos](#get_account_utxos) Get a list of all Txs for a
+given stake address (account)\
+[get_account_txs](#get_account_txs) Get a list of all UTxOs for a
+given stake address (account)\
 [get_account_rewards](#get_account_rewards) Get the full rewards history
 (including MIR) for given stake addresses (accounts)\
 [get_account_updates](#get_account_updates) Get the account updates
@@ -157,7 +157,90 @@ given accounts\
 [get_account_history](#get_account_history) Get the staking history of
 given stake addresses (accounts)
 
-### Stake Account
+[Address](#Address)\
+[get_address_info](#get_address_info) Get the transaction hash list of input
+address array, optionally filtering after specified block height (inclusive)\
+[get_address_utxos](#get_address_utxos) Get UTxO set for given addresses\
+[get_credential_utxos](#get_credential_utxos) Get a list of UTxO against input
+payment credential array including their balances\
+[get_address_txs](#get_address_txs) Get the transaction hash list of input
+address array, optionally filtering after specified block height (inclusive)\
+[get_credential_txs](#get_credential_txs) Get the transaction hash list
+of input payment credential array, optionally filtering after specified block
+height (inclusive)\
+[get_address_assets](#get_address_assets) Get the list of all the assets
+(policy, name and quantity) for given addresses
+
+[Asset](#Asset)\
+[get_asset_list](#get_asset_list) Get the list of all native assets
+(paginated)\
+[get_policy_asset_list](#get_policy_asset_list) Get the list of asset under
+the given policy (including balances)\
+[get_asset_token_registry](#get_asset_token_registry) Get a list of assets
+registered via token registry on github\
+[get_asset_info](#get_asset_info) Get the information of a list of assets
+including first minting & token registry metadata\
+[get_asset_utxos](#get_asset_utxos) Get the UTXO information of a list of
+assets\
+[get_asset_history](#get_asset_history) Get the mint/burn history
+of an asset\
+[get_asset_addresses](#get_asset_addresses) Get the list of all addresses
+holding a given asset\
+[get_asset_nft_address](#get_asset_nft_address) Get the address where specified
+NFT currently reside on.\
+[get_policy_asset_addresses](#get_policy_asset_addresses) Get the list of
+addresses with quantity for each asset on the given policy\
+[get_policy_asset_info](#get_policy_asset_info) Get the information for
+all assets under the same policy\
+[get_asset_summary](#get_asset_summary) Get the summary of an asset
+(total transactions exclude minting/total wallets include only wallets
+with asset balance)\
+[get_asset_txs](#get_asset_txs) Get the list of all asset transaction
+hashes (the newest first)\
+
+[Pool](#Pool)\
+[get_pool_list](#get_pool_list) A list of all currently registered/retiring
+(not retired) pools\
+[get_pool_info](#get_pool_info) Current pool statuses and details for
+a specified list of pool ids\
+[get_pool_stake_snapshot](#get_pool_stake_snapshot) Returns Mark, Set and Go
+stake snapshots for the selected pool, useful for leaderlog calculation\
+[get_pool_delegators](#get_pool_delegators) Returns information about live
+delegators for a given pool\
+[get_pool_delegators_history](#get_pool_delegators_history) Returns information
+about active delegators (incl. history) for a given pool and epoch number
+(all epochs if not specified)\
+[get_pool_blocks](#get_pool_blocks) Returns information about blocks minted
+by a given pool for all epochs (or _epoch_no if provided)\
+[get_pool_history](#get_pool_history) Returns information about pool stake,
+block and reward history in a given epoch (or all epochs that pool existed for,
+in descending order if no epoch number was provided)\
+[get_pool_updates](#get_pool_updates) Returns all pool updates for all pools
+or only updates for specific pool if specified\
+[get_pool_registrations](#get_pool_registrations) Return all pool registrations
+initiated in the requested epoch\
+[get_pool_retirements](#get_pool_retirements) Return all pool retirements
+initiated in the requested epoch\
+[get_pool_relays](#get_pool_relays) A list of registered relays for all
+currently registered/retiring (not retired) pools\
+[get_pool_metadata](#get_pool_metadata) A list of registered relays for all
+currently registered/retiring (not retired) pools\
+[get_retiring_pools](#get_retiring_pools) Get the retiring stake pools list
+
+[Script](#Script)\
+[get_script_info](#get_script_info) List of script information for given
+script hashes\
+[get_native_script_list](#get_native_script_list) The list of all existing
+native script hashes along with their creation transaction hashes\
+[get_plutus_script_list](#get_plutus_script_list) The list of all existing
+native script hashes along with their creation transaction hashes\
+[get_script_redeemers](#get_script_redeemers) The list of all redeemers
+for a given script hash\
+[get_script_utxos](#get_script_utxos) List of all UTXOs for a given script hash\
+[get_datum_info](#get_datum_info) The list of datum information for
+given datum hashes
+
+### Stake_Account
 
 #### get_account_list
 
@@ -214,9 +297,36 @@ Example response:
 ]
 ```
 
+#### get_account_info_cached
+
+Get the cached account information for given stake addresses (accounts)\
+Parameters: Stake address(es), as a string (for one address) or a list
+(for multiple addresses)\
+Returns: The list of account information dictionaries\
+Example:\
+`account_info_cached = get_account_info_cached('stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j')`\
+Example response:
+
+```json
+[
+  {
+    "stake_address": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
+    "status": "registered",
+    "delegated_pool": "pool18r2y72aue5nmv489xtnfxl36vzusq95qst6urd87yd5hgzms04c",
+    "total_balance": "20418617",
+    "utxo": "20418617",
+    "rewards": "0",
+    "withdrawals": "0",
+    "rewards_available": "0",
+    "reserves": "0",
+    "treasury": "0"
+  }
+]
+```
+
 #### get_account_utxos
 
-Get a list of assets registered via token registry on github\
+Get a list of all UTxOs for given stake addresses (account)s\
 Parameters: Stake address\
 Returns: The list of all UTxOs at all payment addresses associated with
 the stake address\
@@ -262,30 +372,49 @@ Example response:
 ]
 ```
 
-#### get_account_info_cached
+#### get_account_txs
 
-Get the cached account information for given stake addresses (accounts)\
-Parameters: Stake address(es), as a string (for one address) or a list
-(for multiple addresses)\
-Returns: The list of account information dictionaries\
+Get a list of all Txs for a given stake address (account)\
+Parameters: Stake address\
+Returns: The list of all transaction hashes for all payment addresses associated with
+the stake address\
 Example:\
-`account_info_cached = get_account_info_cached('stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j')`\
+`account_txs = get_account_txs('stake1uyrx65wjqjgeeksd8hptmcgl5jfyrqkfq0xe8xlp367kphsckq250')`
 Example response:
 
 ```json
 [
   {
-    "stake_address": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
-    "status": "registered",
-    "delegated_pool": "pool18r2y72aue5nmv489xtnfxl36vzusq95qst6urd87yd5hgzms04c",
-    "total_balance": "20418617",
-    "utxo": "20418617",
-    "rewards": "0",
-    "withdrawals": "0",
-    "rewards_available": "0",
-    "reserves": "0",
-    "treasury": "0"
-  }
+    "tx_hash": "5e209eee15637645198ddf22f84f905d50b6103661da98597eb6da0ef7245fa1",
+    "epoch_no": 251,
+    "block_height": 5427308,
+    "block_time": 1615051845
+  },
+  {
+    "tx_hash": "a6981b394e5cf9b801d2c81b81b5aecaf556abd8eca5a00067e2d53c2f6eebab",
+    "epoch_no": 251,
+    "block_height": 5427334,
+    "block_time": 1615052248
+  },
+  {
+    "tx_hash": "e9504ad3c28120abb0fab3504f09a4f9f203c62159a53d74eb8e206fda2cd4b5",
+    "epoch_no": 252,
+    "block_height": 5431176,
+    "block_time": 1615130928
+  },
+  {
+    "tx_hash": "7605d6442d46bb2de29f251f893b8ddccd424ad107240e787dda0bfcb552713c",
+    "epoch_no": 252,
+    "block_height": 5433510,
+    "block_time": 1615179291
+  },
+  {
+    "tx_hash": "645ed2e34370b0d8c1385c07d3a85b337ef6982e2686528c4b90ecaef6b3c35b",
+    "epoch_no": 252,
+    "block_height": 5436849,
+    "block_time": 1615247429
+  },
+  ...
 ]
 ```
 
@@ -478,95 +607,6 @@ Example response:
   }
 ]
 ```
-
-[Address](#Address)\
-[get_address_info](#get_address_info) Get the transaction hash list of input
-address array, optionally filtering after specified block height (inclusive)\
-[get_address_utxos](#get_address_utxos) Get UTxO set for given addresses\
-[get_credential_utxos](#get_credential_utxos) Get a list of UTxO against input
-payment credential array including their balances\
-[get_address_txs](#get_address_txs) Get the transaction hash list of input
-address array, optionally filtering after specified block height (inclusive)\
-[get_address_assets](#get_address_assets) Get the list of all the assets
-(policy, name and quantity) for given addresses\
-[get_credential_txs](#get_credential_txs) Get the transaction hash list
-of input payment credential array, optionally filtering after specified block
-height (inclusive)\
-[get_address_assets](#get_address_assets) Get the list of all the assets
-(policy, name and quantity) for given addresses
-
-[Asset](#Asset)\
-[get_asset_list](#get_asset_list) Get the list of all native assets
-(paginated)\
-[get_policy_asset_list](#get_policy_asset_list) Get the list of asset under
-the given policy (including balances)\
-[get_asset_token_registry](#get_asset_token_registry) Get a list of assets
-registered via token registry on github\
-[get_asset_info](#get_asset_info) Get the information of a list of assets
-including first minting & token registry metadata\
-[get_asset_utxos](#get_asset_utxos) Get the UTXO information of a list of
-assets\
-[get_asset_history](#get_asset_history) Get the mint/burn history
-of an asset\
-[get_asset_addresses](#get_asset_addresses) Get the list of all addresses
-holding a given asset\
-[get_asset_nft_address](#get_asset_nft_address) Get the address where specified
-NFT currently reside on.\
-[get_policy_asset_addresses](#get_policy_asset_addresses) Get the list of
-addresses with quantity for each asset on the given policy\
-[get_policy_asset_info](#get_policy_asset_info) Get the information for
-all assets under the same policy\
-[get_asset_summary](#get_asset_summary) Get the summary of an asset
-(total transactions exclude minting/total wallets include only wallets
-with asset balance)\
-[get_asset_txs](#get_asset_txs) Get the list of all asset transaction
-hashes (the newest first)\
-[get_asset_address_list](#get_asset_address_list) Get the list of
-all addresses holding a given asset [DEPRECATED - replaced by asset_addresses]\
-[get_asset_policy_info](#get_asset_policy_info) Get the information for all \
-assets under the same policy (DEPRECATED - replaced by policy_asset_info)
-
-[Pool](#Pool)\
-[get_pool_list](#get_pool_list) A list of all currently registered/retiring
-(not retired) pools\
-[get_pool_info](#get_pool_info) Current pool statuses and details for
-a specified list of pool ids\
-[get_pool_stake_snapshot](#get_pool_stake_snapshot) Returns Mark, Set and Go
-stake snapshots for the selected pool, useful for leaderlog calculation\
-[get_pool_delegators](#get_pool_delegators) Returns information about live
-delegators for a given pool\
-[get_pool_delegators_history](#get_pool_delegators_history) Returns information
-about active delegators (incl. history) for a given pool and epoch number
-(all epochs if not specified)\
-[get_pool_blocks](#get_pool_blocks) Returns information about blocks minted
-by a given pool for all epochs (or _epoch_no if provided)\
-[get_pool_history](#get_pool_history) Returns information about pool stake,
-block and reward history in a given epoch (or all epochs that pool existed for,
-in descending order if no epoch number was provided)\
-[get_pool_updates](#get_pool_updates) Returns all pool updates for all pools
-or only updates for specific pool if specified\
-[get_pool_registrations](#get_pool_registrations) Return all pool registrations
-initiated in the requested epoch\
-[get_pool_retirements](#get_pool_retirements) Return all pool retirements
-initiated in the requested epoch\
-[get_pool_relays](#get_pool_relays) A list of registered relays for all
-currently registered/retiring (not retired) pools\
-[get_pool_metadata](#get_pool_metadata) A list of registered relays for all
-currently registered/retiring (not retired) pools\
-[get_retiring_pools](#get_retiring_pools) Get the retiring stake pools list
-
-[Script](#Script)\
-[get_script_info](#get_script_info) List of script information for given
-script hashes\
-[get_native_script_list](#get_native_script_list) The list of all existing
-native script hashes along with their creation transaction hashes\
-[get_plutus_script_list](#get_plutus_script_list) The list of all existing
-native script hashes along with their creation transaction hashes\
-[get_script_redeemers](#get_script_redeemers) The list of all redeemers
-for a given script hash\
-[get_script_utxos](#get_script_utxos) List of all UTXOs for a given script hash\
-[get_datum_info](#get_datum_info) The list of datum information for
-given datum hashes
 
 ### Network
 
@@ -1551,86 +1591,6 @@ Example response:
 ]
 ```
 
-#### get_tx_utxos
-
-Get UTxO set (inputs/outputs) of transactions\
-Parameters: Transaction(s) hash(es) as a string (for one transaction)
-or list (for multiple transactions)\
-Returns: The list of transactions UTxOs dictionaries\
-Example:\
-`tx_utxos = get_tx_utxos('bf685dde61d36b8acd259b2bd00a69a2e8359d2a69b75aa3a0eff9d38ca1f2ef')`\
-Example response:
-
-```json
-[
-  {
-    "tx_hash": "bf685dde61d36b8acd259b2bd00a69a2e8359d2a69b75aa3a0eff9d38ca1f2ef",
-    "inputs": [
-      {
-        "payment_addr": {
-          "bech32": "addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7",
-          "cred": "dcc3fb415f1e0bf25bbabae6e261c61f85a1a23e4e063145b1efcc39"
-        },
-        "stake_addr": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
-        "tx_hash": "2534b92a1d04ef39f9915bef8d7c5246cc4db880ac01f3499fe9aa83ac155a19",
-        "tx_index": 2,
-        "value": "14602840",
-        "asset_list": []
-      },
-      {
-        "payment_addr": {
-          "bech32": "addr1zxgx3far7qygq0k6epa0zcvcvrevmn0ypsnfsue94nsn3tvpw288a4x0xf8pxgcntelxmyclq83s0ykeehchz2wtspks905plm",
-          "cred": "9068a7a3f008803edac87af1619860f2cdcde40c26987325ace138ad"
-        },
-        "stake_addr": "stake1uxqh9rn76n8nynsnyvf4ulndjv0srcc8jtvumut3989cqmgjt49h6",
-        "tx_hash": "2534b92a1d04ef39f9915bef8d7c5246cc4db880ac01f3499fe9aa83ac155a19",
-        "tx_index": 0,
-        "value": "1327480",
-        "asset_list": [
-          {
-            "policy_id": "11ebbfbfd62985cbae7330b95488b9dcf17ecb5e728442031362ad81",
-            "asset_name": "48756e677279436f772333313835",
-            "fingerprint": "asset1kgzw0q7pt42zeerkn9sctpz3s5gan3xfrjpsgd",
-            "quantity": "1"
-          }
-        ]
-      }
-    ],
-    "outputs": [
-      {
-        "payment_addr": {
-          "bech32": "addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7",
-          "cred": "dcc3fb415f1e0bf25bbabae6e261c61f85a1a23e4e063145b1efcc39"
-        },
-        "stake_addr": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
-        "tx_hash": "bf685dde61d36b8acd259b2bd00a69a2e8359d2a69b75aa3a0eff9d38ca1f2ef",
-        "tx_index": 0,
-        "value": "1180940",
-        "asset_list": [
-          {
-            "policy_id": "11ebbfbfd62985cbae7330b95488b9dcf17ecb5e728442031362ad81",
-            "asset_name": "48756e677279436f772333313835",
-            "fingerprint": "asset1kgzw0q7pt42zeerkn9sctpz3s5gan3xfrjpsgd",
-            "quantity": "1"
-          }
-        ]
-      },
-      {
-        "payment_addr": {
-          "bech32": "addr1q8wv876ptu0qhujmh2awdcnpcc0ctgdz8e8qvv29k8hucwft99azzjfn9l2658p483uljfdd00ef5rzg58y5km6gj9jqcp0ws7",
-          "cred": "dcc3fb415f1e0bf25bbabae6e261c61f85a1a23e4e063145b1efcc39"
-        },
-        "stake_addr": "stake1uy4jj73pfyejl4d2rs6nc70eykkhhu56p3y2rj2tdayfzeqnjyh0j",
-        "tx_hash": "bf685dde61d36b8acd259b2bd00a69a2e8359d2a69b75aa3a0eff9d38ca1f2ef",
-        "tx_index": 1,
-        "value": "14481686",
-        "asset_list": []
-      }
-    ]
-  }
-]
-```
-
 ### Address
 
 #### get_address_info
@@ -2586,63 +2546,6 @@ Example response:
     "epoch_no": 380,
     "block_height": 8112717,,
     "block_time": 1670493734
-  }
-]
-```
-
-#### get_asset_address_list
-
-Get the list of all addresses holding a given asset\
-[DEPRECATED - replaced by asset_addresses]/
-Parameters:\
-Asset Policy\
-Asset Name in hexadecimal format (optional), default: all policy assets\
-Returns: The list of payment addresses holding the given token\
-(including balances) [DEPRECATED - replaced by asset_addresses]\
-Example:\
-`asset_address_list = get_asset_address_list('07697e6ca1e21777ac76f26d0779c53f7d08e47b9e32d23bd8fed9cd','4379626572696130363936')`\
-Example response:
-
-```json
-[
-  {
-    "payment_address": "addr1qywp2795uk4uusknpseu3fcwy8ew57dnuaeutnxaa5j6ulp4u2anham4xet066yjc6xjxcymujvvwlfhj8k8gxfl2nvs73rvzh",
-    "quantity": "1"
-  }
-]
-```
-
-#### get_asset_policy_info
-
-Get the information for all assets under the same policy\
-(DEPRECATED - replaced by policy_asset_info)/
-Parameters: Asset Policy\
-Returns: The list of detailed information of assets under the same policy\
-[DEPRECATED - replaced by policy_asset_info]\
-Example:\
-`asset_policy_info = get_asset_policy_info('5d16cc1a177b5d9ba9cfa9793b07e60f1fb70fea1f8aef064415d114')`\
-Example response:
-
-```json
-[
-  {
-    "asset_name": "494147",
-    "asset_name_ascii": "IAG",
-    "fingerprint": "asset1z62wksuv4sjkl24kjgr2sm8tfr4p0cf9p32rca",
-    "minting_tx_hash": "8e010a2a46a0302e892bba4627bde44c03e09e9569b18e9818cdcc146f995469",
-    "total_supply": "1000000000000000",
-    "mint_cnt": 1,
-    "burn_cnt": 0,
-    "creation_time": 1649980800,
-    "minting_tx_metadata": null,
-    "token_registry_metadata": {
-      "url": "https://www.iagon.com/",
-      "logo": "iVBORw0KGgoAAAANSUhEUgAAAZ...FhIt8FTG3AAAAAElFTkSuQmCC",
-      "name": "IAGON",
-      "ticker": "IAG",
-      "decimals": 6,
-      "description": "IAGON is a shared storage economy that bridges decentralization and compliance for Web 3.0."
-    }
   }
 ]
 ```
