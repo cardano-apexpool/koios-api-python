@@ -62,10 +62,11 @@ def get_policy_asset_list(policy: str, offset: int = 0, limit: int = 0) -> list:
     return assets
 
 
-def get_asset_token_registry() -> list:
+def get_asset_token_registry(logo: bool = True) -> list:
     """
     https://api.koios.rest/#get-/asset_token_registry
     Get a list of assets registered via token registry on github
+    :param logo: Include the logo in the response if True, otherwise skip it
     :returns: The list of token registry information for each asset
     """
     url = API_BASE_URL + "/asset_token_registry"
@@ -75,6 +76,10 @@ def get_asset_token_registry() -> list:
     while True:
         if offset > 0:
             parameters["offset"] = offset
+        if not logo:
+            parameters[
+                "select"
+            ] = "policy_id,asset_name,asset_name_ascii,ticker,description,url,decimals"
         resp = koios_get_request(url, parameters)
         assets_token_registry += resp
         if len(resp) < API_RESP_COUNT:

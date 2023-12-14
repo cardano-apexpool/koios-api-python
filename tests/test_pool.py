@@ -112,7 +112,7 @@ def test_pool_metadata():
     assert isinstance(pool_metadata, list)
     assert len(pool_metadata) == 1
     assert pool_metadata[0]["pool_id_bech32"] == TEST_POOL
-    assert isinstance(pool_metadata[0]["meta_json"], dict)
+    assert isinstance(pool_metadata[0]["meta_hash"], str)
 
 
 def test_retiring_pools():

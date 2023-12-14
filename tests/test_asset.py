@@ -27,6 +27,9 @@ def test_policy_asset_list():
 def test_asset_token_registry():
     """Ensure the get_asset_token_registry exists"""
     assert get_asset_token_registry
+    asset_token_registry = get_asset_token_registry(False)
+    assert isinstance(asset_token_registry, list)
+    assert len(asset_token_registry) > 0
 
 
 def test_asset_info():
