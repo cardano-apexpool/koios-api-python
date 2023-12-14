@@ -2073,7 +2073,7 @@ Example response:
 #### get_asset_token_registry
 
 Get a list of assets registered via token registry on github\
-Parameters: none\
+Parameters: logo (bool) - include the logo in the response or not, default: True\
 Returns: The list of assets registered via token registry on github\
 Example:\
 `asset_token_registry = get_asset_token_registry()`\
