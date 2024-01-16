@@ -43,7 +43,7 @@ def get_account_info(addr: [str, list]) -> list:
         parameters["_stake_addresses"] = addr
     else:
         parameters["_stake_addresses"] = [addr]
-    return koios_post_request(url, parameters)
+    return koios_post_request(url, {}, parameters)
 
 
 def get_account_info_cached(addr: [str, list]) -> list:
@@ -60,7 +60,7 @@ def get_account_info_cached(addr: [str, list]) -> list:
         parameters["_stake_addresses"] = addr
     else:
         parameters["_stake_addresses"] = [addr]
-    return koios_post_request(url, parameters)
+    return koios_post_request(url, {}, parameters)
 
 
 def get_account_utxos(
@@ -76,6 +76,7 @@ def get_account_utxos(
     """
     url = API_BASE_URL + "/account_utxos"
     parameters = {}
+    qs_parameters = {"limit": API_RESP_COUNT}
     if isinstance(addr, list):
         parameters["_stake_addresses"] = addr
     else:
@@ -84,8 +85,8 @@ def get_account_utxos(
     utxos = []
     while True:
         if offset > 0:
-            parameters["offset"] = offset
-        resp = koios_post_request(url, parameters)
+            qs_parameters["offset"] = offset
+        resp = koios_post_request(url, qs_parameters, parameters)
         utxos += resp
         if len(resp) < API_RESP_COUNT:
             if 0 < limit <= len(utxos):
@@ -141,7 +142,7 @@ def get_account_rewards(addr: [str, list], epoch: int = 0) -> list:
         parameters["_stake_addresses"] = [addr]
     if isinstance(epoch, int) and epoch > 0:
         parameters["_epoch_no"] = epoch
-    resp = koios_post_request(url, parameters)
+    resp = koios_post_request(url, {}, parameters)
     return resp
 
 
@@ -158,7 +159,7 @@ def get_account_updates(addr: [str, list]) -> list:
         parameters["_stake_addresses"] = addr
     else:
         parameters["_stake_addresses"] = [addr]
-    return koios_post_request(url, parameters)
+    return koios_post_request(url, {}, parameters)
 
 
 def get_account_addresses(
@@ -180,7 +181,7 @@ def get_account_addresses(
         parameters["_stake_addresses"] = [addr]
     parameters["_first_only"] = str(first_only).lower()
     parameters["_empty"] = str(empty).lower()
-    return koios_post_request(url, parameters)
+    return koios_post_request(url, {}, parameters)
 
 
 def get_account_assets(addr: [str, list]) -> list:
@@ -192,7 +193,7 @@ def get_account_assets(addr: [str, list]) -> list:
     """
     url = API_BASE_URL + "/account_assets"
     parameters = {}
-    qs_parameters = {}
+    qs_parameters = {"limit": API_RESP_COUNT}
     if isinstance(addr, list):
         parameters["_stake_addresses"] = addr
     else:
@@ -202,7 +203,7 @@ def get_account_assets(addr: [str, list]) -> list:
     while True:
         if offset > 0:
             qs_parameters["offset"] = offset
-        resp = koios_post_request(url, parameters)
+        resp = koios_post_request(url, qs_parameters, parameters)
         assets += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -227,4 +228,4 @@ def get_account_history(addr: [str, list], epoch: int = 0) -> list:
         parameters["_stake_addresses"] = [addr]
     if epoch:
         parameters["_epoch_no"] = epoch
-    return koios_post_request(url, parameters)
+    return koios_post_request(url, {}, parameters)

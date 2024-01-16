@@ -38,7 +38,7 @@ def get_pool_info(pool_id: [str, list]) -> list:
         parameters["_pool_bech32_ids"] = pool_id
     else:
         parameters["_pool_bech32_ids"] = [pool_id]
-    return koios_post_request(url, parameters)
+    return koios_post_request(url, {}, parameters)
 
 
 def get_pool_stake_snapshot(pool_id: str) -> list:
@@ -255,7 +255,7 @@ def get_pool_metadata(pool_id: str) -> list:
         parameters["_pool_bech32_ids"] = pool_id
     else:
         parameters["_pool_bech32_ids"] = [pool_id]
-    return koios_post_request(url, parameters)
+    return koios_post_request(url, {}, parameters)
 
 
 def get_retiring_pools() -> list:

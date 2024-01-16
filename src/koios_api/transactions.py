@@ -18,7 +18,7 @@ def get_utxo_info(utxos: [str, list], extended: bool = False) -> list:
         parameters["_utxo_refs"] = [utxos]
     if isinstance(extended, bool):
         parameters["_extended"] = str(extended).lower()
-    return koios_post_request(url, parameters)
+    return koios_post_request(url, {}, parameters)
 
 
 def get_tx_info(txs: [str, list]) -> list:
@@ -34,7 +34,7 @@ def get_tx_info(txs: [str, list]) -> list:
         parameters["_tx_hashes"] = txs
     else:
         parameters["_tx_hashes"] = [txs]
-    return koios_post_request(url, parameters)
+    return koios_post_request(url, {}, parameters)
 
 
 def get_tx_metadata(txs: [str, list]) -> list:
@@ -50,7 +50,7 @@ def get_tx_metadata(txs: [str, list]) -> list:
         parameters["_tx_hashes"] = txs
     else:
         parameters["_tx_hashes"] = [txs]
-    return koios_post_request(url, parameters)
+    return koios_post_request(url, {}, parameters)
 
 
 def get_tx_metalabels() -> list:
@@ -104,7 +104,7 @@ def submit_tx(transaction: str) -> str:
             sleep(SLEEP_TIME)
             logger.warning("retrying...")
     """
-    resp = koios_post_request(url, transaction, headers)
+    resp = koios_post_request(url, {}, transaction, headers)
     return resp
 
 
@@ -121,4 +121,4 @@ def get_tx_status(txs: [str, list]) -> list:
         parameters["_tx_hashes"] = txs
     else:
         parameters["_tx_hashes"] = [txs]
-    return koios_post_request(url, parameters)
+    return koios_post_request(url, {}, parameters)

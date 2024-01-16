@@ -32,5 +32,5 @@ def get_ogmios(jsonrpc: str, method: str, params=None) -> list:
     parameters = {"jsonrpc": jsonrpc, "method": method}
     for param, value in params.items():
         parameters[param] = value
-    resp = koios_post_request(url, parameters)
+    resp = koios_post_request(url, {}, parameters)
     return resp

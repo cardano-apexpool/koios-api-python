@@ -70,7 +70,7 @@ def get_asset_token_registry(logo: bool = True) -> list:
     :returns: The list of token registry information for each asset
     """
     url = API_BASE_URL + "/asset_token_registry"
-    parameters = {}
+    parameters = {"order": "policy_id.asc,asset_name.asc"}
     assets_token_registry = []
     offset = 0
     while True:
@@ -105,7 +105,7 @@ def get_asset_info(assets: [str, list]) -> list:
     for asset in asset_list:
         asset_split = asset.split(".")
         parameters["_asset_list"].append([asset_split[0], asset_split[1]])
-    return koios_post_request(url, parameters)
+    return koios_post_request(url, {}, parameters)
 
 
 def get_asset_utxos(assets: [str, list], extended: bool = False) -> list:
@@ -118,7 +118,7 @@ def get_asset_utxos(assets: [str, list], extended: bool = False) -> list:
     """
     url = API_BASE_URL + "/asset_utxos"
     parameters = {"_asset_list": []}
-    qs_parameters = {}
+    qs_parameters = {"limit": API_RESP_COUNT}
     if isinstance(assets, str):
         asset_list = [assets]
     else:
@@ -132,7 +132,7 @@ def get_asset_utxos(assets: [str, list], extended: bool = False) -> list:
     while True:
         if offset > 0:
             qs_parameters["offset"] = offset
-        resp = koios_post_request(url, parameters)
+        resp = koios_post_request(url, qs_parameters, parameters)
         utxos += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -285,7 +285,7 @@ def get_asset_summary(policy: str, name: str = "") -> list:
     """
     url = API_BASE_URL + "/asset_summary"
     parameters = {"_asset_policy": policy, "_asset_name": name}
-    return koios_post_request(url, parameters)
+    return koios_post_request(url, {}, parameters)
 
 
 def get_asset_txs(

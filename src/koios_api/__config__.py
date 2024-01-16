@@ -11,15 +11,15 @@ else:
 if "SLEEP_TIME" not in env:
     SLEEP_TIME = 1
 else:
-    SLEEP_TIME = env["SLEEP_TIME"]
+    SLEEP_TIME = int(env["SLEEP_TIME"])
 if "API_RESP_COUNT" not in env:
     API_RESP_COUNT = 1000
 else:
-    API_RESP_COUNT = env["API_RESP_COUNT"]
+    API_RESP_COUNT = int(env["API_RESP_COUNT"])
 if "REQUEST_TIMEOUT" not in env:
     REQUEST_TIMEOUT = 60
 else:
-    REQUEST_TIMEOUT = env["REQUEST_TIMEOUT"]
+    REQUEST_TIMEOUT = int(env["REQUEST_TIMEOUT"])
 if "CARDANO_NET" not in env:
     CARDANO_NET = "mainnet"
     if "API_BASE_URL" not in env:

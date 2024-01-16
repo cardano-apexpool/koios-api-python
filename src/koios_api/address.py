@@ -15,7 +15,7 @@ def get_address_info(addr: [str, list]) -> list:
         parameters["_addresses"] = addr
     else:
         parameters["_addresses"] = [addr]
-    return koios_post_request(url, parameters)
+    return koios_post_request(url, {}, parameters)
 
 
 def get_address_utxos(addr: [str, list], extended: bool = False) -> list:
@@ -28,6 +28,7 @@ def get_address_utxos(addr: [str, list], extended: bool = False) -> list:
     """
     url = API_BASE_URL + "/address_utxos"
     parameters = {}
+    qs_parameters = {"limit": API_RESP_COUNT}
     if isinstance(addr, list):
         parameters["_addresses"] = addr
     else:
@@ -37,8 +38,8 @@ def get_address_utxos(addr: [str, list], extended: bool = False) -> list:
     offset = 0
     while True:
         if offset > 0:
-            parameters["offset"] = offset
-        resp = koios_post_request(url, parameters)
+            qs_parameters["offset"] = offset
+        resp = koios_post_request(url, qs_parameters, parameters)
         utxos += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -57,6 +58,7 @@ def get_credential_utxos(cred: [str, list], extended: bool = False) -> list:
     """
     url = API_BASE_URL + "/credential_utxos"
     parameters = {}
+    qs_parameters = {"limit": API_RESP_COUNT}
     if isinstance(cred, list):
         parameters["_payment_credentials"] = cred
     else:
@@ -66,8 +68,8 @@ def get_credential_utxos(cred: [str, list], extended: bool = False) -> list:
     offset = 0
     while True:
         if offset > 0:
-            parameters["offset"] = offset
-        resp = koios_post_request(url, parameters)
+            qs_parameters["offset"] = offset
+        resp = koios_post_request(url, qs_parameters, parameters)
         utxos += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -86,7 +88,7 @@ def get_address_txs(addr: [str, list], block_height: int = 0) -> list:
     """
     url = API_BASE_URL + "/address_txs"
     parameters = {}
-    qs_parameters = {}
+    qs_parameters = {"limit": API_RESP_COUNT}
     if isinstance(addr, list):
         parameters["_addresses"] = addr
     else:
@@ -98,7 +100,7 @@ def get_address_txs(addr: [str, list], block_height: int = 0) -> list:
     while True:
         if offset > 0:
             qs_parameters["offset"] = offset
-        resp = koios_post_request(url, parameters)
+        resp = koios_post_request(url, qs_parameters, parameters)
         txs += resp
         if len(resp) < API_RESP_COUNT:
             break
@@ -124,7 +126,7 @@ def get_credential_txs(cred: [str, list], block_height: int = 0) -> list:
         parameters["_payment_credentials"] = [cred]
     if block_height:
         parameters["_after_block_height"] = block_height
-    return koios_post_request(url, parameters)
+    return koios_post_request(url, {}, parameters)
 
 
 def get_address_assets(addr: [str, list]) -> list:
@@ -136,7 +138,7 @@ def get_address_assets(addr: [str, list]) -> list:
     """
     url = API_BASE_URL + "/address_assets"
     parameters = {}
-    qs_parameters = {}
+    qs_parameters = {"limit": API_RESP_COUNT}
     if isinstance(addr, list):
         parameters["_addresses"] = addr
     else:
@@ -146,7 +148,7 @@ def get_address_assets(addr: [str, list]) -> list:
     while True:
         if offset > 0:
             qs_parameters["offset"] = offset
-        resp = koios_post_request(url, parameters)
+        resp = koios_post_request(url, qs_parameters, parameters)
         assets += resp
         if len(resp) < API_RESP_COUNT:
             break

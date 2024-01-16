@@ -44,7 +44,7 @@ def get_block_info(block: [str, list]) -> list:
         parameters["_block_hashes"] = block
     else:
         parameters["_block_hashes"] = [block]
-    return koios_post_request(url, parameters)
+    return koios_post_request(url, {}, parameters)
 
 
 def get_block_txs(block: [str, list]) -> list:
@@ -60,4 +60,4 @@ def get_block_txs(block: [str, list]) -> list:
         parameters["_block_hashes"] = block
     else:
         parameters["_block_hashes"] = [block]
-    return koios_post_request(url, parameters)
+    return koios_post_request(url, {}, parameters)

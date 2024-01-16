@@ -75,10 +75,11 @@ def koios_get_request(url: str, parameters: dict) -> list:
     return resp
 
 
-def koios_post_request(url: str, parameters: dict, headers=None) -> list:
+def koios_post_request(url: str, params: dict, parameters: dict, headers=None) -> list:
     """
     Create a POST request to Koios API using the "requests" library and return the text of the response as a list
     :param url: URL
+    :param params: Parameters to include in the query string
     :param parameters: Parameters to include as data in the POST request
     :param headers: Headers to include in the request
     :return: A list with the body of the response
@@ -100,9 +101,7 @@ def koios_post_request(url: str, parameters: dict, headers=None) -> list:
         "asset_utxos",
     ]
     if any(req in url for req in ordered_requests):
-        params = {"order": "block_height.asc"}
-    else:
-        params = {}
+        params["order"] = "block_height.asc"
     while True:
         try:
             response = requests.post(

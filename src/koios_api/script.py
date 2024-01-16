@@ -15,7 +15,7 @@ def get_script_info(script_hashes: [str, list]) -> list:
         parameters["_script_hashes"] = script_hashes
     else:
         parameters["_script_hashes"] = [script_hashes]
-    return koios_post_request(url, parameters)
+    return koios_post_request(url, {}, parameters)
 
 
 def get_native_script_list() -> list:
@@ -114,4 +114,4 @@ def get_datum_info(datum: [str, list]) -> list:
         parameters["_datum_hashes"] = datum
     else:
         parameters["_datum_hashes"] = [datum]
-    return koios_post_request(url, parameters)
+    return koios_post_request(url, {}, parameters)
