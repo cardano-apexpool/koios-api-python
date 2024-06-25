@@ -1,4 +1,6 @@
 """Account section functions"""
+from typing import Union
+
 from .library import *
 
 
@@ -30,7 +32,7 @@ def get_account_list(offset: int = 0, limit: int = 0) -> list:
     return account_list
 
 
-def get_account_info(addr: [str, list]) -> list:
+def get_account_info(addr: Union[str, list]) -> list:
     """
     https://api.koios.rest/#post-/account_info
     Get the account information for given stake addresses (accounts)
@@ -46,7 +48,7 @@ def get_account_info(addr: [str, list]) -> list:
     return koios_post_request(url, {}, parameters)
 
 
-def get_account_info_cached(addr: [str, list]) -> list:
+def get_account_info_cached(addr: Union[str, list]) -> list:
     """
     https://api.koios.rest/#post-/account_info_cached
     Get the cached account information for given stake addresses
@@ -64,7 +66,7 @@ def get_account_info_cached(addr: [str, list]) -> list:
 
 
 def get_account_utxos(
-    addr: [str, list], extended: bool = False, offset: int = 0, limit: int = 0
+    addr: Union[str, list], extended: bool = False, offset: int = 0, limit: int = 0
 ) -> list:
     """
     https://api.koios.rest/#get-/account_utxos
@@ -126,7 +128,7 @@ def get_account_txs(addr: str, block_height: int = 0) -> list:
     return txs
 
 
-def get_account_rewards(addr: [str, list], epoch: int = 0) -> list:
+def get_account_rewards(addr: Union[str, list], epoch: int = 0) -> list:
     """
     https://api.koios.rest/#post-/account_rewards
     Get the full rewards history (including MIR) for given stake addresses (accounts)
@@ -146,7 +148,7 @@ def get_account_rewards(addr: [str, list], epoch: int = 0) -> list:
     return resp
 
 
-def get_account_updates(addr: [str, list]) -> list:
+def get_account_updates(addr: Union[str, list]) -> list:
     """
     https://api.koios.rest/#post-/account_updates
     Get the account updates (registration, deregistration, delegation and withdrawals) for given stake addresses
@@ -163,7 +165,7 @@ def get_account_updates(addr: [str, list]) -> list:
 
 
 def get_account_addresses(
-    addr: [str, list], first_only: bool = False, empty: bool = True
+    addr: Union[str, list], first_only: bool = False, empty: bool = True
 ) -> list:
     """
     https://api.koios.rest/#post-/account_addresses
@@ -184,7 +186,7 @@ def get_account_addresses(
     return koios_post_request(url, {}, parameters)
 
 
-def get_account_assets(addr: [str, list]) -> list:
+def get_account_assets(addr: Union[str, list]) -> list:
     """
     https://api.koios.rest/#post-/account_assets
     Get the native asset balance of given accounts
@@ -212,7 +214,7 @@ def get_account_assets(addr: [str, list]) -> list:
     return assets
 
 
-def get_account_history(addr: [str, list], epoch: int = 0) -> list:
+def get_account_history(addr: Union[str, list], epoch: int = 0) -> list:
     """
     https://api.koios.rest/#post-/account_history
     Get the staking history of given stake addresses (accounts)

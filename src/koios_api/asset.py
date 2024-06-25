@@ -1,4 +1,6 @@
 """Asset section functions"""
+from typing import Union
+
 from .library import *
 
 
@@ -89,7 +91,7 @@ def get_asset_token_registry(logo: bool = True) -> list:
     return assets_token_registry
 
 
-def get_asset_info(assets: [str, list]) -> list:
+def get_asset_info(assets: Union[str, list]) -> list:
     """
     https://api.koios.rest/#post-/asset_info
     Get the information of a list of assets including first minting & token registry metadata
@@ -108,7 +110,7 @@ def get_asset_info(assets: [str, list]) -> list:
     return koios_post_request(url, {}, parameters)
 
 
-def get_asset_utxos(assets: [str, list], extended: bool = False) -> list:
+def get_asset_utxos(assets: Union[str, list], extended: bool = False) -> list:
     """
     https://api.koios.rest/#post-/asset_utxos
     Get the UTXO information of a list of assets

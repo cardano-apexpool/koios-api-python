@@ -2,7 +2,7 @@
 
 from src.koios_api.script import *
 
-TEST_SCRIPT = "30b8e7fa4674409240889f955623c187397e7346d276ab2e845d3a25"
+TEST_SCRIPT = "2cccc05192920ff1eb02bcfa7bb2a1fc5352ce58391d7ba3c66a555b"
 TEST_DATUM = "45b0cfc220ceec5b7c1c62c4d4193d38e4eba48e8815729ce75f9c0ab0e4c1c0"
 
 

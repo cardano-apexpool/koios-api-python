@@ -1,4 +1,6 @@
 """Pool section functions"""
+from typing import Union
+
 from .library import *
 
 
@@ -24,7 +26,7 @@ def get_pool_list() -> list:
     return pools_list
 
 
-def get_pool_info(pool_id: [str, list]) -> list:
+def get_pool_info(pool_id: Union[str, list]) -> list:
     """
     https://api.koios.rest/#post-/pool_info
     Current pool statuses and details for a specified list of pool ids
