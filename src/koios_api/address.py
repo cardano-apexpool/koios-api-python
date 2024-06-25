@@ -1,8 +1,10 @@
 """Address section functions"""
+from typing import Union
+
 from .library import *
 
 
-def get_address_info(addr: [str, list]) -> list:
+def get_address_info(addr: Union[str, list]) -> list:
     """
     https://api.koios.rest/#post-/address_info
     Get address info - balance, associated stake address (if any) and UTxO set for given addresses
@@ -18,7 +20,7 @@ def get_address_info(addr: [str, list]) -> list:
     return koios_post_request(url, {}, parameters)
 
 
-def get_address_utxos(addr: [str, list], extended: bool = False) -> list:
+def get_address_utxos(addr: Union[str, list], extended: bool = False) -> list:
     """
     https://api.koios.rest/#post-/address_utxos
     Get UTxO set for given addresses
@@ -48,7 +50,7 @@ def get_address_utxos(addr: [str, list], extended: bool = False) -> list:
     return utxos
 
 
-def get_credential_utxos(cred: [str, list], extended: bool = False) -> list:
+def get_credential_utxos(cred: Union[str, list], extended: bool = False) -> list:
     """
     https://api.koios.rest/#post-/credential_utxos
     Get a list of UTxO against input payment credential array including their balances
@@ -78,7 +80,7 @@ def get_credential_utxos(cred: [str, list], extended: bool = False) -> list:
     return utxos
 
 
-def get_address_txs(addr: [str, list], block_height: int = 0) -> list:
+def get_address_txs(addr: Union[str, list], block_height: int = 0) -> list:
     """
     https://api.koios.rest/#post-/address_txs
     Get the transaction hash list of input address array, optionally filtering after specified block height (inclusive)
@@ -109,7 +111,7 @@ def get_address_txs(addr: [str, list], block_height: int = 0) -> list:
     return txs
 
 
-def get_credential_txs(cred: [str, list], block_height: int = 0) -> list:
+def get_credential_txs(cred: Union[str, list], block_height: int = 0) -> list:
     """
     https://api.koios.rest/#post-/credential_txs
     Get the transaction hash list of input payment credential array,
@@ -129,7 +131,7 @@ def get_credential_txs(cred: [str, list], block_height: int = 0) -> list:
     return koios_post_request(url, {}, parameters)
 
 
-def get_address_assets(addr: [str, list]) -> list:
+def get_address_assets(addr: Union[str, list]) -> list:
     """
     https://api.koios.rest/#post-/address_assets
     Get the list of all the assets (policy, name and quantity) for given addresses

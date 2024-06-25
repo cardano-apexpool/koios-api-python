@@ -1,8 +1,10 @@
 """Transactions section functions"""
+from typing import Union
+
 from .library import *
 
 
-def get_utxo_info(utxos: [str, list], extended: bool = False) -> list:
+def get_utxo_info(utxos: Union[str, list], extended: bool = False) -> list:
     """
     https://api.koios.rest/#post-/utxo_info
     Get UTxO set for requested UTxO references
@@ -21,7 +23,7 @@ def get_utxo_info(utxos: [str, list], extended: bool = False) -> list:
     return koios_post_request(url, {}, parameters)
 
 
-def get_tx_info(txs: [str, list]) -> list:
+def get_tx_info(txs: Union[str, list]) -> list:
     """
     https://api.koios.rest/#post-/tx_info
     Get detailed information about transaction(s)
@@ -37,7 +39,7 @@ def get_tx_info(txs: [str, list]) -> list:
     return koios_post_request(url, {}, parameters)
 
 
-def get_tx_metadata(txs: [str, list]) -> list:
+def get_tx_metadata(txs: Union[str, list]) -> list:
     """
     https://api.koios.rest/#post-/tx_metadata
     Get metadata information (if any) for given transaction(s)
@@ -108,7 +110,7 @@ def submit_tx(transaction: str) -> str:
     return resp
 
 
-def get_tx_status(txs: [str, list]) -> list:
+def get_tx_status(txs: Union[str, list]) -> list:
     """
     https://api.koios.rest/#post-/tx_status
     Get the number of block confirmations for a given transaction hash list

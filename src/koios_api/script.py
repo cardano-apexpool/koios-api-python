@@ -1,8 +1,10 @@
 """Script section functions"""
+from typing import Union
+
 from .library import *
 
 
-def get_script_info(script_hashes: [str, list]) -> list:
+def get_script_info(script_hashes: Union[str, list]) -> list:
     """
     https://api.koios.rest/#post-/script_info
     List of datum information for given datum hashes
@@ -101,7 +103,7 @@ def get_script_utxos(script_hash: str, extended: bool = False) -> list:
     return utxos
 
 
-def get_datum_info(datum: [str, list]) -> list:
+def get_datum_info(datum: Union[str, list]) -> list:
     """
     https://api.koios.rest/#post-/datum_info
     List of datum information for given datum hashes

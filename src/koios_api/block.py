@@ -1,4 +1,6 @@
 """Block section functions"""
+from typing import Union
+
 from .library import *
 
 
@@ -31,7 +33,7 @@ def get_blocks(limit: int = 0) -> list:
     return blocks
 
 
-def get_block_info(block: [str, list]) -> list:
+def get_block_info(block: Union[str, list]) -> list:
     """
     https://api.koios.rest/#post-/block_info
     Get detailed information about a specific block
@@ -47,7 +49,7 @@ def get_block_info(block: [str, list]) -> list:
     return koios_post_request(url, {}, parameters)
 
 
-def get_block_txs(block: [str, list]) -> list:
+def get_block_txs(block: Union[str, list]) -> list:
     """
     https://api.koios.rest/#post-/block_txs
     Get a list of all transactions included in provided blocks
