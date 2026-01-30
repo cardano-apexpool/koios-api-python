@@ -1,8 +1,13 @@
 """Ogmios section functions"""
-from .library import *
+from typing import Any, Optional
+
+from .__config__ import API_BASE_URL
+from .library import koios_post_request
 
 
-def get_ogmios(jsonrpc: str, method: str, params=None) -> list:
+def get_ogmios(
+    jsonrpc: str, method: str, params: Optional[dict[str, Any]] = None
+) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#post-/ogmios
     Multiple ogmios queries are supported,
@@ -29,8 +34,7 @@ def get_ogmios(jsonrpc: str, method: str, params=None) -> list:
     if params is None:
         params = {}
     url = API_BASE_URL + "/ogmios"
-    parameters = {"jsonrpc": jsonrpc, "method": method}
+    parameters: dict[str, Any] = {"jsonrpc": jsonrpc, "method": method}
     for param, value in params.items():
         parameters[param] = value
-    resp = koios_post_request(url, {}, parameters)
-    return resp
+    return koios_post_request(url, {}, parameters)

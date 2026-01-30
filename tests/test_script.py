@@ -2,8 +2,8 @@
 
 from src.koios_api.script import *
 
-TEST_SCRIPT = "2cccc05192920ff1eb02bcfa7bb2a1fc5352ce58391d7ba3c66a555b"
-TEST_DATUM = "45b0cfc220ceec5b7c1c62c4d4193d38e4eba48e8815729ce75f9c0ab0e4c1c0"
+TEST_SCRIPT = "bd2119ee2bfb8c8d7c427e8af3c35d537534281e09e23013bca5b138"
+TEST_DATUM = "818ee3db3bbbd04f9f2ce21778cac3ac605802a4fcb00c8b3a58ee2dafc17d46"
 
 
 def test_script_info():

@@ -1,10 +1,11 @@
 """Block section functions"""
-from typing import Union
+from typing import Any, Union
 
-from .library import *
+from .__config__ import API_BASE_URL
+from .library import koios_post_request, paginated_get
 
 
-def get_blocks(limit: int = 0) -> list:
+def get_blocks(limit: int = 0) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#get-/blocks
     Get summarised details about all blocks (paginated - latest first)
@@ -12,28 +13,13 @@ def get_blocks(limit: int = 0) -> list:
     :returns: The list of block information (the newest first)
     """
     url = API_BASE_URL + "/blocks"
-    parameters = {}
-    blocks = []
-    offset = 0
-    while True:
-        if offset > 0:
-            parameters["offset"] = offset
-        if isinstance(limit, int) and limit > 0:
-            parameters["limit"] = limit
-        resp = koios_get_request(url, parameters)
-        blocks += resp
-        if len(resp) < API_RESP_COUNT:
-            break
-        else:
-            offset += len(resp)
-        if isinstance(limit, int) and len(blocks) > limit:
-            break
+    parameters: dict[str, Any] = {}
     if isinstance(limit, int) and limit > 0:
-        blocks = blocks[0:limit]
-    return blocks
+        parameters["limit"] = limit
+    return paginated_get(url, parameters, limit=limit)
 
 
-def get_block_info(block: Union[str, list]) -> list:
+def get_block_info(block: Union[str, list[str]]) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#post-/block_info
     Get detailed information about a specific block
@@ -41,7 +27,7 @@ def get_block_info(block: Union[str, list]) -> list:
     :returns: The list of detailed block information
     """
     url = API_BASE_URL + "/block_info"
-    parameters = {}
+    parameters: dict[str, Any] = {}
     if isinstance(block, list):
         parameters["_block_hashes"] = block
     else:
@@ -49,7 +35,7 @@ def get_block_info(block: Union[str, list]) -> list:
     return koios_post_request(url, {}, parameters)
 
 
-def get_block_txs(block: Union[str, list]) -> list:
+def get_block_txs(block: Union[str, list[str]]) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#post-/block_txs
     Get a list of all transactions included in provided blocks
@@ -57,7 +43,7 @@ def get_block_txs(block: Union[str, list]) -> list:
     :returns: The list of transactions hashes
     """
     url = API_BASE_URL + "/block_txs"
-    parameters = {}
+    parameters: dict[str, Any] = {}
     if isinstance(block, list):
         parameters["_block_hashes"] = block
     else:
