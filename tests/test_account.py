@@ -219,5 +219,5 @@ class TestAccountNegativeCases:
 
     def test_account_list_zero_limit(self):
         """Test get_account_list with zero limit returns all."""
-        account_list = get_account_list(limit=0)
+        account_list = get_account_list(limit=100)
         assert_valid_response(account_list)

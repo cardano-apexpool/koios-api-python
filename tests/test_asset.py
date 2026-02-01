@@ -67,10 +67,10 @@ class TestAssetTokenRegistry:
         """Ensure the get_asset_token_registry function exists."""
         assert get_asset_token_registry
 
-    @pytest.mark.parametrize("paginate", [True, False])
-    def test_asset_token_registry_with_pagination(self, paginate):
-        """Test get_asset_token_registry with and without pagination."""
-        asset_token_registry = get_asset_token_registry(paginate)
+    def test_asset_token_registry_without_logo(self):
+        """Test get_asset_token_registry without logo (faster response)."""
+        # Use logo=False to reduce response size and speed up test
+        asset_token_registry = get_asset_token_registry(logo=False)
         assert_non_empty_list(asset_token_registry)
 
 

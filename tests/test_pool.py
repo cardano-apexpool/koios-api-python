@@ -37,17 +37,12 @@ class TestPoolList:
         assert get_pool_list
 
     def test_pool_list_returns_non_empty(self):
-        """Test get_pool_list returns non-empty list."""
+        """Test get_pool_list returns non-empty list with correct format."""
+        # Note: get_pool_list() doesn't have a limit param, but returns paginated results
+        # We just verify the response format with first page
         pool_list = get_pool_list()
         assert_non_empty_list(pool_list)
         assert pool_list[0]["pool_id_bech32"].startswith("pool1")
-
-    @pytest.mark.parametrize("limit", [1, 10, 50])
-    def test_pool_list_with_limits(self, limit):
-        """Test get_pool_list with different limits."""
-        pool_list = get_pool_list(limit=limit)
-        assert_valid_response(pool_list)
-        assert len(pool_list) == limit
 
 
 @pytest.mark.integration
@@ -208,6 +203,7 @@ class TestPoolRelays:
 
     def test_pool_relays_returns_non_empty(self):
         """Test get_pool_relays returns non-empty list."""
+        # Note: get_pool_relays() doesn't have a limit param
         pool_relays = get_pool_relays()
         assert_non_empty_list(pool_relays)
         assert_has_key(pool_relays, "pool_id_bech32")
