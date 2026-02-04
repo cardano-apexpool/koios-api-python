@@ -2,7 +2,6 @@
 
 import pytest
 
-
 # =============================================================================
 # Test Data Constants - Mainnet
 # =============================================================================
@@ -25,7 +24,7 @@ TEST_BLOCK = "8a2e06c0bf499d8feefb43ec739be8de1aeb474f458a21cce381d39f51a055c4"
 TEST_BLOCK_TX_COUNT = 7
 
 # Pool test data
-TEST_POOL = "pool155efqn9xpcf73pphkk88cmlkdwx4ulkg606tne970qswczg3asc"
+TEST_POOL = "pool17rjst78s67lvellg8s586rf076jxa3wnsdz730f4xk2zwuhrtej"
 
 # Script test data
 TEST_SCRIPT = "bd2119ee2bfb8c8d7c427e8af3c35d537534281e09e23013bca5b138"

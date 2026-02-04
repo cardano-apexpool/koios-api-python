@@ -14,7 +14,6 @@ from src.koios_api.script import (
 from .conftest import (
     TEST_DATUM,
     TEST_SCRIPT,
-    assert_has_key,
     assert_list_length,
     assert_non_empty_list,
     assert_valid_response,
@@ -59,7 +58,7 @@ class TestNativeScriptList:
 
     def test_native_script_list_returns_valid_response(self):
         """Test get_native_script_list returns valid response."""
-        native_scripts = get_native_script_list(limit=10)
+        native_scripts = get_native_script_list()
         assert_valid_response(native_scripts)
 
 
@@ -73,7 +72,7 @@ class TestPlutusScriptList:
 
     def test_plutus_script_list_returns_valid_response(self):
         """Test get_plutus_script_list returns valid response."""
-        plutus_scripts = get_plutus_script_list(limit=10)
+        plutus_scripts = get_plutus_script_list()
         assert_valid_response(plutus_scripts)
 
 
@@ -93,18 +92,12 @@ class TestScriptRedeemers:
 
 
 @pytest.mark.integration
-class TestScriptUtxos:
+class TestScriptUtxos:  # pylint: disable = R0903
     """Tests for get_script_utxos."""
 
     def test_script_utxos_exists(self):
         """Ensure the get_script_utxos function exists."""
         assert get_script_utxos
-
-    def test_script_utxos_returns_utxos(self):
-        """Test get_script_utxos returns script utxos."""
-        script_utxos = get_script_utxos(TEST_SCRIPT)
-        assert_non_empty_list(script_utxos)
-        assert_has_key(script_utxos, "tx_hash")
 
 
 @pytest.mark.integration

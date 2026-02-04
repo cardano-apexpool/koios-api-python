@@ -11,7 +11,13 @@ from src.koios_api.network import (
     get_treasury_withdrawals,
 )
 
-from .conftest import TEST_EPOCH, assert_has_key, assert_list_length, assert_non_empty_list, assert_valid_response
+from .conftest import (
+    TEST_EPOCH,
+    assert_has_key,
+    assert_list_length,
+    assert_non_empty_list,
+    assert_valid_response,
+)
 
 
 @pytest.mark.integration
@@ -44,7 +50,12 @@ class TestGetGenesis:
         genesis = get_genesis()
         assert_list_length(genesis, 1)
         assert int(genesis[0]["maxlovelacesupply"]) == 45000000000000000
-        expected_fields = ["networkmagic", "networkid", "epochlength", "maxlovelacesupply"]
+        expected_fields = [
+            "networkmagic",
+            "networkid",
+            "epochlength",
+            "maxlovelacesupply",
+        ]
         for field in expected_fields:
             assert field in genesis[0]
 

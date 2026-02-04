@@ -1,14 +1,11 @@
 """Unit tests for library.py with mocking - no network access required."""
 
-import json
 
 import pytest
 import responses
-from responses import matchers
 
 from src.koios_api.__config__ import API_BASE_URL
 from src.koios_api.library import (
-    MAX_RETRIES,
     MaxRetriesExceeded,
     get_error_message,
     koios_get_request,
@@ -17,7 +14,6 @@ from src.koios_api.library import (
     paginated_get,
     paginated_post,
 )
-
 
 # =============================================================================
 # Tests for get_error_message
@@ -212,9 +208,7 @@ class TestKoiosPostRequest:
             status=200,
         )
 
-        result = koios_post_request(
-            url, {}, {"_stake_addresses": ["stake1abc"]}
-        )
+        result = koios_post_request(url, {}, {"_stake_addresses": ["stake1abc"]})
         assert result == expected_response
 
     @responses.activate
@@ -262,7 +256,9 @@ class TestKoiosPostRequest:
         url = f"{API_BASE_URL}/account_info"
 
         responses.add(responses.POST, url, status=503)
-        responses.add(responses.POST, url, json=[{"stake_address": "stake1abc"}], status=200)
+        responses.add(
+            responses.POST, url, json=[{"stake_address": "stake1abc"}], status=200
+        )
 
         result = koios_post_request(url, {}, {"_stake_addresses": ["stake1abc"]})
         assert result == [{"stake_address": "stake1abc"}]

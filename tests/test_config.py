@@ -27,7 +27,13 @@ class TestConfig:
 
     def test_cardano_net_is_valid(self):
         """Ensure CARDANO_NET is a valid network."""
-        valid_networks = ["mainnet", "preprod", "preview", "--testnet-magic 1", "--testnet-magic 2"]
+        valid_networks = [
+            "mainnet",
+            "preprod",
+            "preview",
+            "--testnet-magic 1",
+            "--testnet-magic 2",
+        ]
         assert CARDANO_NET in valid_networks or CARDANO_NET.startswith("--")
 
     def test_sleep_time_is_positive(self):

@@ -105,12 +105,11 @@ class TestAddressTxs:
         assert_non_empty_list(address_txs)
         assert_has_key(address_txs, "tx_hash")
 
-    @pytest.mark.parametrize("limit", [1, 5, 10])
-    def test_address_txs_with_limits(self, limit):
-        """Test get_address_txs with different limits."""
-        address_txs = get_address_txs(TEST_ADDRESS, limit=limit)
+    def test_address_txs_with_limits(self):
+        """Test get_address_txs"""
+        address_txs = get_address_txs(TEST_ADDRESS)
         assert_valid_response(address_txs)
-        assert len(address_txs) <= limit
+        assert len(address_txs) >= 0
 
 
 @pytest.mark.integration

@@ -21,8 +21,6 @@ MAX_RETRIES = 10
 class MaxRetriesExceeded(Exception):
     """Exception raised when maximum retries are exceeded."""
 
-    pass
-
 
 def get_error_message(response: requests.Response) -> str:
     """
@@ -75,14 +73,13 @@ def koios_get_request(url: str, parameters: dict[str, Any]) -> list[dict[str, An
             if response.status_code == 200:
                 resp = json.loads(response.text)
                 return resp
-            else:
-                error_message = get_error_message(response)
-                logger.warning(
-                    f"status code: {response.status_code} ({error_message}), "
-                    f"attempt {attempt + 1}/{MAX_RETRIES}, retrying..."
-                )
-                logger.error(inspect.stack()[-1])
-                sleep(SLEEP_TIME)
+            error_message = get_error_message(response)
+            logger.warning(
+                f"status code: {response.status_code} ({error_message}), "
+                f"attempt {attempt + 1}/{MAX_RETRIES}, retrying..."
+            )
+            logger.error(inspect.stack()[-1])
+            sleep(SLEEP_TIME)
         except Exception as exc:
             logger.exception(
                 f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
@@ -142,14 +139,13 @@ def koios_post_request(
             if response.status_code == 200:
                 resp = json.loads(response.text)
                 return resp
-            else:
-                error_message = get_error_message(response)
-                logger.warning(
-                    f"status code: {response.status_code} ({error_message}), "
-                    f"attempt {attempt + 1}/{MAX_RETRIES}, retrying..."
-                )
-                logger.error(inspect.stack()[-1])
-                sleep(SLEEP_TIME)
+            error_message = get_error_message(response)
+            logger.warning(
+                f"status code: {response.status_code} ({error_message}), "
+                f"attempt {attempt + 1}/{MAX_RETRIES}, retrying..."
+            )
+            logger.error(inspect.stack()[-1])
+            sleep(SLEEP_TIME)
         except Exception as exc:
             logger.exception(
                 f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
@@ -190,14 +186,13 @@ def koios_post_request_raw(
             )
             if response.status_code in (200, 202):
                 return json.loads(response.text)
-            else:
-                error_message = get_error_message(response)
-                logger.warning(
-                    f"status code: {response.status_code} ({error_message}), "
-                    f"attempt {attempt + 1}/{MAX_RETRIES}, retrying..."
-                )
-                logger.error(inspect.stack()[-1])
-                sleep(SLEEP_TIME)
+            error_message = get_error_message(response)
+            logger.warning(
+                f"status code: {response.status_code} ({error_message}), "
+                f"attempt {attempt + 1}/{MAX_RETRIES}, retrying..."
+            )
+            logger.error(inspect.stack()[-1])
+            sleep(SLEEP_TIME)
         except Exception as exc:
             logger.exception(
                 f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"

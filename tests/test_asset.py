@@ -103,7 +103,7 @@ class TestAssetInfo:
 
 
 @pytest.mark.integration
-class TestAssetUtxos:
+class TestAssetUtxos:  # pylint: disable=R0903
     """Tests for get_asset_utxos."""
 
     def test_asset_utxos_exists(self):
@@ -224,7 +224,7 @@ class TestAssetTxs:
 
 
 @pytest.mark.integration
-class TestAssetNegativeCases:
+class TestAssetNegativeCases:  # pylint: disable=R0903
     """Negative test cases for asset functions."""
 
     def test_asset_info_empty_list(self):

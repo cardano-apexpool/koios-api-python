@@ -4,8 +4,8 @@ import pytest
 
 from src.koios_api.transactions import (
     get_tx_info,
-    get_tx_metalabels,
     get_tx_metadata,
+    get_tx_metalabels,
     get_tx_status,
     get_utxo_info,
     submit_tx,
@@ -112,7 +112,7 @@ class TestTxMetalabels:
 
 
 @pytest.mark.integration
-class TestSubmitTx:
+class TestSubmitTx:  # pylint: disable=R0903
     """Tests for submit_tx."""
 
     def test_submit_tx_exists(self):

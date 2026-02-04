@@ -2,9 +2,13 @@
 
 import pytest
 
-from src.koios_api.epoch import get_epoch_block_protocols, get_epoch_info, get_epoch_params
+from src.koios_api.epoch import (
+    get_epoch_block_protocols,
+    get_epoch_info,
+    get_epoch_params,
+)
 
-from .conftest import TEST_EPOCH, assert_list_length, assert_non_empty_list
+from .conftest import TEST_EPOCH, assert_list_length
 
 
 @pytest.mark.integration
@@ -20,7 +24,13 @@ class TestEpochInfo:
         epoch_info = get_epoch_info(TEST_EPOCH)
         assert_list_length(epoch_info, 1)
         assert epoch_info[0]["epoch_no"] == TEST_EPOCH
-        expected_fields = ["epoch_no", "start_time", "end_time", "blk_count", "tx_count"]
+        expected_fields = [
+            "epoch_no",
+            "start_time",
+            "end_time",
+            "blk_count",
+            "tx_count",
+        ]
         for field in expected_fields:
             assert field in epoch_info[0]
 

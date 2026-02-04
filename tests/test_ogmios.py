@@ -32,14 +32,15 @@ class TestOgmios:
 
 
 @pytest.mark.integration
-class TestOgmiosQueries:
+class TestOgmiosQueries:  # pylint: disable=R0903
     """Tests for various Ogmios queries."""
 
     @pytest.mark.parametrize(
         "method",
         [
             "queryNetwork/tip",
-            "queryNetwork/genesisConfiguration",
+            "queryLedgerState/eraStart",
+            "queryNetwork/blockHeight",
         ],
     )
     def test_ogmios_various_queries(self, method):

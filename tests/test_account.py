@@ -16,7 +16,6 @@ from src.koios_api.account import (
 )
 
 from .conftest import (
-    INVALID_STAKE_ADDRESS,
     TEST_EPOCH,
     TEST_STAKE_ADDRESS,
     assert_has_key,
