@@ -1,13 +1,50 @@
-"""Ogmios tests"""
+"""Ogmios integration tests."""
 
-from src.koios_api.ogmios import *
+import pytest
+
+from src.koios_api.ogmios import get_ogmios
+
+from .conftest import assert_valid_response
 
 
-def test_tip():
-    """Ensure the get_epoch_info exists and returns the expected results"""
-    assert get_ogmios
-    tip = get_ogmios("2.0", "queryNetwork/tip")
-    assert isinstance(tip, dict)
-    assert len(tip)
-    assert tip["method"] == "queryNetwork/tip"
-    assert tip["result"]
+@pytest.mark.integration
+class TestOgmios:
+    """Tests for get_ogmios."""
+
+    def test_ogmios_exists(self):
+        """Ensure the get_ogmios function exists."""
+        assert get_ogmios
+
+    def test_ogmios_tip_query(self):
+        """Test get_ogmios with tip query."""
+        tip = get_ogmios("2.0", "queryNetwork/tip")
+        assert_valid_response(tip, dict)
+        assert len(tip) > 0
+        assert tip["method"] == "queryNetwork/tip"
+        assert "result" in tip
+
+    def test_ogmios_has_expected_structure(self):
+        """Test that Ogmios response has expected structure."""
+        tip = get_ogmios("2.0", "queryNetwork/tip")
+        expected_fields = ["jsonrpc", "method", "result"]
+        for field in expected_fields:
+            assert field in tip
+
+
+@pytest.mark.integration
+class TestOgmiosQueries:  # pylint: disable=R0903
+    """Tests for various Ogmios queries."""
+
+    @pytest.mark.parametrize(
+        "method",
+        [
+            "queryNetwork/tip",
+            "queryLedgerState/eraStart",
+            "queryNetwork/blockHeight",
+        ],
+    )
+    def test_ogmios_various_queries(self, method):
+        """Test get_ogmios with various query methods."""
+        result = get_ogmios("2.0", method)
+        assert_valid_response(result, dict)
+        assert result["method"] == method

@@ -1,10 +1,11 @@
 """Account section functions"""
-from typing import Union
+from typing import Any, Union
 
-from .library import *
+from .__config__ import API_BASE_URL, API_RESP_COUNT
+from .library import koios_post_request, paginated_get, paginated_post
 
 
-def get_account_list(offset: int = 0, limit: int = 0) -> list:
+def get_account_list(offset: int = 0, limit: int = 0) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#get-/account_list
     Get a list of all stake addresses that have at least 1 transaction
@@ -13,26 +14,10 @@ def get_account_list(offset: int = 0, limit: int = 0) -> list:
     :returns: The list of account (stake address) IDs
     """
     url = API_BASE_URL + "/account_list"
-    parameters = {}
-    account_list = []
-    while True:
-        if offset > 0:
-            parameters["offset"] = offset
-        resp = koios_get_request(url, parameters)
-        account_list += resp
-        if len(resp) < API_RESP_COUNT:
-            if 0 < limit <= len(account_list):
-                account_list = account_list[0:limit]
-            break
-        else:
-            offset += len(resp)
-        if 0 < limit <= len(account_list):
-            account_list = account_list[0:limit]
-            break
-    return account_list
+    return paginated_get(url, {}, offset, limit)
 
 
-def get_account_info(addr: Union[str, list]) -> list:
+def get_account_info(addr: Union[str, list[str]]) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#post-/account_info
     Get the account information for given stake addresses (accounts)
@@ -40,7 +25,7 @@ def get_account_info(addr: Union[str, list]) -> list:
     :returns: The list of account information
     """
     url = API_BASE_URL + "/account_info"
-    parameters = {}
+    parameters: dict[str, Any] = {}
     if isinstance(addr, list):
         parameters["_stake_addresses"] = addr
     else:
@@ -48,7 +33,7 @@ def get_account_info(addr: Union[str, list]) -> list:
     return koios_post_request(url, {}, parameters)
 
 
-def get_account_info_cached(addr: Union[str, list]) -> list:
+def get_account_info_cached(addr: Union[str, list[str]]) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#post-/account_info_cached
     Get the cached account information for given stake addresses
@@ -57,7 +42,7 @@ def get_account_info_cached(addr: Union[str, list]) -> list:
     :returns: The list of account information
     """
     url = API_BASE_URL + "/account_info_cached"
-    parameters = {}
+    parameters: dict[str, Any] = {}
     if isinstance(addr, list):
         parameters["_stake_addresses"] = addr
     else:
@@ -66,8 +51,8 @@ def get_account_info_cached(addr: Union[str, list]) -> list:
 
 
 def get_account_utxos(
-    addr: Union[str, list], extended: bool = False, offset: int = 0, limit: int = 0
-) -> list:
+    addr: Union[str, list[str]], extended: bool = False, offset: int = 0, limit: int = 0
+) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#get-/account_utxos
     :param addr: Stake address(es), as a string (for one address) or a list (for multiple addresses)
@@ -77,32 +62,16 @@ def get_account_utxos(
     :return: The list of all UTxOs for a given stake address (account)
     """
     url = API_BASE_URL + "/account_utxos"
-    parameters = {}
-    qs_parameters = {"limit": API_RESP_COUNT}
+    parameters: dict[str, Any] = {}
     if isinstance(addr, list):
         parameters["_stake_addresses"] = addr
     else:
         parameters["_stake_addresses"] = [addr]
     parameters["_extended"] = str(extended).lower()
-    utxos = []
-    while True:
-        if offset > 0:
-            qs_parameters["offset"] = offset
-        resp = koios_post_request(url, qs_parameters, parameters)
-        utxos += resp
-        if len(resp) < API_RESP_COUNT:
-            if 0 < limit <= len(utxos):
-                utxos = utxos[0:limit]
-            break
-        else:
-            offset += len(resp)
-        if 0 < limit <= len(utxos):
-            utxos = utxos[0:limit]
-            break
-    return utxos
+    return paginated_post(url, {"limit": API_RESP_COUNT}, parameters, offset, limit)
 
 
-def get_account_txs(addr: str, block_height: int = 0) -> list:
+def get_account_txs(addr: str, block_height: int = 0) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#get-/account_txs
     Get a list of all Txs for a given stake address (account)
@@ -111,24 +80,15 @@ def get_account_txs(addr: str, block_height: int = 0) -> list:
     :returns: The list of transactions associated with stake address (account)
     """
     url = API_BASE_URL + "/account_txs"
-    parameters = {"_stake_address": addr}
+    parameters: dict[str, Any] = {"_stake_address": addr}
     if block_height > 0:
         parameters["_after_block_height"] = block_height
-    txs = []
-    offset = 0
-    while True:
-        if offset > 0:
-            parameters["offset"] = offset
-        resp = koios_get_request(url, parameters)
-        txs += resp
-        if len(resp) < API_RESP_COUNT:
-            break
-        else:
-            offset += len(resp)
-    return txs
+    return paginated_get(url, parameters)
 
 
-def get_account_rewards(addr: Union[str, list], epoch: int = 0) -> list:
+def get_account_rewards(
+    addr: Union[str, list[str]], epoch: int = 0
+) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#post-/account_rewards
     Get the full rewards history (including MIR) for given stake addresses (accounts)
@@ -137,18 +97,17 @@ def get_account_rewards(addr: Union[str, list], epoch: int = 0) -> list:
     :returns: The list of reward history information
     """
     url = API_BASE_URL + "/account_rewards"
-    parameters = {}
+    parameters: dict[str, Any] = {}
     if isinstance(addr, list):
         parameters["_stake_addresses"] = addr
     else:
         parameters["_stake_addresses"] = [addr]
     if isinstance(epoch, int) and epoch > 0:
         parameters["_epoch_no"] = epoch
-    resp = koios_post_request(url, {}, parameters)
-    return resp
+    return koios_post_request(url, {}, parameters)
 
 
-def get_account_updates(addr: Union[str, list]) -> list:
+def get_account_updates(addr: Union[str, list[str]]) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#post-/account_updates
     Get the account updates (registration, deregistration, delegation and withdrawals) for given stake addresses
@@ -156,7 +115,7 @@ def get_account_updates(addr: Union[str, list]) -> list:
     :returns: The list of account updates information
     """
     url = API_BASE_URL + "/account_updates"
-    parameters = {}
+    parameters: dict[str, Any] = {}
     if isinstance(addr, list):
         parameters["_stake_addresses"] = addr
     else:
@@ -165,8 +124,8 @@ def get_account_updates(addr: Union[str, list]) -> list:
 
 
 def get_account_addresses(
-    addr: Union[str, list], first_only: bool = False, empty: bool = True
-) -> list:
+    addr: Union[str, list[str]], first_only: bool = False, empty: bool = True
+) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#post-/account_addresses
     Get all addresses associated with given staking accounts
@@ -176,7 +135,7 @@ def get_account_addresses(
     :returns: The list of payment addresses
     """
     url = API_BASE_URL + "/account_addresses"
-    parameters = {}
+    parameters: dict[str, Any] = {}
     if isinstance(addr, list):
         parameters["_stake_addresses"] = addr
     else:
@@ -186,7 +145,7 @@ def get_account_addresses(
     return koios_post_request(url, {}, parameters)
 
 
-def get_account_assets(addr: Union[str, list]) -> list:
+def get_account_assets(addr: Union[str, list[str]]) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#post-/account_assets
     Get the native asset balance of given accounts
@@ -194,27 +153,17 @@ def get_account_assets(addr: Union[str, list]) -> list:
     :returns: The list of assets owned by account
     """
     url = API_BASE_URL + "/account_assets"
-    parameters = {}
-    qs_parameters = {"limit": API_RESP_COUNT}
+    parameters: dict[str, Any] = {}
     if isinstance(addr, list):
         parameters["_stake_addresses"] = addr
     else:
         parameters["_stake_addresses"] = [addr]
-    assets = []
-    offset = 0
-    while True:
-        if offset > 0:
-            qs_parameters["offset"] = offset
-        resp = koios_post_request(url, qs_parameters, parameters)
-        assets += resp
-        if len(resp) < API_RESP_COUNT:
-            break
-        else:
-            offset += len(resp)
-    return assets
+    return paginated_post(url, {"limit": API_RESP_COUNT}, parameters)
 
 
-def get_account_history(addr: Union[str, list], epoch: int = 0) -> list:
+def get_account_history(
+    addr: Union[str, list[str]], epoch: int = 0
+) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#post-/account_history
     Get the staking history of given stake addresses (accounts)
@@ -223,7 +172,7 @@ def get_account_history(addr: Union[str, list], epoch: int = 0) -> list:
     :returns: The list of active stake values per epoch
     """
     url = API_BASE_URL + "/account_history"
-    parameters = {}
+    parameters: dict[str, Any] = {}
     if isinstance(addr, list):
         parameters["_stake_addresses"] = addr
     else:

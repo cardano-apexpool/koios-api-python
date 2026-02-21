@@ -1,10 +1,13 @@
 """Transactions section functions"""
-from typing import Union
+from typing import Any, Union
 
-from .library import *
+from .__config__ import API_BASE_URL
+from .library import koios_post_request, koios_post_request_raw, paginated_get
 
 
-def get_utxo_info(utxos: Union[str, list], extended: bool = False) -> list:
+def get_utxo_info(
+    utxos: Union[str, list[str]], extended: bool = False
+) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#post-/utxo_info
     Get UTxO set for requested UTxO references
@@ -13,7 +16,7 @@ def get_utxo_info(utxos: Union[str, list], extended: bool = False) -> list:
     :returns: The list of UTXO details
     """
     url = API_BASE_URL + "/utxo_info"
-    parameters = {}
+    parameters: dict[str, Any] = {}
     if isinstance(utxos, list):
         parameters["_utxo_refs"] = utxos
     else:
@@ -23,7 +26,7 @@ def get_utxo_info(utxos: Union[str, list], extended: bool = False) -> list:
     return koios_post_request(url, {}, parameters)
 
 
-def get_tx_info(txs: Union[str, list]) -> list:
+def get_tx_info(txs: Union[str, list[str]]) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#post-/tx_info
     Get detailed information about transaction(s)
@@ -31,7 +34,7 @@ def get_tx_info(txs: Union[str, list]) -> list:
     :returns: The list of detailed information about transaction(s)
     """
     url = API_BASE_URL + "/tx_info"
-    parameters = {}
+    parameters: dict[str, Any] = {}
     if isinstance(txs, list):
         parameters["_tx_hashes"] = txs
     else:
@@ -39,7 +42,7 @@ def get_tx_info(txs: Union[str, list]) -> list:
     return koios_post_request(url, {}, parameters)
 
 
-def get_tx_metadata(txs: Union[str, list]) -> list:
+def get_tx_metadata(txs: Union[str, list[str]]) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#post-/tx_metadata
     Get metadata information (if any) for given transaction(s)
@@ -47,7 +50,7 @@ def get_tx_metadata(txs: Union[str, list]) -> list:
     :returns: The list of metadata information present in each of the transactions queried
     """
     url = API_BASE_URL + "/tx_metadata"
-    parameters = {}
+    parameters: dict[str, Any] = {}
     if isinstance(txs, list):
         parameters["_tx_hashes"] = txs
     else:
@@ -55,62 +58,29 @@ def get_tx_metadata(txs: Union[str, list]) -> list:
     return koios_post_request(url, {}, parameters)
 
 
-def get_tx_metalabels() -> list:
+def get_tx_metalabels() -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#get-/tx_metalabels
     Get a list of all transaction metadata labels
     :returns: The list of known metadata labels
     """
     url = API_BASE_URL + "/tx_metalabels"
-    parameters = {}
-    metalabels_list = []
-    offset = 0
-    while True:
-        if offset > 0:
-            parameters["offset"] = offset
-        resp = koios_get_request(url, parameters)
-        metalabels_list += resp
-        if len(resp) < API_RESP_COUNT:
-            break
-        else:
-            offset += len(resp)
-    return metalabels_list
+    return paginated_get(url, {})
 
 
-def submit_tx(transaction: str) -> str:
+def submit_tx(transaction: bytes) -> str:
     """
     https://api.koios.rest/#post-/submittx
     Submit an already serialized transaction to the network
-    :param transaction: transaction in cbor format
+    :param transaction: transaction in cbor format (as bytes)
     :returns: transaction hash
     """
     url = API_BASE_URL + "/submittx"
     headers = {"Accept": "application/json", "Content-Type": "application/cbor"}
-    """
-    if KOIOS_API_TOKEN:
-        headers["Api-Token"] = "Bearer " + KOIOS_API_TOKEN
-    while True:
-        try:
-            response = requests.post(
-                url, headers=headers, data=transaction, timeout=REQUEST_TIMEOUT
-            )
-            if response.status_code == 200:
-                resp = json.loads(response.text)
-                break
-            else:
-                logger.warning(f"status code: {response.status_code}, retrying...")
-        except Exception as exc:
-            logger.exception(
-                f"Exception in {inspect.getframeinfo(inspect.currentframe()).function}: {exc}"
-            )
-            sleep(SLEEP_TIME)
-            logger.warning("retrying...")
-    """
-    resp = koios_post_request(url, {}, transaction, headers)
-    return resp
+    return koios_post_request_raw(url, transaction, headers)
 
 
-def get_tx_status(txs: Union[str, list]) -> list:
+def get_tx_status(txs: Union[str, list[str]]) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#post-/tx_status
     Get the number of block confirmations for a given transaction hash list
@@ -118,7 +88,7 @@ def get_tx_status(txs: Union[str, list]) -> list:
     :returns: The list of transaction confirmation counts
     """
     url = API_BASE_URL + "/tx_status"
-    parameters = {}
+    parameters: dict[str, Any] = {}
     if isinstance(txs, list):
         parameters["_tx_hashes"] = txs
     else:

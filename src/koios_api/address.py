@@ -1,10 +1,11 @@
 """Address section functions"""
-from typing import Union
+from typing import Any, Union
 
-from .library import *
+from .__config__ import API_BASE_URL, API_RESP_COUNT
+from .library import koios_post_request, paginated_post
 
 
-def get_address_info(addr: Union[str, list]) -> list:
+def get_address_info(addr: Union[str, list[str]]) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#post-/address_info
     Get address info - balance, associated stake address (if any) and UTxO set for given addresses
@@ -12,7 +13,7 @@ def get_address_info(addr: Union[str, list]) -> list:
     :returns: The list of address information
     """
     url = API_BASE_URL + "/address_info"
-    parameters = {}
+    parameters: dict[str, Any] = {}
     if isinstance(addr, list):
         parameters["_addresses"] = addr
     else:
@@ -20,37 +21,29 @@ def get_address_info(addr: Union[str, list]) -> list:
     return koios_post_request(url, {}, parameters)
 
 
-def get_address_utxos(addr: Union[str, list], extended: bool = False) -> list:
+def get_address_utxos(
+    addr: Union[str, list[str]], extended: bool = False
+) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#post-/address_utxos
     Get UTxO set for given addresses
-    :param addr: Aaddress as string (for one address) or list (for multiple addresses)
+    :param addr: Address as string (for one address) or list (for multiple addresses)
     :param extended: (optional) Include certain optional fields are populated as a part of the call
     :returns: The list of address UTXOs
     """
     url = API_BASE_URL + "/address_utxos"
-    parameters = {}
-    qs_parameters = {"limit": API_RESP_COUNT}
+    parameters: dict[str, Any] = {}
     if isinstance(addr, list):
         parameters["_addresses"] = addr
     else:
         parameters["_addresses"] = [addr]
     parameters["_extended"] = str(extended).lower()
-    utxos = []
-    offset = 0
-    while True:
-        if offset > 0:
-            qs_parameters["offset"] = offset
-        resp = koios_post_request(url, qs_parameters, parameters)
-        utxos += resp
-        if len(resp) < API_RESP_COUNT:
-            break
-        else:
-            offset += len(resp)
-    return utxos
+    return paginated_post(url, {"limit": API_RESP_COUNT}, parameters)
 
 
-def get_credential_utxos(cred: Union[str, list], extended: bool = False) -> list:
+def get_credential_utxos(
+    cred: Union[str, list[str]], extended: bool = False
+) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#post-/credential_utxos
     Get a list of UTxO against input payment credential array including their balances
@@ -59,28 +52,18 @@ def get_credential_utxos(cred: Union[str, list], extended: bool = False) -> list
     :returns: The list of input payment credentials maps
     """
     url = API_BASE_URL + "/credential_utxos"
-    parameters = {}
-    qs_parameters = {"limit": API_RESP_COUNT}
+    parameters: dict[str, Any] = {}
     if isinstance(cred, list):
         parameters["_payment_credentials"] = cred
     else:
         parameters["_payment_credentials"] = [cred]
     parameters["_extended"] = str(extended).lower()
-    utxos = []
-    offset = 0
-    while True:
-        if offset > 0:
-            qs_parameters["offset"] = offset
-        resp = koios_post_request(url, qs_parameters, parameters)
-        utxos += resp
-        if len(resp) < API_RESP_COUNT:
-            break
-        else:
-            offset += len(resp)
-    return utxos
+    return paginated_post(url, {"limit": API_RESP_COUNT}, parameters)
 
 
-def get_address_txs(addr: Union[str, list], block_height: int = 0) -> list:
+def get_address_txs(
+    addr: Union[str, list[str]], block_height: int = 0
+) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#post-/address_txs
     Get the transaction hash list of input address array, optionally filtering after specified block height (inclusive)
@@ -89,29 +72,19 @@ def get_address_txs(addr: Union[str, list], block_height: int = 0) -> list:
     :returns: The list of transaction hashes
     """
     url = API_BASE_URL + "/address_txs"
-    parameters = {}
-    qs_parameters = {"limit": API_RESP_COUNT}
+    parameters: dict[str, Any] = {}
     if isinstance(addr, list):
         parameters["_addresses"] = addr
     else:
         parameters["_addresses"] = [addr]
     if block_height > 0:
         parameters["_after_block_height"] = block_height
-    txs = []
-    offset = 0
-    while True:
-        if offset > 0:
-            qs_parameters["offset"] = offset
-        resp = koios_post_request(url, qs_parameters, parameters)
-        txs += resp
-        if len(resp) < API_RESP_COUNT:
-            break
-        else:
-            offset += len(resp)
-    return txs
+    return paginated_post(url, {"limit": API_RESP_COUNT}, parameters)
 
 
-def get_credential_txs(cred: Union[str, list], block_height: int = 0) -> list:
+def get_credential_txs(
+    cred: Union[str, list[str]], block_height: int = 0
+) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#post-/credential_txs
     Get the transaction hash list of input payment credential array,
@@ -121,17 +94,17 @@ def get_credential_txs(cred: Union[str, list], block_height: int = 0) -> list:
     :returns: The list of transaction hashes
     """
     url = API_BASE_URL + "/credential_txs"
-    parameters = {}
+    parameters: dict[str, Any] = {}
     if isinstance(cred, list):
         parameters["_payment_credentials"] = cred
     else:
         parameters["_payment_credentials"] = [cred]
-    if block_height:
+    if block_height > 0:
         parameters["_after_block_height"] = block_height
-    return koios_post_request(url, {}, parameters)
+    return paginated_post(url, {"limit": API_RESP_COUNT}, parameters)
 
 
-def get_address_assets(addr: Union[str, list]) -> list:
+def get_address_assets(addr: Union[str, list[str]]) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#post-/address_assets
     Get the list of all the assets (policy, name and quantity) for given addresses
@@ -139,21 +112,9 @@ def get_address_assets(addr: Union[str, list]) -> list:
     :returns: The list of address-owned assets
     """
     url = API_BASE_URL + "/address_assets"
-    parameters = {}
-    qs_parameters = {"limit": API_RESP_COUNT}
+    parameters: dict[str, Any] = {}
     if isinstance(addr, list):
         parameters["_addresses"] = addr
     else:
         parameters["_addresses"] = [addr]
-    assets = []
-    offset = 0
-    while True:
-        if offset > 0:
-            qs_parameters["offset"] = offset
-        resp = koios_post_request(url, qs_parameters, parameters)
-        assets += resp
-        if len(resp) < API_RESP_COUNT:
-            break
-        else:
-            offset += len(resp)
-    return assets
+    return paginated_post(url, {"limit": API_RESP_COUNT}, parameters)

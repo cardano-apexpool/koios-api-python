@@ -1,8 +1,11 @@
 """Network section functions"""
-from .library import *
+from typing import Any
+
+from .__config__ import API_BASE_URL
+from .library import koios_get_request, paginated_get
 
 
-def get_tip() -> list:
+def get_tip() -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#get-/tip
     Get the tip info about the latest block seen by chain
@@ -12,7 +15,7 @@ def get_tip() -> list:
     return koios_get_request(url, {})
 
 
-def get_genesis() -> list:
+def get_genesis() -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#get-/genesis
     Get the Genesis parameters used to start specific era on chain
@@ -22,7 +25,7 @@ def get_genesis() -> list:
     return koios_get_request(url, {})
 
 
-def get_totals(epoch: int = 0) -> list:
+def get_totals(epoch: int = 0) -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#get-/totals
     Get the circulating utxo, treasury, rewards, supply and reserves in lovelace
@@ -31,13 +34,13 @@ def get_totals(epoch: int = 0) -> list:
     :returns: The list of supply/reserves/utxo/fees/treasury stats
     """
     url = API_BASE_URL + "/totals"
-    parameters = {}
+    parameters: dict[str, Any] = {}
     if isinstance(epoch, int) and epoch > 0:
         parameters["_epoch_no"] = epoch
     return koios_get_request(url, parameters)
 
 
-def get_param_updates() -> list:
+def get_param_updates() -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#get-/param_updates
     Get all parameter update proposals submitted to the chain starting Shelley era
@@ -47,45 +50,21 @@ def get_param_updates() -> list:
     return koios_get_request(url, {})
 
 
-def get_reserve_withdrawals() -> list:
+def get_reserve_withdrawals() -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#get-/reserve_withdrawals
     List of all withdrawals from reserves against stake accounts
     :returns: The list of withdrawals from reserves against stake accounts
     """
     url = API_BASE_URL + "/reserve_withdrawals"
-    parameters = {}
-    withdrawals = []
-    offset = 0
-    while True:
-        if offset > 0:
-            parameters["offset"] = offset
-        resp = koios_get_request(url, parameters)
-        withdrawals += resp
-        if len(resp) < API_RESP_COUNT:
-            break
-        else:
-            offset += len(resp)
-    return withdrawals
+    return paginated_get(url, {})
 
 
-def get_treasury_withdrawals() -> list:
+def get_treasury_withdrawals() -> list[dict[str, Any]]:
     """
     https://api.koios.rest/#get-/treasury_withdrawals
     List of all withdrawals from treasury against stake accounts
     :returns: The list of withdrawals from treasury against stake accounts
     """
     url = API_BASE_URL + "/treasury_withdrawals"
-    parameters = {}
-    withdrawals = []
-    offset = 0
-    while True:
-        if offset > 0:
-            parameters["offset"] = offset
-        resp = koios_get_request(url, parameters)
-        withdrawals += resp
-        if len(resp) < API_RESP_COUNT:
-            break
-        else:
-            offset += len(resp)
-    return withdrawals
+    return paginated_get(url, {})
